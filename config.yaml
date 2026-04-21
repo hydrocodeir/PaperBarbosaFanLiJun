@@ -115,3 +115,15 @@ plots:
   annotate_stations_on_map: false
   save_format: png
   heatmap_station_order: delta_desc
+spatial_visualization:
+  iran_boundary_geojson: data/Iran.geojson
+  # options:
+  # - thin_plate_spline (default)
+  # - multiquadric
+  # - inverse
+  # - gaussian
+  # - linear / cubic / nearest
+  # - linear_rbf
+  # - quintic
+  interpolation_method: linear_rbf
+  interpolation_smooth: 0.50

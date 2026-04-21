@@ -371,7 +371,11 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
     fig_dir.mkdir(parents=True, exist_ok=True)
     taus = taus or [0.05, 0.10, 0.50, 0.90, 0.95]
     max_iter = int(cfg["quantile_regression"]["max_iter"])
-    boundary_geom = _load_boundary_geometry(Path("data") / "Iran.geojson")
+    spatial_cfg = cfg.get("spatial_visualization", {})
+    boundary_path = Path(spatial_cfg.get("iran_boundary_geojson", "data/Iran.geojson"))
+    interpolation_method = spatial_cfg.get("interpolation_method", "thin_plate_spline")
+    interpolation_smooth = float(spatial_cfg.get("interpolation_smooth", 0.35))
+    boundary_geom = _load_boundary_geometry(boundary_path)
     for tau in taus:
         rows = []
         slope_col = f"slope_{tau:0.2f}"
@@ -433,7 +437,13 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
 
             interp_df = sdf[["longitude", "latitude", slope_col]].rename(columns={slope_col: "slope_value"}).dropna().copy()
             grid_x, grid_y = _build_interpolation_grid(interp_df, boundary_geom=boundary_geom, nx=320, ny=320)
-            surface = _interpolate_station_surface(interp_df, grid_x, grid_y, method="thin_plate_spline", smooth=0.35)
+            surface = _interpolate_station_surface(
+                interp_df,
+                grid_x,
+                grid_y,
+                method=interpolation_method,
+                smooth=interpolation_smooth,
+            )
             surface = _mask_surface_to_boundary(grid_x, grid_y, surface, boundary_geom=boundary_geom)
             mappable = ax.contourf(
                 grid_x,
