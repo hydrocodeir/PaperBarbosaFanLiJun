@@ -1,0 +1,115 @@
+project:
+  name: Quantile Regression + Bootstrap + Clustering for Temperature Extremes
+  language: fa
+  random_seed: 42
+paths:
+  data_csv: /data/data.csv
+  station_csv: /data/stationsInfo.csv
+  output_dir: /outputs
+data:
+  station_id_col: station_id
+  station_name_col: station_name
+  year_col: year
+  month_col: month
+  day_col: day
+  tmin_col: tmin
+  tmax_col: tmax
+  tmean_col: tmean
+  precip_col: precip
+index_construction:
+  reference_years: null
+  percentile_window_days: 5
+  lower_percentile: 10
+  upper_percentile: 90
+  drop_feb29: true
+  min_reference_samples_per_doy: 15
+indices:
+- name: warm_days
+  source_col: tmax
+  tail: upper
+  percentile: 90
+  title: Warm Days
+  unit: days/year
+- name: warm_nights
+  source_col: tmin
+  tail: upper
+  percentile: 90
+  title: Warm Nights
+  unit: days/year
+- name: cool_days
+  source_col: tmax
+  tail: lower
+  percentile: 10
+  title: Cool Days
+  unit: days/year
+- name: cool_nights
+  source_col: tmin
+  tail: lower
+  percentile: 10
+  title: Cool Nights
+  unit: days/year
+quantile_regression:
+  full_quantiles:
+    start: 0.01
+    stop: 0.99
+    step: 0.01
+  focus_quantiles:
+  - 0.05
+  - 0.5
+  - 0.95
+  time_unit: decade
+  min_years_required_to_run: 3
+  min_years_recommended_for_publication: 20
+  max_iter: 5000
+bootstrap:
+  enabled: true
+  method: moving_block
+  n_reps: 200
+  block_length: 2
+  alpha: 0.05
+  save_long_table: true
+feature_engineering:
+  delta_definitions:
+    Delta1:
+    - slope_0.95
+    - slope_0.05
+    Delta2:
+    - slope_0.95
+    - slope_0.50
+    Delta3:
+    - slope_0.50
+    - slope_0.05
+clustering:
+  enabled: true
+  algorithm: hierarchical
+  linkage: average
+  metric: euclidean
+  n_clusters: 4
+  standardize: true
+  feature_mode: uncertainty
+  simple_features:
+  - slope_0.05
+  - slope_0.50
+  - slope_0.95
+  - Delta1
+  uncertainty_features:
+  - slope_0.05
+  - slope_0.50
+  - slope_0.95
+  - Delta1
+  - Delta2
+  - Delta3
+  - boot_mean_0.05
+  - boot_mean_0.50
+  - boot_mean_0.95
+  - boot_sd_0.05
+  - boot_sd_0.50
+  - boot_sd_0.95
+  - boot_mean_Delta1
+  - boot_sd_Delta1
+plots:
+  dpi: 600
+  style: default
+  annotate_stations_on_map: false
+  save_format: png
+  heatmap_station_order: delta_desc
