@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple
 import warnings
 
 import numpy as np
@@ -264,7 +264,11 @@ def summarize_bootstrap(boot: pd.DataFrame, alpha: float) -> Dict[str, float]:
     return out
 
 
-def run_station_qr(annual: pd.DataFrame, cfg: dict) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def run_station_qr(
+    annual: pd.DataFrame,
+    cfg: dict,
+    progress_callback: Callable[[str], None] | None = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     dcfg = cfg["data"]
     station_col = dcfg["station_id_col"]
     station_name_col = dcfg["station_name_col"]
@@ -277,10 +281,20 @@ def run_station_qr(annual: pd.DataFrame, cfg: dict) -> Tuple[pd.DataFrame, pd.Da
     rng = np.random.default_rng(int(cfg["project"]["random_seed"]))
 
     all_quant_records, summary_records, boot_records = [], [], []
+    total_stations = annual[[station_col, station_name_col]].drop_duplicates().shape[0]
+    total_indices = len(cfg["indices"])
+    total_tasks = total_indices * total_stations
+    task_no = 0
 
     for index_cfg in cfg["indices"]:
         idx_name = index_cfg["name"]
         for (station_id, station_name), sdf in annual.groupby([station_col, station_name_col]):
+            task_no += 1
+            if progress_callback is not None:
+                progress_callback(
+                    f"Quantile regression {task_no}/{total_tasks}: "
+                    f"index={idx_name}, station={station_name} ({station_id})"
+                )
             sdf = sdf[[year_col, idx_name]].sort_values(year_col).copy()
             years, values = sdf[year_col].to_numpy(dtype=float), sdf[idx_name].to_numpy(dtype=float)
             n_years = int(np.isfinite(values).sum())
