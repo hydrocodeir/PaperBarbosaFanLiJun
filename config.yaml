@@ -3,9 +3,9 @@ project:
   language: fa
   random_seed: 42
 paths:
-  data_csv: /data/data.csv
-  station_csv: /data/stationsInfo.csv
-  output_dir: /outputs
+  data_csv: data/data.csv
+  station_csv: data/stationsInfo.csv
+  output_dir: outputs
 data:
   station_id_col: station_id
   station_name_col: station_name
@@ -60,7 +60,7 @@ quantile_regression:
   time_unit: decade
   min_years_required_to_run: 3
   min_years_recommended_for_publication: 20
-  max_iter: 5000
+  max_iter: 200
 bootstrap:
   enabled: true
   method: moving_block
