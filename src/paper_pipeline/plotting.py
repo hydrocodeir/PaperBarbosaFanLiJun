@@ -93,6 +93,11 @@ def _load_boundary_geometry(boundary_path: Path | None):
     return geom
 
 
+def _get_boundary_path_from_cfg(cfg: dict) -> Path:
+    spatial_cfg = cfg.get("spatial_visualization", {})
+    return Path(spatial_cfg.get("iran_boundary_geojson", "data/Iran.geojson"))
+
+
 def _get_plot_extent(meta: pd.DataFrame, boundary_geom=None, pad_deg: float = 0.4):
     if boundary_geom is not None:
         minx, miny, maxx, maxy = boundary_geom.bounds
@@ -372,7 +377,7 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
     taus = taus or [0.05, 0.10, 0.50, 0.90, 0.95]
     max_iter = int(cfg["quantile_regression"]["max_iter"])
     spatial_cfg = cfg.get("spatial_visualization", {})
-    boundary_path = Path(spatial_cfg.get("iran_boundary_geojson", "data/Iran.geojson"))
+    boundary_path = _get_boundary_path_from_cfg(cfg)
     interpolation_method = spatial_cfg.get("interpolation_method", "thin_plate_spline")
     interpolation_smooth = float(spatial_cfg.get("interpolation_smooth", 0.35))
     boundary_geom = _load_boundary_geometry(boundary_path)
@@ -805,7 +810,7 @@ def plot_dendrograms(features: pd.DataFrame, artifacts: Dict[str, np.ndarray], o
 
 
 def _scatter_station_map(df: pd.DataFrame, value_col: str, title: str, outpath: Path, cfg: dict, discrete: bool = False):
-    boundary_geom = _load_boundary_geometry(Path("data") / "Iran.geojson")
+    boundary_geom = _load_boundary_geometry(_get_boundary_path_from_cfg(cfg))
     fig, ax = plt.subplots(figsize=(7.5, 6))
     _draw_boundary(ax, boundary_geom, linewidth=1.0, zorder=2)
     scatter = ax.scatter(

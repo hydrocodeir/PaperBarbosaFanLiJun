@@ -109,21 +109,44 @@ All major analysis choices are controlled through `config.yaml`, including:
 - variable names in the source tables
 - extreme-index settings
 - quantile grid and focus quantiles
+- minimum sample-length thresholds for modeling and publication screening
 - bootstrap method and replication count
 - clustering algorithm and feature set
 - plot resolution and output format
+- spatial boundary and interpolation settings for map figures
 
 In the current setup:
 
 - the output directory is `outputs/`
-- the reference period for thresholds is all available years
+- the reference period for thresholds is `1961-1990`
 - the percentile window is 5 calendar days
 - lower and upper thresholds are the 10th and 90th percentiles
 - February 29 is removed
 - full quantile regression is computed from `tau = 0.05` to `0.95` with step `0.01`
 - focus quantiles are `0.05`, `0.10`, `0.50`, `0.90`, and `0.95`
+- station-index series shorter than the configured minimum run length are flagged and excluded from QR / OLS estimation
+- publication-oriented sensitivity checks compare analytic QR confidence intervals with bootstrap confidence intervals at `tau = 0.05` and `0.95`
 - bootstrap is enabled using `meboot` with `200` replicates
 - clustering is enabled using hierarchical clustering with average linkage and Euclidean distance
+- a reduced-feature clustering rerun is enabled as a robustness check
+
+For spatial maps, the current configuration can also specify:
+
+- `spatial_visualization.iran_boundary_geojson`
+- `spatial_visualization.interpolation_method`
+- `spatial_visualization.interpolation_smooth`
+
+Supported interpolation labels currently include:
+
+- `thin_plate_spline`
+- `multiquadric`
+- `inverse`
+- `gaussian`
+- `linear`
+- `cubic`
+- `nearest`
+- `linear_rbf`
+- `quintic`
 
 ### 3. Daily Preprocessing
 
@@ -178,6 +201,8 @@ The implementation includes two fitting strategies:
 
 This combination makes the workflow more stable across both short and long station records.
 
+If a station-index series does not satisfy the configured minimum record length, the workflow keeps the row in output tables but stores `NaN` slopes instead of forcing a regression fit.
+
 Primary outputs from this stage:
 
 - `outputs/tables/qr_all_quantiles_long.csv`
@@ -212,6 +237,13 @@ The main derived asymmetry measures are:
 - `Delta3 = slope_0.50 - slope_0.05`
 
 These metrics quantify whether upper-tail trends are changing faster or slower than lower-tail trends.
+
+For publication-oriented sensitivity assessment, the workflow also compares:
+
+- analytic quantile-regression significance based on model confidence intervals
+- bootstrap significance based on bootstrap confidence intervals
+
+This comparison is currently emphasized for `tau = 0.05` and `tau = 0.95`.
 
 Primary outputs from this stage:
 
@@ -251,6 +283,8 @@ The current repository configuration uses:
 
 The clustering is performed separately for each index. Missing feature values are imputed column-wise using the median before clustering. When enabled, features are standardized using `StandardScaler` to prevent high-variance metrics from dominating the classification.
 
+If the requested number of clusters exceeds the number of available stations for an index, the implementation automatically reduces the cluster count to the maximum admissible value so the run remains stable.
+
 Two algorithmic paths are supported:
 
 - hierarchical clustering via SciPy linkage and flat cluster extraction
@@ -260,6 +294,11 @@ Primary outputs from this stage:
 
 - `outputs/tables/cluster_assignments.csv`
 - cluster labels merged back into `outputs/tables/clustering_feature_table.csv`
+
+When the robustness check is enabled, the pipeline also exports:
+
+- `outputs/tables/cluster_assignments_reduced_features.csv`
+- `outputs/tables/cluster_robustness_summary.csv`
 
 ### 9. Summary Table Generation
 
@@ -277,7 +316,9 @@ This summary typically includes:
 - Delta metrics
 - bootstrap means and standard deviations
 - bootstrap confidence intervals
+- analytic-versus-bootstrap sensitivity flags for publication quantiles
 - assigned cluster labels
+- reduced-feature cluster labels, when robustness checking is enabled
 
 ### 10. Figure Production
 
@@ -335,7 +376,7 @@ Outputs:
 
 #### 10.6 Spatial Station Maps
 
-Station-based thematic maps are created by joining modeled results to station coordinates. The workflow can also use the Iran boundary geometry from `data/Iran.geojson` when present.
+Station-based thematic maps are created by joining modeled results to station coordinates. The workflow can also use the Iran boundary geometry from the path specified in `config.yaml` under `spatial_visualization.iran_boundary_geojson`.
 
 For each index, the repository exports maps of:
 
@@ -381,6 +422,8 @@ For selected quantiles, spatial maps are generated from station-specific slopes.
 2. interpolates the station field using radial basis functions or gridded interpolation
 3. masks the surface to the country boundary when a boundary file is available
 4. overlays station markers and significance based on quantile-regression confidence intervals
+
+These interpolated surfaces are intended primarily for visualization of broad spatial structure. With a sparse station network, direct station estimates should remain the primary basis for scientific interpretation.
 
 Outputs:
 
@@ -433,6 +476,8 @@ Generated files include:
 `REPORT.md` summarizes:
 
 - data coverage
+- the number of station-index series below the QR minimum record length
+- the number of station-index series below the publication-recommended record length
 - highest-Delta1 stations by index
 - cluster sizes when clustering is enabled
 
@@ -482,3 +527,6 @@ In practical terms, the repository performs the following sequence:
 - All trend slopes are expressed per decade.
 - The workflow is designed for batch export rather than interactive display.
 - Because full quantile regression and bootstrap are computationally heavy, complete runs may take noticeable time before all figures appear.
+- When `reference_years` is left as `null`, percentile thresholds are estimated from all available years; for strict climatological comparability, a fixed baseline period may be preferable.
+- Quantile-regression significance in the map figures is currently based on analytic confidence intervals from the fitted QR model; bootstrap-based sensitivity checks are recommended for publication use, especially at extreme quantiles.
+- Clustering is exploratory and depends on the chosen feature set; correlated features such as slope contrasts and their component slopes should be interpreted with care.

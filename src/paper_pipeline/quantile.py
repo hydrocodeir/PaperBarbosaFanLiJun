@@ -264,6 +264,71 @@ def summarize_bootstrap(boot: pd.DataFrame, alpha: float) -> Dict[str, float]:
     return out
 
 
+def _ci_excludes_zero(low: float, high: float) -> float:
+    if not (np.isfinite(low) and np.isfinite(high)):
+        return np.nan
+    return float((low > 0) or (high < 0))
+
+
+def add_sensitivity_check_columns(summary: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    if summary.empty:
+        return summary
+
+    out = summary.copy()
+    taus = [float(x) for x in cfg["quantile_regression"].get("sensitivity_check_quantiles", [0.05, 0.95])]
+    for tau in taus:
+        suffix = f"{tau:0.2f}"
+        analytic_low = f"ci_low_{suffix}"
+        analytic_high = f"ci_high_{suffix}"
+        boot_low = f"boot_ci_low_{suffix}"
+        boot_high = f"boot_ci_high_{suffix}"
+        analytic_sig = f"analytic_sig_{suffix}"
+        bootstrap_sig = f"bootstrap_sig_{suffix}"
+        agreement = f"sig_agree_{suffix}"
+        status = f"sensitivity_status_{suffix}"
+
+        if analytic_low in out.columns and analytic_high in out.columns:
+            out[analytic_sig] = out.apply(
+                lambda row: _ci_excludes_zero(row.get(analytic_low, np.nan), row.get(analytic_high, np.nan)),
+                axis=1,
+            )
+        else:
+            out[analytic_sig] = np.nan
+
+        if boot_low in out.columns and boot_high in out.columns:
+            out[bootstrap_sig] = out.apply(
+                lambda row: _ci_excludes_zero(row.get(boot_low, np.nan), row.get(boot_high, np.nan)),
+                axis=1,
+            )
+        else:
+            out[bootstrap_sig] = np.nan
+
+        analytic_vals = out[analytic_sig].to_numpy(dtype=float)
+        bootstrap_vals = out[bootstrap_sig].to_numpy(dtype=float)
+        agree = np.where(
+            np.isfinite(analytic_vals) & np.isfinite(bootstrap_vals),
+            analytic_vals == bootstrap_vals,
+            np.nan,
+        )
+        out[agreement] = agree
+
+        status_values = []
+        for a_sig, b_sig in zip(analytic_vals, bootstrap_vals):
+            if not (np.isfinite(a_sig) and np.isfinite(b_sig)):
+                status_values.append("insufficient")
+            elif bool(a_sig) and bool(b_sig):
+                status_values.append("agree_significant")
+            elif (not bool(a_sig)) and (not bool(b_sig)):
+                status_values.append("agree_nonsignificant")
+            elif bool(a_sig) and (not bool(b_sig)):
+                status_values.append("analytic_only")
+            else:
+                status_values.append("bootstrap_only")
+        out[status] = status_values
+
+    return out
+
+
 def run_station_qr(
     annual: pd.DataFrame,
     cfg: dict,
@@ -298,29 +363,49 @@ def run_station_qr(
             sdf = sdf[[year_col, idx_name]].sort_values(year_col).copy()
             years, values = sdf[year_col].to_numpy(dtype=float), sdf[idx_name].to_numpy(dtype=float)
             n_years = int(np.isfinite(values).sum())
+            can_run_qr = n_years >= min_years
+            focus_fits = {}
 
             all_slopes = {}
             for tau in full_q:
-                slope = fit_quantile_slope(years, values, tau=tau, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+                slope = (
+                    fit_quantile_slope(years, values, tau=tau, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+                    if can_run_qr
+                    else np.nan
+                )
                 all_quant_records.append({"index_name": idx_name, "station_id": station_id, "station_name": station_name, "tau": tau, "slope": slope, "n_years": n_years})
                 all_slopes[tau] = slope
+
+            for tau in focus_q:
+                if can_run_qr:
+                    focus_fits[tau] = fit_quantile_line(years, values, tau=tau, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+                else:
+                    focus_fits[tau] = {
+                        "slope": np.nan,
+                        "ci_low": np.nan,
+                        "ci_high": np.nan,
+                    }
 
             row = {
                 "index_name": idx_name,
                 "station_id": station_id,
                 "station_name": station_name,
                 "n_years": n_years,
+                "insufficient_years_for_qr": bool(not can_run_qr),
                 "publication_warning_short_record": bool(n_years < recommended_years),
-                "ols_slope": fit_ols_slope(years, values),
-                "slope_0.05": all_slopes.get(0.05, np.nan),
-                "slope_0.50": all_slopes.get(0.50, np.nan),
-                "slope_0.95": all_slopes.get(0.95, np.nan),
+                "ols_slope": fit_ols_slope(years, values) if can_run_qr else np.nan,
             }
+            for tau in focus_q:
+                suffix = f"{tau:0.2f}"
+                row[f"slope_{suffix}"] = float(focus_fits[tau]["slope"])
+                row[f"ci_low_{suffix}"] = float(focus_fits[tau]["ci_low"])
+                row[f"ci_high_{suffix}"] = float(focus_fits[tau]["ci_high"])
+
             row["Delta1"] = row["slope_0.95"] - row["slope_0.05"]
             row["Delta2"] = row["slope_0.95"] - row["slope_0.50"]
             row["Delta3"] = row["slope_0.50"] - row["slope_0.05"]
 
-            if cfg["bootstrap"]["enabled"] and n_years >= min_years:
+            if cfg["bootstrap"]["enabled"] and can_run_qr:
                 boot = bootstrap_qr(years, values, focus_q, cfg, rng)
                 if not boot.empty:
                     boot.insert(0, "index_name", idx_name)

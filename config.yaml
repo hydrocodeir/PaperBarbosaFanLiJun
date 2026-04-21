@@ -17,7 +17,9 @@ data:
   tmean_col: tmean
   precip_col: precip
 index_construction:
-  reference_years: null
+  reference_years:
+  - 1961
+  - 1990
   percentile_window_days: 5
   lower_percentile: 10
   upper_percentile: 90
@@ -63,6 +65,9 @@ quantile_regression:
   min_years_required_to_run: 3
   min_years_recommended_for_publication: 20
   max_iter: 200
+  sensitivity_check_quantiles:
+  - 0.05
+  - 0.95
 bootstrap:
   enabled: true
   method: meboot
@@ -109,6 +114,13 @@ clustering:
   - boot_sd_0.95
   - boot_mean_Delta1
   - boot_sd_Delta1
+  robustness_check:
+    enabled: true
+    reduced_features:
+    - slope_0.05
+    - slope_0.50
+    - slope_0.95
+    - Delta1
 plots:
   dpi: 600
   style: default

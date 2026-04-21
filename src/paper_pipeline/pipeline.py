@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from .clustering import build_feature_table, run_clustering
+from .clustering import build_feature_table, compare_clusterings, run_clustering
 from .indices import create_extreme_indices
 from .plotting import (
     plot_data_coverage,
@@ -21,7 +21,7 @@ from .plotting import (
     plot_station_paper2_figures,
     plot_station_heatmap,
 )
-from .quantile import run_station_qr
+from .quantile import add_sensitivity_check_columns, run_station_qr
 from .reporting import generate_report
 
 
@@ -63,28 +63,57 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
 
     log_status("Starting quantile regression and bootstrap stage. This can take a while with current settings.")
     qr_all, qr_summary, boot_long = run_station_qr(annual, cfg, progress_callback=log_status)
+    qr_summary = add_sensitivity_check_columns(qr_summary, cfg)
     log_status("Quantile regression stage completed.")
 
     feature_table = build_feature_table(qr_summary)
     cluster_df, artifacts = run_clustering(feature_table, cfg)
+    reduced_cluster_df = pd.DataFrame()
+    cluster_robustness_df = pd.DataFrame()
     if not cluster_df.empty:
         feature_table = feature_table.merge(cluster_df, on=["index_name", "station_id", "station_name"], how="left")
+    robustness_cfg = cfg["clustering"].get("robustness_check", {})
+    if robustness_cfg.get("enabled", False):
+        reduced_cluster_df, _ = run_clustering(
+            feature_table,
+            cfg,
+            feature_cols=robustness_cfg.get("reduced_features", cfg["clustering"]["simple_features"]),
+            label_col="cluster_reduced_features",
+        )
+        if not reduced_cluster_df.empty:
+            feature_table = feature_table.merge(
+                reduced_cluster_df,
+                on=["index_name", "station_id", "station_name"],
+                how="left",
+            )
+            cluster_robustness_df = compare_clusterings(cluster_df, reduced_cluster_df)
 
     qr_all.to_csv(tables_dir / "qr_all_quantiles_long.csv", index=False)
     qr_summary.to_csv(tables_dir / "qr_focus_slopes_and_bootstrap_summary.csv", index=False)
     feature_table.to_csv(tables_dir / "clustering_feature_table.csv", index=False)
     cluster_df.to_csv(tables_dir / "cluster_assignments.csv", index=False)
+    if not reduced_cluster_df.empty:
+        reduced_cluster_df.to_csv(tables_dir / "cluster_assignments_reduced_features.csv", index=False)
+    if not cluster_robustness_df.empty:
+        cluster_robustness_df.to_csv(tables_dir / "cluster_robustness_summary.csv", index=False)
     if cfg["bootstrap"]["save_long_table"] and not boot_long.empty:
         boot_long.to_csv(tables_dir / "bootstrap_distributions_long.csv", index=False)
     log_status("Saved quantile, bootstrap, and clustering tables.")
 
     focus_cols = [
         "index_name", "station_id", "station_name", "n_years",
-        "slope_0.05", "slope_0.50", "slope_0.95", "Delta1", "Delta2", "Delta3",
+        "insufficient_years_for_qr",
+        "slope_0.05", "ci_low_0.05", "ci_high_0.05",
+        "slope_0.50", "ci_low_0.50", "ci_high_0.50",
+        "slope_0.95", "ci_low_0.95", "ci_high_0.95",
+        "Delta1", "Delta2", "Delta3",
         "boot_mean_0.05", "boot_sd_0.05", "boot_ci_low_0.05", "boot_ci_high_0.05",
         "boot_mean_0.50", "boot_sd_0.50", "boot_ci_low_0.50", "boot_ci_high_0.50",
         "boot_mean_0.95", "boot_sd_0.95", "boot_ci_low_0.95", "boot_ci_high_0.95",
+        "analytic_sig_0.05", "bootstrap_sig_0.05", "sig_agree_0.05", "sensitivity_status_0.05",
+        "analytic_sig_0.95", "bootstrap_sig_0.95", "sig_agree_0.95", "sensitivity_status_0.95",
         "boot_mean_Delta1", "boot_sd_Delta1", "boot_ci_low_Delta1", "boot_ci_high_Delta1", "cluster",
+        "cluster_reduced_features",
     ]
     feature_table[[c for c in focus_cols if c in feature_table.columns]].to_csv(tables_dir / "publication_summary_table.csv", index=False)
     log_status("Saved publication summary table.")
@@ -101,6 +130,6 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     plot_station_paper1_figure4(boot_long, qr_summary, figs_dir, cfg)
     plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
     log_status("Finished rendering figures.")
-    generate_report(annual, feature_table, cluster_df, cfg, outdir)
+    generate_report(annual, feature_table, cluster_df, cfg, outdir, cluster_robustness_df=cluster_robustness_df)
     log_status("Generated final report.")
     return outdir
