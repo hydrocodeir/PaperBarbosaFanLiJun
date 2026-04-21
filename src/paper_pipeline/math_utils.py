@@ -5,6 +5,7 @@ from typing import List
 
 import numpy as np
 import pandas as pd
+import statsmodels.api as sm
 
 
 def make_quantile_grid(start: float, stop: float, step: float) -> List[float]:
@@ -33,13 +34,16 @@ def moving_block_bootstrap(arr: np.ndarray, block_length: int, rng: np.random.Ge
     n = len(arr)
     if n == 0:
         return arr.copy()
-    block_length = max(1, min(int(block_length), n))
+    if n < 3:
+        return arr.copy()
+    block_length = int(np.clip(block_length, 2, n))
+    starts = np.arange(0, n - block_length + 1)
     n_blocks = int(math.ceil(n / block_length))
-    starts = rng.integers(0, n, size=n_blocks)
-    offsets = np.arange(block_length)
-    indices = (starts[:, None] + offsets[None, :]) % n
-    sampled = arr[indices].reshape(-1)
-    return sampled[:n]
+    pieces = []
+    for _ in range(n_blocks):
+        s = int(rng.choice(starts))
+        pieces.append(arr[s : s + block_length])
+    return np.concatenate(pieces)[:n]
 
 
 def iid_bootstrap(arr: np.ndarray, rng: np.random.Generator) -> np.ndarray:
@@ -48,3 +52,45 @@ def iid_bootstrap(arr: np.ndarray, rng: np.random.Generator) -> np.ndarray:
     if n == 0:
         return arr.copy()
     return arr[rng.integers(0, n, size=n)]
+
+
+def maximum_entropy_bootstrap(arr: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    x = np.asarray(arr, dtype=float)
+    n = len(x)
+    if n < 3:
+        return x.copy()
+
+    order = np.argsort(x)
+    xs = x[order]
+    mids = 0.5 * (xs[:-1] + xs[1:])
+
+    left_width = mids[0] - xs[0]
+    right_width = xs[-1] - mids[-1]
+    z = np.empty(n + 1, dtype=float)
+    z[0] = xs[0] - left_width
+    z[1:-1] = mids
+    z[-1] = xs[-1] + right_width
+
+    u = np.sort(rng.uniform(size=n))
+    scaled = np.clip(u * n, 0, n - 1e-12)
+    idx = np.floor(scaled).astype(int)
+    frac = scaled - idx
+    ys_sorted = z[idx] + frac * (z[idx + 1] - z[idx])
+
+    y = np.empty(n, dtype=float)
+    y[order] = ys_sorted
+    return y - y.mean() + x.mean()
+
+
+def residual_bootstrap(x: np.ndarray, y: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    if len(y) < 3:
+        return y.copy()
+    X = sm.add_constant(x)
+    ols = sm.OLS(y, X).fit()
+    y_hat = np.asarray(ols.predict(X), dtype=float)
+    resid = np.asarray(ols.resid, dtype=float)
+    resid = resid - np.mean(resid)
+    sampled_resid = rng.choice(resid, size=len(resid), replace=True)
+    return y_hat + sampled_resid

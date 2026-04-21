@@ -13,7 +13,11 @@ from .plotting import (
     plot_delta_uncertainty,
     plot_dendrograms,
     plot_maps,
+    plot_paper1_quantile_dendrograms,
+    plot_paper2_figure3_maps,
+    plot_station_paper1_figure4,
     plot_region_quantile_slopes,
+    plot_station_paper2_figures,
     plot_station_heatmap,
 )
 from .quantile import run_station_qr
@@ -63,6 +67,10 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     plot_delta_uncertainty(feature_table, figs_dir, cfg)
     plot_dendrograms(feature_table, artifacts, figs_dir, cfg)
     plot_maps(feature_table, stations, cluster_df, figs_dir, cfg)
+    plot_station_paper2_figures(annual, figs_dir, cfg)
+    plot_paper2_figure3_maps(annual, stations, figs_dir, cfg)
+    plot_station_paper1_figure4(boot_long, qr_summary, figs_dir, cfg)
+    plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
 
     metadata = {
         "project_name": cfg["project"]["name"],

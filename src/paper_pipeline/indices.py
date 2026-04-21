@@ -46,6 +46,8 @@ def compute_daily_thresholds(
     return pd.DataFrame(rows)
 
 
+
+
 def create_extreme_indices(df: pd.DataFrame, cfg: dict) -> Tuple[pd.DataFrame, pd.DataFrame]:
     dcfg = cfg["data"]
     station_col = dcfg["station_id_col"]

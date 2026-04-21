@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 from typing import Dict, List, Tuple
+import warnings
 
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from statsmodels.tools.sm_exceptions import IterationLimitWarning
 
-from .math_utils import iid_bootstrap, make_quantile_grid, moving_block_bootstrap
+from .math_utils import (
+    iid_bootstrap,
+    make_quantile_grid,
+    maximum_entropy_bootstrap,
+    moving_block_bootstrap,
+    residual_bootstrap,
+)
 
 
 def quantile_loss(u: np.ndarray, tau: float) -> float:
@@ -54,7 +62,8 @@ def fit_quantile_slope(years: np.ndarray, values: np.ndarray, tau: float, max_it
     x = (years - years.min()) / 10.0
     X = sm.add_constant(x)
     try:
-        return float(sm.QuantReg(values, X).fit(q=tau, max_iter=max_iter).params[1])
+        result = _fit_quantreg_with_retry(values, X, tau=tau, max_iter=max_iter)
+        return float(result.params[1])
     except Exception:
         return np.nan
 
@@ -75,9 +84,132 @@ def fit_ols_slope(years: np.ndarray, values: np.ndarray) -> float:
         return np.nan
 
 
+def fit_quantile_line(years: np.ndarray, values: np.ndarray, tau: float, max_iter: int = 5000) -> Dict[str, float | np.ndarray]:
+    years = np.asarray(years, dtype=float)
+    values = np.asarray(values, dtype=float)
+    mask = np.isfinite(years) & np.isfinite(values)
+    years = years[mask]
+    values = values[mask]
+    if len(values) < 3:
+        return {
+            "years": years,
+            "values": values,
+            "x": np.array([], dtype=float),
+            "fitted": np.array([], dtype=float),
+            "slope": np.nan,
+            "intercept": np.nan,
+            "ci_low": np.nan,
+            "ci_high": np.nan,
+        }
+
+    order = np.argsort(years)
+    years = years[order]
+    values = values[order]
+    x = (years - years.min()) / 10.0
+
+    try:
+        X = sm.add_constant(x)
+        res = _fit_quantreg_with_retry(values, X, tau=tau, max_iter=max_iter)
+        ci = res.conf_int()
+        ci_low = float(ci[1, 0]) if np.ndim(ci) == 2 else np.nan
+        ci_high = float(ci[1, 1]) if np.ndim(ci) == 2 else np.nan
+        return {
+            "years": years,
+            "values": values,
+            "x": x,
+            "fitted": np.asarray(res.predict(X), dtype=float),
+            "slope": float(res.params[1]),
+            "intercept": float(res.params[0]),
+            "ci_low": ci_low,
+            "ci_high": ci_high,
+        }
+    except Exception:
+        slope = fit_quantile_slope(years, values, tau=tau, max_iter=max_iter)
+        intercept = float(np.quantile(values - slope * x, tau)) if np.isfinite(slope) else np.nan
+        fitted = intercept + slope * x if np.isfinite(intercept) and np.isfinite(slope) else np.array([], dtype=float)
+        return {
+            "years": years,
+            "values": values,
+            "x": x,
+            "fitted": np.asarray(fitted, dtype=float),
+            "slope": float(slope),
+            "intercept": intercept,
+            "ci_low": np.nan,
+            "ci_high": np.nan,
+        }
+
+
+def _fit_quantreg_with_retry(values: np.ndarray, X: np.ndarray, tau: float, max_iter: int):
+    model = sm.QuantReg(values, X)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", IterationLimitWarning)
+        result = model.fit(q=tau, max_iter=max_iter)
+    reached_limit = any(isinstance(w.message, IterationLimitWarning) for w in caught)
+    if reached_limit:
+        retry_iter = max(int(max_iter) * 10, 5000)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", IterationLimitWarning)
+            result = model.fit(q=tau, max_iter=retry_iter)
+    return result
+
+
+def fit_ols_line(years: np.ndarray, values: np.ndarray) -> Dict[str, float | np.ndarray]:
+    years = np.asarray(years, dtype=float)
+    values = np.asarray(values, dtype=float)
+    mask = np.isfinite(years) & np.isfinite(values)
+    years = years[mask]
+    values = values[mask]
+    if len(values) < 3:
+        return {
+            "years": years,
+            "values": values,
+            "x": np.array([], dtype=float),
+            "fitted": np.array([], dtype=float),
+            "slope": np.nan,
+            "intercept": np.nan,
+            "ci_low": np.nan,
+            "ci_high": np.nan,
+        }
+
+    order = np.argsort(years)
+    years = years[order]
+    values = values[order]
+    x = (years - years.min()) / 10.0
+    X = sm.add_constant(x)
+    try:
+        res = sm.OLS(values, X).fit()
+        ci = res.conf_int()
+        ci_low = float(ci[1, 0]) if np.ndim(ci) == 2 else np.nan
+        ci_high = float(ci[1, 1]) if np.ndim(ci) == 2 else np.nan
+        return {
+            "years": years,
+            "values": values,
+            "x": x,
+            "fitted": np.asarray(res.predict(X), dtype=float),
+            "slope": float(res.params[1]),
+            "intercept": float(res.params[0]),
+            "ci_low": ci_low,
+            "ci_high": ci_high,
+        }
+    except Exception:
+        slope = fit_ols_slope(years, values)
+        intercept = float(np.nanmean(values) - slope * np.nanmean(x)) if np.isfinite(slope) else np.nan
+        fitted = intercept + slope * x if np.isfinite(intercept) and np.isfinite(slope) else np.array([], dtype=float)
+        return {
+            "years": years,
+            "values": values,
+            "x": x,
+            "fitted": np.asarray(fitted, dtype=float),
+            "slope": float(slope),
+            "intercept": intercept,
+            "ci_low": np.nan,
+            "ci_high": np.nan,
+        }
+
+
 def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[float], cfg: dict, rng: np.random.Generator) -> pd.DataFrame:
     n_reps = int(cfg["bootstrap"]["n_reps"])
-    method = cfg["bootstrap"]["method"]
+    method = str(cfg["bootstrap"]["method"]).lower()
     block_length = int(cfg["bootstrap"]["block_length"])
     max_iter = int(cfg["quantile_regression"]["max_iter"])
     records = []
@@ -87,9 +219,21 @@ def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[fl
     values_valid = values[valid]
     if len(values_valid) < 3:
         return pd.DataFrame()
+    x_decades = (years_valid - years_valid.min()) / 10.0
+
+    valid_methods = {"meboot", "residual", "moving_block", "iid"}
+    if method not in valid_methods:
+        raise ValueError(f"Unknown bootstrap method '{method}'. Valid options: {sorted(valid_methods)}")
 
     for rep in range(n_reps):
-        yb = moving_block_bootstrap(values_valid, block_length, rng) if method == "moving_block" else iid_bootstrap(values_valid, rng)
+        if method == "meboot":
+            yb = maximum_entropy_bootstrap(values_valid, rng)
+        elif method == "residual":
+            yb = residual_bootstrap(x_decades, values_valid, rng)
+        elif method == "moving_block":
+            yb = moving_block_bootstrap(values_valid, block_length, rng)
+        else:
+            yb = iid_bootstrap(values_valid, rng)
         row = {"replicate": rep}
         for tau in focus_quantiles:
             row[f"slope_{tau:0.2f}"] = fit_quantile_slope(years_valid, yb, tau=tau, max_iter=max_iter)
