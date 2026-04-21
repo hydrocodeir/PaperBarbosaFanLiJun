@@ -124,8 +124,28 @@ def plot_maps(features: pd.DataFrame, stations: pd.DataFrame, cluster_df: pd.Dat
         for col, lab in [("slope_0.05", "q0.05 slope"), ("slope_0.50", "q0.50 slope"), ("slope_0.95", "q0.95 slope"), ("Delta1", "Δ(q95-q05)")]:
             _scatter_station_map(sdf, col, f"Spatial distribution of {lab} - {idx_cfg['title']}", outdir / f"map_{idx_name}_{col}.{cfg['plots']['save_format']}", cfg)
         if not cluster_df.empty:
-            csdf = sdf.merge(cluster_df.loc[cluster_df["index_name"] == idx_name, ["station_id", "cluster"]], on="station_id", how="left")
-            _scatter_station_map(csdf, "cluster", f"Station clusters - {idx_cfg['title']}", outdir / f"map_{idx_name}_cluster.{cfg['plots']['save_format']}", cfg, True)
+            # `features` may already include `cluster` from pipeline merge.
+            # Merging again can create suffixes (cluster_x/cluster_y), so we resolve safely.
+            csdf = sdf.merge(
+                cluster_df.loc[cluster_df["index_name"] == idx_name, ["station_id", "cluster"]],
+                on="station_id",
+                how="left",
+                suffixes=("", "_from_cluster_df"),
+            )
+            if "cluster" not in csdf.columns and "cluster_from_cluster_df" in csdf.columns:
+                csdf["cluster"] = csdf["cluster_from_cluster_df"]
+            if "cluster" in csdf.columns:
+                csdf_cluster = csdf.dropna(subset=["cluster"]).copy()
+                if csdf_cluster.empty:
+                    continue
+                _scatter_station_map(
+                    csdf_cluster,
+                    "cluster",
+                    f"Station clusters - {idx_cfg['title']}",
+                    outdir / f"map_{idx_name}_cluster.{cfg['plots']['save_format']}",
+                    cfg,
+                    True,
+                )
 
 
 def plot_data_coverage(annual: pd.DataFrame, outdir: Path, cfg: dict):
