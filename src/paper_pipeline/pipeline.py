@@ -196,7 +196,7 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir))
     advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir))
     advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir))
-    advanced_results.update(run_regionalization_analysis(feature_table, cfg, outdir))
+    advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir))
     log_status("Finished advanced publication analyses.")
 
     log_status("Rendering robustness synthesis figure from completed sensitivity outputs...")

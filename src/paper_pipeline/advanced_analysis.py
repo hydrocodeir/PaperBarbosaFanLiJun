@@ -90,6 +90,77 @@ def _moran_i(values: np.ndarray, coords: np.ndarray, k_neighbors: int, permutati
     return obs, p_value
 
 
+def _haversine_km(coords_a: np.ndarray, coords_b: np.ndarray) -> np.ndarray:
+    lon1 = np.radians(coords_a[:, 0])
+    lat1 = np.radians(coords_a[:, 1])
+    lon2 = np.radians(coords_b[:, 0])
+    lat2 = np.radians(coords_b[:, 1])
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = np.sin(dlat / 2.0) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2.0) ** 2
+    return 6371.0 * 2.0 * np.arcsin(np.sqrt(np.clip(a, 0.0, 1.0)))
+
+
+def _mean_within_cluster_distance_km(coords: np.ndarray, labels: np.ndarray) -> float:
+    coords = np.asarray(coords, dtype=float)
+    labels = np.asarray(labels)
+    vals = []
+    for cluster_id in pd.unique(labels):
+        mask = labels == cluster_id
+        cluster_coords = coords[mask]
+        if len(cluster_coords) < 2:
+            continue
+        pair_rows = []
+        for i in range(len(cluster_coords) - 1):
+            left = np.repeat(cluster_coords[i : i + 1], len(cluster_coords) - i - 1, axis=0)
+            right = cluster_coords[i + 1 :]
+            pair_rows.append(_haversine_km(left, right))
+        if pair_rows:
+            vals.append(np.concatenate(pair_rows))
+    if not vals:
+        return np.nan
+    merged = np.concatenate(vals)
+    return float(np.mean(merged)) if merged.size else np.nan
+
+
+def _spatial_cluster_validation(
+    sdf: pd.DataFrame,
+    permutations: int,
+    rng: np.random.Generator,
+) -> dict[str, float]:
+    local = sdf.dropna(subset=["cluster", "latitude", "longitude"]).copy()
+    if local.empty or local["cluster"].nunique() < 2:
+        return {}
+
+    coords = local[["longitude", "latitude"]].to_numpy(dtype=float)
+    labels = pd.to_numeric(local["cluster"], errors="coerce").to_numpy()
+    observed = _mean_within_cluster_distance_km(coords, labels)
+    if not np.isfinite(observed):
+        return {}
+
+    permuted = []
+    for _ in range(permutations):
+        shuffled = rng.permutation(labels)
+        permuted.append(_mean_within_cluster_distance_km(coords, shuffled))
+    permuted_arr = np.asarray(permuted, dtype=float)
+    permuted_arr = permuted_arr[np.isfinite(permuted_arr)]
+    if permuted_arr.size == 0:
+        return {}
+
+    p_compact = float((1 + np.sum(permuted_arr <= observed)) / (permuted_arr.size + 1))
+    return {
+        "n_stations": int(len(local)),
+        "n_clusters": int(local["cluster"].nunique()),
+        "observed_mean_within_cluster_distance_km": float(observed),
+        "permuted_mean_distance_km": float(permuted_arr.mean()),
+        "permuted_sd_distance_km": float(permuted_arr.std(ddof=1)) if permuted_arr.size > 1 else 0.0,
+        "compactness_z_score": float(
+            (observed - permuted_arr.mean()) / permuted_arr.std(ddof=1)
+        ) if permuted_arr.size > 1 and permuted_arr.std(ddof=1) > 0 else np.nan,
+        "p_perm_more_compact": p_compact,
+    }
+
+
 def _plot_two_heatmaps(left: pd.DataFrame, right: pd.DataFrame, left_title: str, right_title: str, outpath: Path, cmap: str = "viridis") -> None:
     apply_publication_theme()
     fig, axes = plt.subplots(1, 2, figsize=(14, 5.5), constrained_layout=True)
@@ -537,7 +608,7 @@ def run_driver_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg
     return {"driver_analysis_summary": driver_df}
 
 
-def run_regionalization_analysis(feature_table: pd.DataFrame, cfg: dict, outdir: Path) -> Dict[str, pd.DataFrame]:
+def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg: dict, outdir: Path) -> Dict[str, pd.DataFrame]:
     analysis_cfg = cfg.get("advanced_analyses", {}).get("regionalization", {})
     if not analysis_cfg.get("enabled", False) or feature_table.empty or "cluster" not in feature_table.columns:
         return {}
@@ -547,11 +618,20 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, cfg: dict, outdir:
     tables_dir.mkdir(parents=True, exist_ok=True)
     figs_dir.mkdir(parents=True, exist_ok=True)
     metrics = list(analysis_cfg.get("summary_metrics", ["slope_0.05", "slope_0.50", "slope_0.95", "Delta1"]))
+    spatial_validation_perms = int(analysis_cfg.get("spatial_validation_permutations", 499))
+    rng = np.random.default_rng(int(cfg["project"]["random_seed"]))
     cluster_df = feature_table.dropna(subset=["cluster"]).copy()
+    if "latitude" not in cluster_df.columns or "longitude" not in cluster_df.columns:
+        cluster_df = cluster_df.merge(
+            stations[["station_id", "station_name", "latitude", "longitude"]],
+            on=["station_id", "station_name"],
+            how="left",
+        )
     if cluster_df.empty:
         return {}
 
     rows = []
+    spatial_rows = []
     for (idx_name, cluster), sdf in cluster_df.groupby(["index_name", "cluster"]):
         for metric in metrics:
             vals = pd.to_numeric(sdf[metric], errors="coerce").dropna()
@@ -570,10 +650,31 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, cfg: dict, outdir:
                     "max": float(vals.max()),
                 }
             )
+    for idx_name, sdf in cluster_df.groupby("index_name"):
+        result = _spatial_cluster_validation(sdf, permutations=spatial_validation_perms, rng=rng)
+        if result:
+            result["index_name"] = idx_name
+            spatial_rows.append(result)
     regional_df = pd.DataFrame(rows)
+    spatial_df = pd.DataFrame(spatial_rows)
     if not regional_df.empty:
         regional_df.to_csv(tables_dir / "regional_cluster_composites.csv", index=False)
+    if not spatial_df.empty:
+        spatial_df = spatial_df[
+            [
+                "index_name",
+                "n_stations",
+                "n_clusters",
+                "observed_mean_within_cluster_distance_km",
+                "permuted_mean_distance_km",
+                "permuted_sd_distance_km",
+                "compactness_z_score",
+                "p_perm_more_compact",
+            ]
+        ].sort_values("index_name")
+        spatial_df.to_csv(tables_dir / "regional_cluster_spatial_validation.csv", index=False)
 
+    if not regional_df.empty:
         apply_publication_theme()
         for idx_cfg in cfg["indices"]:
             idx_name = idx_cfg["name"]
@@ -608,4 +709,31 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, cfg: dict, outdir:
                 fig.savefig(figs_dir / f"cluster_delta1_boxplot_{idx_name}.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
             plt.close(fig)
 
-    return {"regional_cluster_composites": regional_df}
+    if not spatial_df.empty:
+        apply_publication_theme()
+        fig, ax = plt.subplots(figsize=(8.8, 4.8), constrained_layout=True)
+        plot_df = spatial_df.sort_values("observed_mean_within_cluster_distance_km").copy()
+        xpos = np.arange(len(plot_df))
+        ax.bar(xpos, plot_df["observed_mean_within_cluster_distance_km"], color="#457b9d", label="Observed")
+        ax.scatter(xpos, plot_df["permuted_mean_distance_km"], color="#d62828", zorder=3, label="Permutation mean")
+        for i, row in enumerate(plot_df.itertuples(index=False)):
+            ax.text(
+                i,
+                float(row.observed_mean_within_cluster_distance_km) + 10,
+                f"p={float(row.p_perm_more_compact):.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=8.5,
+            )
+        ax.set_xticks(xpos)
+        ax.set_xticklabels([x.replace("_", " ").title() for x in plot_df["index_name"]], rotation=15, ha="right")
+        ax.set_ylabel("Mean within-cluster station distance (km)")
+        ax.set_title("Spatial Coherence of Cluster Assignments")
+        ax.legend(frameon=False)
+        fig.savefig(figs_dir / f"cluster_spatial_validation.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+        plt.close(fig)
+
+    results = {"regional_cluster_composites": regional_df}
+    if not spatial_df.empty:
+        results["regional_cluster_spatial_validation"] = spatial_df
+    return results
