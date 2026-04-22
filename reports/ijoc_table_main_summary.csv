@@ -1,0 +1,5 @@
+index_name,ols_slope,q0.05_slope,q0.50_slope,q0.95_slope,approx_change_1961_2024,fdr_sig_q0.10,fdr_sig_q0.50,fdr_sig_q0.90,dominant_cluster,dominant_cluster_n,dominant_cluster_median_Delta1
+warm_days,9.53,7.81,8.15,12.05,60.0,27,27,17,2,12,2.26
+warm_nights,13.58,13.96,13.65,12.55,85.5,29,28,25,2,15,1.7
+cool_days,-2.56,-1.51,-2.01,-8.05,-16.1,0,17,26,1,27,-6.64
+cool_nights,-2.98,-1.77,-2.47,-6.78,-18.8,12,23,25,2,26,-8.21
