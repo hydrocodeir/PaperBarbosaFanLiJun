@@ -142,34 +142,15 @@ By contrast, warm days show stronger upper-tail amplification than warm nights. 
 
 ### 3.4. Representative stations and cluster-defined quantile geometries
 
-Regional means necessarily conceal strong station-scale contrasts. To connect the clustering results to physically interpretable slope geometries, representative stations were selected from the cluster structures of each index.
+Regional means necessarily conceal strong station-scale contrasts. To connect the clustering results to physically interpretable slope geometries without introducing manual selection bias, one representative station per cluster was selected algorithmically as the observed station closest to the corresponding cluster centroid in the standardized clustering feature space used for the baseline regionalization. Because the clustering itself already applies collinearity screening, the representative-station rule is tied to the same screened feature set rather than to an ad hoc post hoc criterion.
 
-**Table 3.** Representative stations selected to illustrate contrasting cluster membership and focal-quantile behaviour. Stations were chosen to span the main cluster-defined geometries rather than to maximize a single metric.
-
-| Index | Station | Cluster | q0.05 | q0.50 | q0.95 | Delta1 | Interpretation |
-|---|---|---:|---:|---:|---:|---:|---|
-| Warm days | Esfahan | 1 | +11.92 | +16.29 | +28.50 | +16.58 | Extreme upper-tail amplification |
-| Warm days | Bushehr (Airport) | 2 | +3.83 | +4.00 | -2.50 | -6.33 | Upper-tail weakening |
-| Warm days | Khoy | 3 | +11.72 | +12.43 | +8.83 | -2.89 | High baseline with downward-tilting upper tail |
-| Warm days | Zanjan | 4 | +2.50 | +9.44 | +16.61 | +14.11 | Strong upward quantile transition |
-| Warm nights | Ramsar | 1 | +25.20 | +25.59 | +19.82 | -5.38 | High baseline, muted upper tail |
-| Warm nights | Tabriz | 2 | +9.73 | +11.96 | +15.23 | +5.50 | Moderate positive amplification |
-| Warm nights | Tehran (Mehrabad Airport) | 3 | +9.11 | +15.88 | +21.03 | +11.91 | Strong upper-tail intensification |
-| Warm nights | Shiraz | 4 | +9.77 | +14.00 | +35.68 | +25.90 | Exceptional upper-tail amplification |
-| Cool days | Sanandaj | 1 | -1.46 | -4.44 | -8.11 | -6.64 | Typical upper-tail contraction |
-| Cool days | Zabol | 2 | +1.40 | -2.86 | -8.75 | -10.15 | Positive lower tail, negative upper tail |
-| Cool days | Orumiyeh | 3 | +0.17 | -3.21 | -16.77 | -16.95 | Extreme high-quantile collapse |
-| Cool days | Torbat-E Heydariyeh | 4 | -0.26 | +3.26 | -12.35 | -12.10 | Positive median, collapsing upper tail |
-| Cool nights | Khorramabad | 1 | +1.48 | +2.70 | -19.52 | -21.01 | Strongest upper-tail contraction |
-| Cool nights | Qazvin | 2 | +0.50 | -3.56 | -13.26 | -13.76 | Classical contraction profile |
-| Cool nights | Gorgan | 3 | +4.00 | +6.43 | +1.52 | -2.48 | Positive low- and mid-quantile regime |
-| Cool nights | Shahrekord | 4 | +5.60 | +14.62 | +17.56 | +11.96 | Positive-tail outlier |
+**Table 3.** Reproducibly selected representative stations, defined as the closest observed member to each cluster centroid in the screened baseline clustering feature space. The exact station list and associated distances are generated automatically in `outputs/tables/representative_station_selection.csv` and should be inserted from that file after each pipeline run.
 
 ![Figure 4. Representative-station comparisons.](../outputs/figures/ijoc_station_comparisons/main_figure_representative_stations.png)
 
-*Figure 4. Multi-panel comparison of representative stations selected to contrast cluster membership and focal-quantile behaviour for (a) warm days, (b) warm nights, (c) cool days, and (d) cool nights. The selected stations show that the clusters correspond to distinct quantile-slope geometries rather than only differences in average trend magnitude.*
+*Figure 4. Multi-panel comparison of algorithmically selected representative stations for (a) warm days, (b) warm nights, (c) cool days, and (d) cool nights. Within each index, one station per cluster is shown, chosen as the closest observed member to the corresponding cluster centroid in the screened clustering feature space. The panels therefore visualize cluster-defined quantile-slope geometries using a reproducible medoid-like rule rather than hand-picked examples.*
 
-These representative stations clarify the logic of the cluster structure. Warm-day change ranges from extreme upper-tail amplification (Esfahan, Zanjan) to relative upper-tail weakening (Bushehr Airport, Khoy). Warm nights span high-baseline but downward-tilting profiles (Ramsar), strong monotonic amplification (Tehran), and exceptional upper-tail growth (Shiraz). The cool indices likewise span dominant contraction profiles, mixed low- versus high-quantile behaviour, and isolated positive outliers such as Shahrekord for cool nights. The clusters are therefore climatologically interpretable rather than merely statistically convenient, because they correspond to distinct geometries of distributional change.
+These representative stations clarify the logic of the cluster structure while remaining fully reproducible. Because each panel shows centroid-nearest observed members rather than manually curated examples, the figure should be read as a visualization of typical cluster geometry. Warm-day clusters still separate upper-tail amplification from weakening or flatter profiles; warm-night clusters separate broad-based nocturnal intensification from stronger upper-tail growth; and the cool indices continue to distinguish contraction-dominated regimes from mixed or locally positive profiles. The clusters are therefore climatologically interpretable rather than merely statistically convenient, but that interpretation now rests on a transparent selection rule that can be regenerated exactly from the pipeline.
 
 ### 3.5. Spatial expression and regionalization
 

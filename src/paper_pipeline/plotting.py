@@ -17,6 +17,7 @@ from shapely import contains_xy
 from shapely.geometry import Point
 from shapely.ops import polygonize, unary_union as shp_unary_union
 
+from .clustering import screen_clustering_features
 from .quantile import fit_ols_line, fit_quantile_line
 from .math_utils import make_quantile_grid
 
@@ -394,35 +395,11 @@ def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFr
     apply_publication_theme()
     fig_dir = outdir / "ijoc_station_comparisons"
     fig_dir.mkdir(parents=True, exist_ok=True)
+    tables_dir = outdir.parent / "tables"
+    tables_dir.mkdir(parents=True, exist_ok=True)
     qgrid = make_quantile_grid(0.01, 0.99, 0.01)
     max_iter = int(cfg["quantile_regression"]["max_iter"])
 
-    selected = {
-        "warm_days": [
-            "Esfahan",                  # cluster 1, strongest upper-tail amplification
-            "Bushehr (Airport)",        # cluster 2, negative Delta1
-            "Khoy",                     # cluster 3, high lower-tail slope, negative Delta1
-            "Zanjan",                   # cluster 4, strong upper-tail amplification
-        ],
-        "warm_nights": [
-            "Ramsar",                   # cluster 1, high baseline but negative Delta1
-            "Tabriz",                   # cluster 2, moderate positive amplification
-            "Tehran (Mehrabad Airport)",# cluster 3, strong amplification
-            "Shiraz",                   # cluster 4, exceptional upper-tail amplification
-        ],
-        "cool_days": [
-            "Sanandaj",                 # dominant cluster 1, strong contraction
-            "Zabol",                    # cluster 2, positive q0.05 and negative q0.95
-            "Orumiyeh",                 # cluster 3, extreme q0.95 contraction
-            "Torbat-E Heydariyeh",      # cluster 4, anomalous positive median slope
-        ],
-        "cool_nights": [
-            "Khorramabad",              # cluster 1, most extreme negative Delta1
-            "Qazvin",                   # cluster 2, strong negative contraction
-            "Gorgan",                   # cluster 3, positive low/median slopes
-            "Shahrekord",               # cluster 4, positive tail amplification
-        ],
-    }
     focus_quantiles = [0.05, 0.50, 0.95]
     cluster_colors = {1: "#1b5e20", 2: "#1565c0", 3: "#ef6c00", 4: "#8e24aa"}
     station_short = {
@@ -431,9 +408,100 @@ def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFr
         "Torbat-E Heydariyeh": "Torbat-e H.",
     }
 
+    def _configured_feature_cols() -> list[str]:
+        mode = str(cfg.get("clustering", {}).get("feature_mode", "simple"))
+        if mode == "uncertainty":
+            return list(cfg["clustering"].get("uncertainty_features", []))
+        return list(cfg["clustering"].get("simple_features", []))
+
+    screening_df = screen_clustering_features(
+        feature_table,
+        cfg,
+        feature_cols=_configured_feature_cols(),
+        feature_set_label="representative_station_selection",
+    )
+
+    def _kept_feature_cols(idx_name: str) -> list[str]:
+        if screening_df.empty:
+            return _configured_feature_cols()
+        kept = screening_df.loc[
+            (screening_df["index_name"] == idx_name)
+            & (screening_df["feature_set"] == "representative_station_selection")
+            & (screening_df["status"].astype(str).str.startswith("kept")),
+            "feature",
+        ].tolist()
+        return kept or _configured_feature_cols()
+
+    def _select_representative_rows(idx_name: str) -> list[dict]:
+        sdf = feature_table.loc[feature_table["index_name"] == idx_name].copy()
+        if sdf.empty or "cluster" not in sdf.columns:
+            return []
+        sdf = sdf.dropna(subset=["cluster"]).copy()
+        if sdf.empty:
+            return []
+
+        feature_cols = [col for col in _kept_feature_cols(idx_name) if col in sdf.columns]
+        if not feature_cols:
+            feature_cols = [col for col in ["slope_0.05", "slope_0.50", "slope_0.95"] if col in sdf.columns]
+        if not feature_cols:
+            return []
+
+        X = sdf[feature_cols].apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan)
+        X = X.apply(lambda col: col.fillna(col.median()), axis=0)
+        means = X.mean(axis=0)
+        stds = X.std(axis=0, ddof=0).replace(0, 1.0)
+        Xz = (X - means) / stds
+        cluster_series = pd.to_numeric(sdf["cluster"], errors="coerce").astype("Int64")
+
+        rows = []
+        unique_clusters = sorted(cluster_series.dropna().astype(int).unique().tolist())
+        for cluster_id in unique_clusters:
+            cluster_mask = cluster_series == cluster_id
+            cluster_sdf = sdf.loc[cluster_mask].copy()
+            cluster_Xz = Xz.loc[cluster_mask].copy()
+            if cluster_sdf.empty or cluster_Xz.empty:
+                continue
+
+            centroid = cluster_Xz.mean(axis=0).to_numpy(dtype=float)
+            distances = np.sqrt(((cluster_Xz.to_numpy(dtype=float) - centroid) ** 2).sum(axis=1))
+            candidate = (
+                cluster_sdf.assign(distance_to_cluster_centroid=distances)
+                .sort_values(["distance_to_cluster_centroid", "station_name"], ascending=[True, True])
+                .iloc[0]
+            )
+            rows.append(
+                {
+                    "index_name": idx_name,
+                    "station_id": candidate["station_id"],
+                    "station_name": candidate["station_name"],
+                    "cluster": int(cluster_id),
+                    "selection_method": "closest_to_cluster_centroid",
+                    "feature_space": ",".join(feature_cols),
+                    "distance_to_cluster_centroid": float(candidate["distance_to_cluster_centroid"]),
+                    "slope_0.05": float(candidate.get("slope_0.05", np.nan)),
+                    "slope_0.50": float(candidate.get("slope_0.50", np.nan)),
+                    "slope_0.95": float(candidate.get("slope_0.95", np.nan)),
+                    "Delta1": float(candidate.get("Delta1", np.nan)),
+                }
+            )
+        return rows
+
+    representative_rows = []
+    for idx_cfg in cfg["indices"]:
+        representative_rows.extend(_select_representative_rows(idx_cfg["name"]))
+    representative_df = pd.DataFrame(representative_rows)
+    if not representative_df.empty:
+        representative_df = representative_df.sort_values(["index_name", "cluster", "distance_to_cluster_centroid", "station_name"]).reset_index(drop=True)
+        representative_df.to_csv(tables_dir / "representative_station_selection.csv", index=False)
+
     def build_curve_rows(idx_name: str):
         rows = []
-        for station_name in selected.get(idx_name, []):
+        local_reps = representative_df.loc[representative_df["index_name"] == idx_name].copy()
+        if local_reps.empty:
+            return rows
+        local_reps = local_reps.sort_values(["cluster", "distance_to_cluster_centroid", "station_name"])
+        for _, rep in local_reps.iterrows():
+            station_name = str(rep["station_name"])
             sdf = annual.loc[annual["station_name"] == station_name].sort_values("year").copy()
             if sdf.empty:
                 continue
@@ -457,6 +525,7 @@ def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFr
                 "color": cluster_colors.get(cluster, "#333333"),
                 "coeff_df": coeff_df,
                 "meta": meta,
+                "distance_to_cluster_centroid": float(rep["distance_to_cluster_centroid"]),
             })
         return rows
 
@@ -513,8 +582,8 @@ def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFr
         ax.legend(legend_handles, legend_labels, loc="upper left", fontsize=8.5, framealpha=0.95)
         _annotate_textbox_bottom_left(
             ax,
-            "Representative stations were selected to contrast cluster membership\n"
-            "and q0.05/q0.50/q0.95 behaviour.",
+            "Representative stations were chosen algorithmically as the closest\n"
+            "observed member to each cluster centroid in the screened feature space.",
         )
         fig.tight_layout()
         fig.savefig(fig_dir / f"station_comparison_{idx_name}.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
@@ -618,7 +687,7 @@ def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFr
         0.5,
         -0.01,
         "Markers denote focal quantiles: circle = q0.05, square = q0.50, diamond = q0.95. "
-        "Stations were selected to represent contrasting cluster memberships and quantile-slope geometries.",
+        "Stations are the closest observed member to each cluster centroid in the screened clustering feature space.",
         ha="center",
         va="top",
         fontsize=9,
