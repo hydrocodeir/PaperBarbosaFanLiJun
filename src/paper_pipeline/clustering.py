@@ -29,6 +29,140 @@ def _resolve_feature_cols(cfg: dict, feature_cols: list[str] | None = None) -> l
     raise ValueError(f"Unsupported feature mode: {mode}")
 
 
+def _screen_feature_matrix(
+    X: pd.DataFrame,
+    feature_cols: list[str],
+    cfg: dict,
+    *,
+    feature_set_label: str,
+    index_name: str,
+) -> tuple[list[str], pd.DataFrame]:
+    screen_cfg = cfg.get("clustering", {}).get("collinearity_screen", {})
+    enabled = bool(screen_cfg.get("enabled", False))
+    threshold = float(screen_cfg.get("abs_correlation_threshold", 0.95))
+
+    rows: list[dict] = []
+    if not enabled:
+        for order, feature in enumerate(feature_cols, start=1):
+            rows.append(
+                {
+                    "index_name": index_name,
+                    "feature_set": feature_set_label,
+                    "feature": feature,
+                    "status": "kept_screening_disabled",
+                    "reference_feature": "",
+                    "abs_correlation_to_reference": np.nan,
+                    "screen_order": order,
+                }
+            )
+        return list(feature_cols), pd.DataFrame(rows)
+
+    kept: list[str] = []
+    for order, feature in enumerate(feature_cols, start=1):
+        series = pd.to_numeric(X[feature], errors="coerce")
+        if series.dropna().empty:
+            rows.append(
+                {
+                    "index_name": index_name,
+                    "feature_set": feature_set_label,
+                    "feature": feature,
+                    "status": "dropped_all_missing",
+                    "reference_feature": "",
+                    "abs_correlation_to_reference": np.nan,
+                    "screen_order": order,
+                }
+            )
+            continue
+        if float(series.std(ddof=0)) <= 1e-12:
+            rows.append(
+                {
+                    "index_name": index_name,
+                    "feature_set": feature_set_label,
+                    "feature": feature,
+                    "status": "dropped_constant",
+                    "reference_feature": "",
+                    "abs_correlation_to_reference": np.nan,
+                    "screen_order": order,
+                }
+            )
+            continue
+        if not kept:
+            kept.append(feature)
+            rows.append(
+                {
+                    "index_name": index_name,
+                    "feature_set": feature_set_label,
+                    "feature": feature,
+                    "status": "kept",
+                    "reference_feature": "",
+                    "abs_correlation_to_reference": np.nan,
+                    "screen_order": order,
+                }
+            )
+            continue
+
+        corr_pairs = []
+        for ref in kept:
+            corr = series.corr(pd.to_numeric(X[ref], errors="coerce"))
+            corr_pairs.append((ref, abs(float(corr)) if pd.notna(corr) else 0.0))
+        ref_feature, max_abs_corr = max(corr_pairs, key=lambda item: item[1])
+        if max_abs_corr >= threshold:
+            rows.append(
+                {
+                    "index_name": index_name,
+                    "feature_set": feature_set_label,
+                    "feature": feature,
+                    "status": "dropped_high_correlation",
+                    "reference_feature": ref_feature,
+                    "abs_correlation_to_reference": max_abs_corr,
+                    "screen_order": order,
+                }
+            )
+            continue
+
+        kept.append(feature)
+        rows.append(
+            {
+                "index_name": index_name,
+                "feature_set": feature_set_label,
+                "feature": feature,
+                "status": "kept",
+                "reference_feature": ref_feature,
+                "abs_correlation_to_reference": max_abs_corr,
+                "screen_order": order,
+            }
+        )
+
+    return kept, pd.DataFrame(rows)
+
+
+def screen_clustering_features(
+    features: pd.DataFrame,
+    cfg: dict,
+    feature_cols: list[str] | None = None,
+    *,
+    feature_set_label: str = "configured",
+) -> pd.DataFrame:
+    if features.empty or not cfg["clustering"]["enabled"]:
+        return pd.DataFrame()
+
+    requested_cols = _resolve_feature_cols(cfg, feature_cols)
+    parts: list[pd.DataFrame] = []
+    for idx_name, sdf in features.groupby("index_name"):
+        X = sdf[requested_cols].apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan)
+        X = X.apply(lambda col: col.fillna(col.median()), axis=0)
+        _, screen_df = _screen_feature_matrix(
+            X,
+            requested_cols,
+            cfg,
+            feature_set_label=feature_set_label,
+            index_name=idx_name,
+        )
+        if not screen_df.empty:
+            parts.append(screen_df)
+    return pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
+
+
 def run_clustering(
     features: pd.DataFrame,
     cfg: dict,
@@ -42,6 +176,7 @@ def run_clustering(
         return pd.DataFrame(), {}
 
     feature_cols = _resolve_feature_cols(cfg, feature_cols)
+    feature_set_label = label_col
     algorithm = algorithm or cfg["clustering"]["algorithm"]
     linkage_method = linkage_method or cfg["clustering"]["linkage"]
     metric = metric or cfg["clustering"]["metric"]
@@ -53,7 +188,16 @@ def run_clustering(
             continue
         X = sdf[feature_cols].apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan)
         X = X.apply(lambda col: col.fillna(col.median()), axis=0)
-        Xv = StandardScaler().fit_transform(X) if cfg["clustering"]["standardize"] else X.to_numpy()
+        screened_cols, _ = _screen_feature_matrix(
+            X,
+            feature_cols,
+            cfg,
+            feature_set_label=feature_set_label,
+            index_name=idx_name,
+        )
+        use_cols = screened_cols if screened_cols else list(feature_cols)
+        X_use = X[use_cols].copy()
+        Xv = StandardScaler().fit_transform(X_use) if cfg["clustering"]["standardize"] else X_use.to_numpy()
         n_samples = len(sdf)
         n_clusters = max(1, min(int(cfg["clustering"]["n_clusters"]), n_samples))
 

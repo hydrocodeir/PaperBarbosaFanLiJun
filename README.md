@@ -129,7 +129,9 @@ In the current setup:
 - bootstrap is enabled using `moving_block` with `200` replicates
 - block length is selected automatically from series length using a cube-root rule, bounded by configured minimum and maximum values
 - clustering is enabled using hierarchical clustering with average linkage and Euclidean distance
-- a reduced-feature clustering rerun is enabled as a robustness check
+- the main clustering baseline uses a parsimonious slope-only feature set
+- candidate clustering features are screened for near-collinearity before fitting
+- an expanded uncertainty-aware clustering rerun is enabled as a robustness check
 
 For spatial maps, the current configuration can also specify:
 
@@ -265,7 +267,7 @@ After quantile slopes are estimated, a station-level feature table is assembled.
 - bootstrap standard deviations
 - bootstrap confidence interval summaries
 
-This creates a compact representation of each station’s trend shape and uncertainty behavior for each climate index.
+This creates a compact representation of each station’s trend shape and uncertainty behavior for each climate index. Before clustering, the configured candidate features are screened for near-collinearity using an absolute-correlation threshold so that almost-duplicate summaries are not allowed to dominate the partition.
 
 Primary output from this stage:
 
@@ -282,9 +284,9 @@ The current repository configuration uses:
 - Euclidean distance
 - four clusters
 - standardized features
-- uncertainty-aware feature mode
+- parsimonious slope-only baseline feature mode
 
-The clustering is performed separately for each index. Missing feature values are imputed column-wise using the median before clustering. When enabled, features are standardized using `StandardScaler` to prevent high-variance metrics from dominating the classification.
+The clustering is performed separately for each index. Missing feature values are imputed column-wise using the median before clustering. Configured candidate features are then screened for near-collinearity in their listed order; highly redundant features are dropped before the final clustering matrix is standardized and passed to the algorithm. When enabled, features are standardized using `StandardScaler` to prevent high-variance metrics from dominating the classification.
 
 If the requested number of clusters exceeds the number of available stations for an index, the implementation automatically reduces the cluster count to the maximum admissible value so the run remains stable.
 
@@ -302,6 +304,7 @@ When the robustness check is enabled, the pipeline also exports:
 
 - `outputs/tables/cluster_assignments_reduced_features.csv`
 - `outputs/tables/cluster_robustness_summary.csv`
+- `outputs/tables/clustering_feature_screening_summary.csv`
 
 ### 9. Summary Table Generation
 
@@ -532,4 +535,4 @@ In practical terms, the repository performs the following sequence:
 - Because full quantile regression and bootstrap are computationally heavy, complete runs may take noticeable time before all figures appear.
 - When `reference_years` is left as `null`, percentile thresholds are estimated from all available years; for strict climatological comparability, a fixed baseline period may be preferable.
 - Quantile-regression significance in the map figures is currently based on analytic confidence intervals from the fitted QR model; bootstrap-based sensitivity checks remain recommended for publication use, especially at extreme quantiles, with moving-block resampling preferred as the main time-series sensitivity baseline.
-- Clustering is exploratory and depends on the chosen feature set; correlated features such as slope contrasts and their component slopes should be interpreted with care.
+- Clustering is exploratory and should not be read as a fully inferential regional taxonomy. The main workflow now uses a parsimonious slope-only baseline, screens candidate features for near-collinearity, and treats richer uncertainty-aware clustering as a sensitivity analysis rather than as the default partition.

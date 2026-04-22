@@ -70,7 +70,7 @@ def generate_report(
 
     if cluster_robustness_df is not None and not cluster_robustness_df.empty:
         lines.append("## Clustering Robustness")
-        lines.append("- Comparison between the configured clustering setup and a reduced-feature rerun.")
+        lines.append("- Comparison between the configured parsimonious clustering baseline and an expanded sensitivity rerun.")
         for idx_cfg in cfg["indices"]:
             idx_name = idx_cfg["name"]
             sdf = cluster_robustness_df.loc[cluster_robustness_df["index_name"] == idx_name]

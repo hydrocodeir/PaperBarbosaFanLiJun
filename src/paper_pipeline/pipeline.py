@@ -14,7 +14,7 @@ from .advanced_analysis import (
     run_spatial_inference,
 )
 from .bootstrap_depth_sensitivity import run_bootstrap_depth_sensitivity
-from .clustering import build_feature_table, compare_clusterings, run_clustering
+from .clustering import build_feature_table, compare_clusterings, run_clustering, screen_clustering_features
 from .clustering_sensitivity import run_alternative_clustering_sensitivity
 from .data_quality import run_data_quality_assessment
 from .homogeneity_sensitivity import run_homogeneity_exclusion_sensitivity
@@ -91,13 +91,25 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     log_status("Quantile regression stage completed.")
 
     feature_table = build_feature_table(qr_summary)
+    baseline_screening_df = screen_clustering_features(
+        feature_table,
+        cfg,
+        feature_set_label="baseline",
+    )
     cluster_df, artifacts = run_clustering(feature_table, cfg)
     reduced_cluster_df = pd.DataFrame()
     cluster_robustness_df = pd.DataFrame()
+    sensitivity_screening_df = pd.DataFrame()
     if not cluster_df.empty:
         feature_table = feature_table.merge(cluster_df, on=["index_name", "station_id", "station_name"], how="left")
     robustness_cfg = cfg["clustering"].get("robustness_check", {})
     if robustness_cfg.get("enabled", False):
+        sensitivity_screening_df = screen_clustering_features(
+            feature_table,
+            cfg,
+            feature_cols=robustness_cfg.get("reduced_features", cfg["clustering"]["simple_features"]),
+            feature_set_label="sensitivity_rerun",
+        )
         reduced_cluster_df, _ = run_clustering(
             feature_table,
             cfg,
@@ -115,6 +127,11 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     qr_all.to_csv(tables_dir / "qr_all_quantiles_long.csv", index=False)
     qr_summary.to_csv(tables_dir / "qr_focus_slopes_and_bootstrap_summary.csv", index=False)
     feature_table.to_csv(tables_dir / "clustering_feature_table.csv", index=False)
+    if not baseline_screening_df.empty or not sensitivity_screening_df.empty:
+        pd.concat([df for df in [baseline_screening_df, sensitivity_screening_df] if not df.empty], ignore_index=True).to_csv(
+            tables_dir / "clustering_feature_screening_summary.csv",
+            index=False,
+        )
     cluster_df.to_csv(tables_dir / "cluster_assignments.csv", index=False)
     if not reduced_cluster_df.empty:
         reduced_cluster_df.to_csv(tables_dir / "cluster_assignments_reduced_features.csv", index=False)

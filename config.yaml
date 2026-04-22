@@ -97,34 +97,38 @@ clustering:
   metric: euclidean
   n_clusters: 4
   standardize: true
-  feature_mode: uncertainty
+  feature_mode: simple
+  collinearity_screen:
+    enabled: true
+    abs_correlation_threshold: 0.95
   simple_features:
   - slope_0.05
   - slope_0.50
   - slope_0.95
-  - Delta1
   uncertainty_features:
   - slope_0.05
   - slope_0.50
   - slope_0.95
   - Delta1
-  - Delta2
-  - Delta3
   - boot_mean_0.05
   - boot_mean_0.50
   - boot_mean_0.95
   - boot_sd_0.05
   - boot_sd_0.50
   - boot_sd_0.95
-  - boot_mean_Delta1
-  - boot_sd_Delta1
   robustness_check:
     enabled: true
     reduced_features:
-    - slope_0.05
-    - slope_0.50
-    - slope_0.95
-    - Delta1
+      - slope_0.05
+      - slope_0.50
+      - slope_0.95
+      - Delta1
+      - boot_mean_0.05
+      - boot_mean_0.50
+      - boot_mean_0.95
+      - boot_sd_0.05
+      - boot_sd_0.50
+      - boot_sd_0.95
 plots:
   dpi: 600
   style: default
