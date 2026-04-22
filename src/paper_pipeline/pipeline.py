@@ -15,6 +15,7 @@ from .advanced_analysis import (
 )
 from .bootstrap_depth_sensitivity import run_bootstrap_depth_sensitivity
 from .clustering import build_feature_table, compare_clusterings, run_clustering
+from .clustering_sensitivity import run_alternative_clustering_sensitivity
 from .data_quality import run_data_quality_assessment
 from .homogeneity_sensitivity import run_homogeneity_exclusion_sensitivity
 from .indices import create_extreme_indices
@@ -122,6 +123,10 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     if cfg["bootstrap"]["save_long_table"] and not boot_long.empty:
         boot_long.to_csv(tables_dir / "bootstrap_distributions_long.csv", index=False)
     log_status("Saved quantile, bootstrap, and clustering tables.")
+
+    log_status("Running alternative-clustering sensitivity analysis...")
+    run_alternative_clustering_sensitivity(feature_table, cfg, outdir)
+    log_status("Saved alternative-clustering sensitivity diagnostics.")
 
     focus_cols = [
         "index_name", "station_id", "station_name", "n_years",

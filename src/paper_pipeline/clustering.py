@@ -34,11 +34,17 @@ def run_clustering(
     cfg: dict,
     feature_cols: list[str] | None = None,
     label_col: str = "cluster",
+    algorithm: str | None = None,
+    linkage_method: str | None = None,
+    metric: str | None = None,
 ) -> Tuple[pd.DataFrame, Dict[str, np.ndarray]]:
     if features.empty or not cfg["clustering"]["enabled"]:
         return pd.DataFrame(), {}
 
     feature_cols = _resolve_feature_cols(cfg, feature_cols)
+    algorithm = algorithm or cfg["clustering"]["algorithm"]
+    linkage_method = linkage_method or cfg["clustering"]["linkage"]
+    metric = metric or cfg["clustering"]["metric"]
 
     cluster_rows, artifacts = [], {}
 
@@ -54,16 +60,17 @@ def run_clustering(
         if n_samples == 1:
             labels = np.array([1], dtype=int)
             artifacts[idx_name] = np.empty((0, 4), dtype=float)
-        elif cfg["clustering"]["algorithm"] == "hierarchical":
-            Z = linkage(Xv, method=cfg["clustering"]["linkage"], metric=cfg["clustering"]["metric"])
+        elif algorithm == "hierarchical":
+            effective_metric = "euclidean" if linkage_method == "ward" else metric
+            Z = linkage(Xv, method=linkage_method, metric=effective_metric)
             labels = fcluster(Z, t=n_clusters, criterion="maxclust")
             artifacts[idx_name] = Z
-        elif cfg["clustering"]["algorithm"] == "kmeans":
+        elif algorithm == "kmeans":
             km = KMeans(n_clusters=n_clusters, random_state=int(cfg["project"]["random_seed"]), n_init=20)
             labels = km.fit_predict(Xv) + 1
             artifacts[idx_name] = km.cluster_centers_
         else:
-            raise ValueError(f"Unsupported clustering algorithm: {cfg['clustering']['algorithm']}")
+            raise ValueError(f"Unsupported clustering algorithm: {algorithm}")
 
         cdf = sdf[["index_name", "station_id", "station_name"]].copy()
         cdf[label_col] = labels

@@ -1,4 +1,4 @@
-Editor-in-Chief  
+﻿Editor-in-Chief  
 *International Journal of Climatology*
 
 Dear Editor,
@@ -19,3 +19,4 @@ Sincerely,
 [Corresponding Author Name]  
 [Affiliation]  
 [Email]
+

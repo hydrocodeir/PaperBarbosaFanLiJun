@@ -1,4 +1,4 @@
-# Quantile-dependent reorganization of thermal extremes across Iran during 1961-2024
+﻿# Quantile-dependent reorganization of thermal extremes across Iran during 1961-2024
 
 **Running title:** Quantile-dependent thermal extremes across Iran
 
@@ -26,7 +26,7 @@ Using 30 meteorological stations for 1961-2024, this study analyses four annual 
 
 The analysis is based on daily observations from 30 meteorological stations distributed across Iran. Station metadata include latitude, longitude, and elevation, thereby allowing the thermal-extreme signals to be interpreted in a physiographic context. After preprocessing, the common analysis period spans 1961-2024, yielding 64 annual values for each station-index series.
 
-![Figure 1. Study area and station network.](figures/ijoc_study_area.png)
+![Figure 1. Study area and station network.](../outputs/figures/ijoc_study_area.png)
 
 *Figure 1. Distribution of the 30 meteorological stations used in the analysis across Iran. Stations are coloured by elevation to highlight the physiographic diversity of the network and the coexistence of lowland, mid-elevation, and highland environments.*
 
@@ -78,9 +78,9 @@ In addition, two secondary contrasts were used in feature engineering: `Delta2 =
 
 ### 2.4. Uncertainty, spatial significance, and regionalization
 
-Bootstrap resampling was used to characterize uncertainty in station-level quantile slopes. The workflow employs 200 replicates with a maximum-entropy bootstrap as the default method and uses alternative bootstrap methods for sensitivity comparison `(Efron and Tibshirani, 1993; Vinod, 2006)`. For each focal quantile, bootstrap means, standard deviations, and confidence intervals were retained so that both point estimates and uncertainty structure could enter the later clustering and robustness stages. In this study, the bootstrap is used primarily to compare uncertainty structure across indices, quantiles, and methodological variants rather than to claim ultra-precise tail interval estimation at individual stations; for that reason, the emphasis is placed on comparative robustness rather than on exact nominal interval coverage in the far tails.
+Bootstrap resampling was used to characterize uncertainty in station-level quantile slopes. The workflow employs 200 replicates with a maximum-entropy bootstrap as the default method and uses alternative bootstrap methods for sensitivity comparison `(Efron and Tibshirani, 1993; Vinod, 2006)`. For each focal quantile, bootstrap means, standard deviations, and confidence intervals were retained so that both point estimates and uncertainty structure could enter the later clustering and robustness stages. In this study, the bootstrap is used primarily to compare uncertainty structure across indices, quantiles, and methodological variants rather than to claim ultra-precise tail interval estimation at individual stations; for that reason, the emphasis is placed on comparative robustness rather than on exact nominal interval coverage in the far tails. Because tail-depth adequacy remained a plausible reviewer concern, a targeted bootstrap-depth sensitivity analysis was also performed for the two central warm-extreme indices by re-estimating their station-level bootstrap summaries with 400 replicates instead of the default 200; this check was designed to test the stability of regional bootstrap means and tail-contrast metrics rather than to rerun the full manuscript workflow, and its results are summarized in Supplementary Figure S11 and Supplementary Tables S12-S13.
 
-Field significance was assessed through false-discovery-rate control `(Benjamini and Hochberg, 1995)` across stations for the focal quantiles, and spatial dependence was examined using Moran's I `(Moran, 1950)` with permutation testing. Regionalization was performed using hierarchical clustering with average linkage and Euclidean distance on standardized feature vectors derived from station-level slope and uncertainty metrics. Hierarchical clustering was preferred because it preserves relative station-similarity structure, supports nested exploratory regionalization, and yields climatologically interpretable groupings without requiring a priori assumptions about the geometry of the clusters. The main clustering configuration used an uncertainty-aware feature set that included focal slopes, Delta contrasts, bootstrap means, and bootstrap variability. Robustness was assessed through a reduced-feature rerun and adjusted Rand index `(Hubert and Arabie, 1985)`, allowing the manuscript to distinguish stable regional structure from feature-selection artefacts.
+Field significance was assessed through false-discovery-rate control `(Benjamini and Hochberg, 1995)` across stations for the focal quantiles, and spatial dependence was examined using Moran's I `(Moran, 1950)` with permutation testing. Regionalization was performed using hierarchical clustering with average linkage and Euclidean distance on standardized feature vectors derived from station-level slope and uncertainty metrics. Hierarchical clustering was preferred because it preserves relative station-similarity structure, supports nested exploratory regionalization, and yields climatologically interpretable groupings without requiring a priori assumptions about the geometry of the clusters. The main clustering configuration used an uncertainty-aware feature set that included focal slopes, Delta contrasts, bootstrap means, and bootstrap variability. Robustness was assessed through a reduced-feature rerun, adjusted Rand index `(Hubert and Arabie, 1985)`, and a targeted alternative-method comparison in which the baseline clustering was compared with complete-linkage hierarchical clustering, Ward hierarchical clustering, average-linkage clustering with cityblock distance, and k-means. This additional check was designed to distinguish genuinely stable station-group structure from patterns that depend strongly on a single clustering convention.
 
 ### 2.5. Additional synthesis analyses
 
@@ -92,7 +92,7 @@ Spatial visualization was treated in the same spirit. Station maps of `Delta1` w
 
 Figure 2 summarizes the full analytical chain implemented in the pipeline, from station observations and percentile-threshold estimation to quantile regression, uncertainty estimation, regionalization, and publication-oriented synthesis products.
 
-![Figure 2. Workflow of the analytical framework.](figures/ijoc_workflow_flowchart.png)
+![Figure 2. Workflow of the analytical framework.](../outputs/figures/ijoc_workflow_flowchart.png)
 
 *Figure 2. Workflow of the analytical framework used in the study. The sequence links daily station observations, percentile-based index construction, full-grid quantile regression, bootstrap uncertainty estimation, significance diagnostics, hierarchical regionalization, spatial visualization, and synthesis analyses used to generate the manuscript outputs.*
 
@@ -108,7 +108,7 @@ The results support a clear central claim: **thermal-extreme change across Iran 
 
 At the regional scale, warm days and warm nights both increase, whereas cool days and cool nights decline. However, the distributional structure of change differs markedly among indices.
 
-![Figure 3. Regional quantile-coefficient panels.](figures/ijoc_regional_quantile_panels.png)
+![Figure 3. Regional quantile-coefficient panels.](../outputs/figures/ijoc_regional_quantile_panels.png)
 
 *Figure 3. Regional quantile-regression coefficients for (a) warm days, (b) warm nights, (c) cool days, and (d) cool nights. Black points show quantile-specific slopes, grey shading indicates 95% confidence intervals, and red lines show the OLS mean trend and its confidence bounds. The display range is restricted to q = 0.05-0.95.*
 
@@ -165,7 +165,7 @@ Regional means necessarily conceal strong station-scale contrasts. To connect th
 | Cool nights | Gorgan | 3 | +4.00 | +6.43 | +1.52 | -2.48 | Positive low- and mid-quantile regime |
 | Cool nights | Shahrekord | 4 | +5.60 | +14.62 | +17.56 | +11.96 | Positive-tail outlier |
 
-![Figure 4. Representative-station comparisons.](figures/ijoc_station_comparisons/main_figure_representative_stations.png)
+![Figure 4. Representative-station comparisons.](../outputs/figures/ijoc_station_comparisons/main_figure_representative_stations.png)
 
 *Figure 4. Multi-panel comparison of representative stations selected to contrast cluster membership and focal-quantile behaviour for (a) warm days, (b) warm nights, (c) cool days, and (d) cool nights. The selected stations show that the clusters correspond to distinct quantile-slope geometries rather than only differences in average trend magnitude.*
 
@@ -175,7 +175,7 @@ These representative stations clarify the logic of the cluster structure. Warm-d
 
 The spatial pattern of `Delta1` is coherent enough to support regional interpretation, but not smooth enough to justify treating the country as a single spatial field.
 
-![Figure 5. Main Delta1 map panels.](figures/ijoc_main_delta1_maps.png)
+![Figure 5. Main Delta1 map panels.](../outputs/figures/ijoc_main_delta1_maps.png)
 
 *Figure 5. Multi-panel station maps of `Delta1 = slope(q0.95) - slope(q0.05)` for (a) warm days, (b) warm nights, (c) cool days, and (d) cool nights. Warm indices generally show positive Delta1 values, whereas cool indices show widespread negative Delta1 values, consistent with upper-tail contraction.*
 
@@ -201,7 +201,7 @@ From a physical standpoint, the warm-night patterns are consistent with greater 
 
 One of the strongest assets of the study is that the principal conclusions do not depend on a single analytical choice.
 
-![Figure 6. Robustness synthesis.](figures/ijoc_robustness_synthesis.png)
+![Figure 6. Robustness synthesis.](../outputs/figures/ijoc_robustness_synthesis.png)
 
 *Figure 6. Synthesis of robustness diagnostics. Panel (a) summarizes reference-period sensitivity, panel (b) summarizes bootstrap-method sensitivity, panel (c) shows interpolation-method agreement for the configured spatial-visualization workflow, and panel (d) reports clustering robustness as adjusted Rand index. The principal structural results remain stable despite some metric-level sensitivity.*
 
@@ -209,9 +209,13 @@ The robustness synthesis shows that warm-night metrics are most sensitive to ref
 
 An additional sensitivity test excluded all stations flagged by any detrended homogeneity diagnostic (Supplementary Figure S10; Supplementary Table S11). The principal directional conclusions were retained: warm indices remained positive and cool indices remained negative at the regional scale, and warm-day upper-tail amplification remained evident. However, some magnitude changes were non-negligible, particularly for warm nights, where the regional tail-contrast metric became more positive after exclusion. This result is useful rather than problematic: it indicates that the manuscript's broad climatic conclusions are not driven by a small subset of flagged stations, while also showing that exact tail-asymmetry magnitudes should be interpreted with appropriate caution.
 
+A second targeted sensitivity check addressed bootstrap depth directly by increasing the number of resamples from 200 to 400 for `warm_days` and `warm_nights` (Supplementary Figure S11; Supplementary Tables S12-S13). The result is reassuringly stable. Regional bootstrap means for `q0.05`, `q0.50`, `q0.95`, and `Delta1` changed by no more than about `0.06 days year^-1 per decade` in absolute mean value, and station-level correspondence between the 200- and 400-replicate summaries remained extremely high (`r = 0.998-1.000`). Confidence-interval widths changed somewhat more than the means, as expected, but their station-level correlations still remained high (`r = 0.975-0.992`). This additional check does not remove all tail uncertainty, but it does show that the manuscript's main warm-extreme messages are not an artefact of a shallow bootstrap configuration.
+
+A third sensitivity check examined whether the regionalization itself depends strongly on the chosen clustering method (Supplementary Figure S12; Supplementary Tables S14-S15). The answer is mixed, and therefore informative. `warm_days` remained comparatively stable across alternative methods (`ARI = 0.63-0.92`), and `warm_nights` also retained a strong common structure for most alternatives (`ARI = 0.88-0.93`), although complete linkage produced a noticeably less similar partition (`ARI = 0.43`). `cool_nights` showed moderate method dependence, with one alternative reproducing the baseline almost exactly (`ARI = 1.00`) but others yielding only partial agreement (`ARI = 0.34-0.48`). `cool_days` were the least stable (`ARI = 0.05-0.35`), indicating that their regional grouping should be read as exploratory rather than as a uniquely resolved partition. This pattern does not invalidate the station-scale signal; rather, it shows that some regional structures, especially for cooling-related indices, are weaker and less crisply separated than those for the warm indices.
+
 Temporal nonlinearity provides an additional layer of evidence.
 
-![Figure 7. Split-period comparison.](figures/ijoc_split_period_comparison.png)
+![Figure 7. Split-period comparison.](../outputs/figures/ijoc_split_period_comparison.png)
 
 *Figure 7. Comparison of regional trend estimates between 1961-1990 and 1991-2024 for the focal quantiles and OLS trend. The later period shows marked intensification of warm extremes and stronger collapse of cool extremes, especially in upper quantiles.*
 
@@ -249,6 +253,10 @@ The Supplementary Material should contain at minimum the following items cited i
 4. `Supplementary Figure S10`: `outputs/figures/ijoc_homogeneity_sensitivity.png`
 5. `Supplementary Tables S1-S3`: `outputs/tables/data_quality_homogeneity_overview.csv`, `outputs/tables/data_quality_station_summary.csv`, `outputs/tables/data_homogeneity_tests_station_summary.csv`
 6. `Supplementary Table S11`: `outputs/tables/homogeneity_flag_exclusion_sensitivity.csv`
+7. `Supplementary Figure S11`: `outputs/figures/ijoc_bootstrap_depth_sensitivity.png`
+8. `Supplementary Tables S12-S13`: `outputs/tables/bootstrap_depth_sensitivity_summary.csv`, `outputs/tables/bootstrap_depth_sensitivity_station_comparison.csv`
+9. `Supplementary Figure S12`: `outputs/figures/ijoc_alternative_clustering_sensitivity.png`
+10. `Supplementary Tables S14-S15`: `outputs/tables/alternative_clustering_sensitivity_summary.csv`, `outputs/tables/alternative_clustering_assignments.csv`
 
 ## References
 
@@ -293,5 +301,6 @@ Zhang X, Hegerl G, Zwiers FW, Kenyon J (2005b) Avoiding inhomogeneity in percent
 Zhang X, Alexander L, Hegerl GC, Jones P, Klein Tank AMG, Peterson TC, Trewin B, Zwiers FW (2011) Indices for monitoring changes in extremes based on daily temperature and precipitation data. *WIREs Climate Change* 2(6):851-870. https://doi.org/10.1002/wcc.147
 
 Zittis G, Hadjinicolaou P, Lelieveld J (2016) Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century. *Climatic Change* 137:245-260. https://doi.org/10.1007/s10584-016-1665-6
+
 
 

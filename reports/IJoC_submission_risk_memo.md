@@ -1,23 +1,23 @@
-# IJoC Submission Risk Memo
+﻿# IJoC Submission Risk Memo
 
 ## Overall judgement
 
 The manuscript is now substantially safer than it was in earlier drafting stages and is meaningfully closer to a defensible `International Journal of Climatology` submission. Its main strengths are now clear: a focused central claim, a coherent quantile-regression framework, stronger discipline in separating main-text figures from supplementary diagnostics, and a more explicit robustness architecture. It no longer reads like an exploratory regional report with many outputs; it reads much more like a hypothesis-driven climatology manuscript with a structured analytical workflow.
 
-The remaining risks are therefore narrower and more technical. They now concern the depth of selected methodological choices rather than the overall scientific seriousness of the paper. In reviewer terms, the manuscript is no longer most vulnerable to "Why is this paper built this way?" but to a smaller number of sharper questions such as "Is the tail-uncertainty treatment deep enough?", "How should the homogeneity diagnostics be interpreted?", and "Are some physical interpretations still stronger than the direct evidence?"
+The remaining risks are therefore narrower and more technical. They now concern the depth of selected methodological choices rather than the overall scientific seriousness of the paper. In reviewer terms, the manuscript is no longer most vulnerable to "Why is this paper built this way?" but to a smaller number of sharper questions such as "How should the homogeneity diagnostics be interpreted?", "Are some physical interpretations still stronger than the direct evidence?", and "Are any communication choices still open to over-reading?"
 
 ## Updated risk ratings
 
 ### 1. Bootstrap depth in the tails
-**Risk level:** Moderate
+**Risk level:** Low to moderate
 
-This is now the most credible remaining methodological pressure point. The manuscript already explains that `200` bootstrap replicates are used primarily for comparative uncertainty screening and robustness comparison rather than for ultra-precise tail interval estimation. That clarification helps. However, a demanding reviewer may still question whether the `q0.95` confidence structure is sufficiently stable where the interpretation depends on upper-tail contrasts.
+This risk has now been reduced further. In addition to the existing methodological justification, the manuscript now includes a targeted higher-replication sensitivity check for the two central warm-extreme indices, increasing the bootstrap depth from `200` to `400` replicates for the core warm-day and warm-night summaries. The result is reassuring: regional bootstrap means changed only minimally, and station-level correspondence between the 200- and 400-replicate summaries remained extremely high.
 
-**Why this still matters**
-The paper makes scientifically interesting claims about tail amplification and contraction. Even when those claims are framed carefully, reviewers may still expect either deeper resampling or a short targeted sensitivity check at higher replication depth.
+**Residual concern**
+The residual vulnerability is no longer "no evidence exists", but rather that the higher-depth check is targeted rather than universal. A very demanding reviewer could still ask why the same exercise was not extended to all four indices or to even deeper replication in the far tails.
 
 **Best mitigation**
-If more work is done before submission, the single highest-yield technical upgrade would be a limited higher-replication bootstrap sensitivity for one or two key summaries or figures rather than a full pipeline rerun.
+No additional work is essential. If more effort is available, the strongest further upgrade would be to cite the targeted high-replication result prominently in any response letter or reviewer response.
 
 ### 2. Data homogeneity and station quality
 **Risk level:** Moderate
@@ -50,15 +50,15 @@ This item is better handled than before because the caption now clarifies that t
 If you want maximum conservatism, move that column to the Supplementary Material. If you keep it in the main text, the current wording is probably adequate but not risk-free.
 
 ### 5. Regionalization and clustering justification
-**Risk level:** Low to moderate
+**Risk level:** Low
 
-This risk is now much lower. The manuscript explains why hierarchical clustering was chosen, how uncertainty-aware features were used, and how clustering robustness was checked through reduced-feature reruns and adjusted Rand index. It also no longer asks the reader to accept clustering as an isolated algorithmic step; the cluster logic is linked to representative stations and supplementary dendrograms.
+This risk is now lower still. The manuscript not only explains why hierarchical clustering was chosen and how uncertainty-aware features were used, but now also includes an explicit alternative-method sensitivity analysis comparing the baseline partition with complete-linkage, Ward-linkage, cityblock-distance, and k-means alternatives. That additional evidence substantially reduces the risk that a reviewer would see the regionalization as depending on one arbitrary clustering convention.
 
 **Residual concern**
-A reviewer could still ask whether another regionalization method would have yielded a similar structure, but this is now more likely to appear as a secondary suggestion than as a major criticism.
+A reviewer could still ask whether cooling-related regionalization is less stable than warming-related regionalization, but that is now something the manuscript can answer directly rather than avoid.
 
 **Best mitigation**
-No further work is necessary unless you want to add a secondary clustering sensitivity experiment, which is not required for a credible submission.
+Already addressed. No further methodological work is necessary here.
 
 ### 6. Split-period analysis
 **Risk level:** Low
@@ -91,11 +91,11 @@ Do one final journal-style cleanup immediately before submission.
 
 If the manuscript were submitted in its current form, the most plausible substantive reviewer comments are now likely to be:
 
-1. "Please justify the bootstrap depth for tail-focused inference or show a limited higher-replication sensitivity check."
-2. "Please clarify why annual mean temperature was used for homogeneity screening and how the retained flagged stations affect warm-night tail interpretation."
-3. "Please keep the physical discussion clearly inferential and avoid implying direct process attribution where the evidence is indirect."
-4. "Please clarify again that the approximate full-period change is a slope-based translation rather than an observed endpoint difference."
-5. "Please comment briefly on whether an alternative regionalization strategy would materially change the cluster interpretation."
+1. "Please clarify why annual mean temperature was used for homogeneity screening and how the retained flagged stations affect warm-night tail interpretation."
+2. "Please keep the physical discussion clearly inferential and avoid implying direct process attribution where the evidence is indirect."
+3. "Please clarify again that the approximate full-period change is a slope-based translation rather than an observed endpoint difference."
+4. "Please explain why the higher-replication bootstrap check was targeted to the warm indices and not extended to every analysis component."
+5. "Please clarify how the more method-sensitive cool-day clustering should be interpreted."
 
 These are all substantially more manageable than the earlier structural criticisms the manuscript would have attracted before the recent revisions.
 
@@ -107,7 +107,7 @@ If submitted now:
 Reason: the paper now has a clear scientific question, a nontrivial analytical design, and a presentation style that is much closer to a real journal submission.
 
 2. Probability of major revision: moderate
-Reason: reviewers are still likely to push on bootstrap depth, homogeneity interpretation, and the balance between statistical evidence and physical explanation.
+Reason: reviewers are still likely to push on homogeneity interpretation, the balance between statistical evidence and physical explanation, and a few communication choices in the main tables.
 
 3. Probability of minor revision directly: low to moderate
 Reason: possible if reviewers are sympathetic to the manuscript's observational-regional framing and do not insist on deeper tail uncertainty analysis.
@@ -119,12 +119,13 @@ Reason: the core scientific signal is coherent, the paper is now much more profe
 
 If more work is possible, the highest-yield actions are now:
 
-1. Run a limited higher-replication bootstrap sensitivity for one or two core summaries or figures.
-2. Decide whether the slope-translated `Approx. 1961-2024 change` column should remain in `Table 1` or move to the Supplementary Material.
-3. Perform one more line-edit pass focused only on causal phrasing so that all mechanism language remains explicitly inferential.
-4. Add one short clarifying sentence, either in the main text or supplementary material, explaining why annual mean temperature was used as the common homogeneity-screening series.
-5. Do a final journal-style cleanup of references, captions, metadata, and supplementary cross-references.
+1. Decide whether the slope-translated `Approx. 1961-2024 change` column should remain in `Table 1` or move to the Supplementary Material.
+2. Perform one more line-edit pass focused only on causal phrasing so that all mechanism language remains explicitly inferential.
+3. Add one short clarifying sentence, either in the main text or supplementary material, explaining why annual mean temperature was used as the common homogeneity-screening series.
+4. Do a final journal-style cleanup of references, captions, metadata, and supplementary cross-references.
+5. Prepare a concise reviewer-response note highlighting the new homogeneity-exclusion, higher-replication bootstrap, and alternative-clustering sensitivities.
 
 ## Bottom line
 
-The manuscript is now past the stage where its main risks arise from structural weakness. The largest previously exposed vulnerability, namely the absence of an explicit homogeneity-exclusion sensitivity check, has already been reduced materially. Likewise, clustering justification and split-period framing are now much better defended. At this point, the paper's remaining exposure is concentrated in a relatively short list of reviewer-style technical questions, with bootstrap depth in the far tails standing out as the single most plausible remaining methodological criticism. That is a much healthier submission position than before.
+The manuscript is now past the stage where its main risks arise from structural weakness. The largest previously exposed vulnerability, namely the absence of an explicit homogeneity-exclusion sensitivity check, has already been reduced materially. Likewise, clustering justification and split-period framing are now much better defended, and the targeted higher-replication bootstrap analysis has reduced what had been the clearest remaining technical criticism. At this point, the paper's remaining exposure is concentrated less in missing analyses than in a small set of interpretive and presentation choices. That is a much healthier submission position than before.
+

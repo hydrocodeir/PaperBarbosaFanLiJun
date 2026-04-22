@@ -185,4 +185,17 @@ advanced_analyses:
     - Delta1
   bootstrap_depth_sensitivity:
     enabled: true
-    n_reps: 800
+    n_reps: 400
+  alternative_clustering_methods:
+    enabled: true
+    methods:
+    - algorithm: hierarchical
+      linkage: complete
+      metric: euclidean
+    - algorithm: hierarchical
+      linkage: ward
+      metric: euclidean
+    - algorithm: hierarchical
+      linkage: average
+      metric: cityblock
+    - algorithm: kmeans
