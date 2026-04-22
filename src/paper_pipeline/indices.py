@@ -78,14 +78,30 @@ def create_extreme_indices(df: pd.DataFrame, cfg: dict) -> Tuple[pd.DataFrame, p
     thresholds = thresholds_tmax.merge(thresholds_tmin, on=[station_col, "doy"], how="outer")
 
     out = out.merge(thresholds, on=[station_col, "doy"], how="left")
-    out["warm_days"] = (out[tmax_col] > out[f"{tmax_col}_p90"]).astype(float)
-    out["cool_days"] = (out[tmax_col] < out[f"{tmax_col}_p10"]).astype(float)
-    out["warm_nights"] = (out[tmin_col] > out[f"{tmin_col}_p90"]).astype(float)
-    out["cool_nights"] = (out[tmin_col] < out[f"{tmin_col}_p10"]).astype(float)
+    annual_min_coverage_pct = float(cfg["index_construction"].get("annual_min_valid_coverage_pct", 80.0))
 
-    annual = (
-        out.groupby([station_col, station_name_col, year_col], as_index=False)[["warm_days", "warm_nights", "cool_days", "cool_nights"]]
-        .sum(min_count=1)
+    def _event_indicator(value_col: str, threshold_col: str, comparator) -> pd.Series:
+        valid = out[value_col].notna() & out[threshold_col].notna()
+        indicator = pd.Series(np.nan, index=out.index, dtype=float)
+        indicator.loc[valid] = comparator(out.loc[valid, value_col], out.loc[valid, threshold_col]).astype(float)
+        return indicator
+
+    out["warm_days"] = _event_indicator(tmax_col, f"{tmax_col}_p90", lambda x, y: x > y)
+    out["cool_days"] = _event_indicator(tmax_col, f"{tmax_col}_p10", lambda x, y: x < y)
+    out["warm_nights"] = _event_indicator(tmin_col, f"{tmin_col}_p90", lambda x, y: x > y)
+    out["cool_nights"] = _event_indicator(tmin_col, f"{tmin_col}_p10", lambda x, y: x < y)
+
+    annual = out.groupby([station_col, station_name_col, year_col], as_index=False).agg(
+        warm_days=("warm_days", lambda s: s.sum(min_count=1)),
+        warm_nights=("warm_nights", lambda s: s.sum(min_count=1)),
+        cool_days=("cool_days", lambda s: s.sum(min_count=1)),
+        cool_nights=("cool_nights", lambda s: s.sum(min_count=1)),
+        valid_days_tmax=("warm_days", lambda s: int(s.notna().sum())),
+        valid_days_tmin=("warm_nights", lambda s: int(s.notna().sum())),
     )
+    annual["coverage_pct_tmax"] = annual["valid_days_tmax"] / 365.0 * 100.0
+    annual["coverage_pct_tmin"] = annual["valid_days_tmin"] / 365.0 * 100.0
+    annual.loc[annual["coverage_pct_tmax"] < annual_min_coverage_pct, ["warm_days", "cool_days"]] = np.nan
+    annual.loc[annual["coverage_pct_tmin"] < annual_min_coverage_pct, ["warm_nights", "cool_nights"]] = np.nan
     annual["reference_period_label"] = ref_label
     return out, annual

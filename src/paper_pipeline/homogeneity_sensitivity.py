@@ -28,7 +28,6 @@ def run_homogeneity_exclusion_sensitivity(
     )
     keep_names = sorted(set(annual["station_name"].astype(str)) - flagged)
 
-    years = np.sort(annual["year"].unique())
     focus_quantiles = [0.05, 0.50, 0.95]
     max_iter = int(cfg["quantile_regression"]["max_iter"])
 
@@ -38,9 +37,10 @@ def run_homogeneity_exclusion_sensitivity(
         "exclude_flagged": annual.loc[annual["station_name"].isin(keep_names)].copy(),
     }.items():
         mean_df = frame.groupby("year", as_index=False)[[idx["name"] for idx in cfg["indices"]]].mean()
+        period_years = mean_df["year"].to_numpy(dtype=float)
         for idx_cfg in cfg["indices"]:
             vals = mean_df[idx_cfg["name"]].to_numpy(dtype=float)
-            ols = fit_ols_line(years, vals)
+            ols = fit_ols_line(period_years, vals)
             row = {
                 "subset": subset_name,
                 "index_name": idx_cfg["name"],
@@ -48,7 +48,7 @@ def run_homogeneity_exclusion_sensitivity(
                 "ols_slope": float(ols["slope"]),
             }
             for tau in focus_quantiles:
-                qr = fit_quantile_line(years, vals, tau=tau, max_iter=max_iter)
+                qr = fit_quantile_line(period_years, vals, tau=tau, max_iter=max_iter)
                 row[f"slope_{tau:.2f}"] = float(qr["slope"])
             row["Delta1"] = row["slope_0.95"] - row["slope_0.05"]
             records.append(row)

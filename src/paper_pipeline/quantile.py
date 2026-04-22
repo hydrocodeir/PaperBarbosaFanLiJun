@@ -17,6 +17,12 @@ from .math_utils import (
 )
 
 
+def build_station_seed(base_seed: int, index_name: str, station_id: str | int) -> int:
+    token = f"{index_name}|{station_id}"
+    offset = sum(ord(ch) for ch in token)
+    return int(base_seed + offset)
+
+
 def quantile_loss(u: np.ndarray, tau: float) -> float:
     u = np.asarray(u, dtype=float)
     return float(np.sum(np.where(u >= 0, tau * u, (tau - 1.0) * u)))
@@ -343,7 +349,7 @@ def run_station_qr(
     min_years = int(cfg["quantile_regression"]["min_years_required_to_run"])
     recommended_years = int(cfg["quantile_regression"]["min_years_recommended_for_publication"])
     alpha = float(cfg["bootstrap"]["alpha"])
-    rng = np.random.default_rng(int(cfg["project"]["random_seed"]))
+    base_seed = int(cfg["project"]["random_seed"])
 
     all_quant_records, summary_records, boot_records = [], [], []
     total_stations = annual[[station_col, station_name_col]].drop_duplicates().shape[0]
@@ -406,6 +412,7 @@ def run_station_qr(
             row["Delta3"] = row["slope_0.50"] - row["slope_0.05"]
 
             if cfg["bootstrap"]["enabled"] and can_run_qr:
+                rng = np.random.default_rng(build_station_seed(base_seed, idx_name, station_id))
                 boot = bootstrap_qr(years, values, focus_q, cfg, rng)
                 if not boot.empty:
                     boot.insert(0, "index_name", idx_name)

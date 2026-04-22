@@ -1231,47 +1231,61 @@ def plot_ijoc_main_delta_maps(feature_table: pd.DataFrame, stations: pd.DataFram
 def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
     apply_publication_theme()
     tables_dir = outdir.parent / "tables"
-    ref = pd.read_csv(tables_dir / "reference_period_sensitivity_summary.csv")
-    boot = pd.read_csv(tables_dir / "bootstrap_method_sensitivity_summary.csv")
-    interp = pd.read_csv(tables_dir / "interpolation_method_sensitivity_summary.csv")
-    cluster = pd.read_csv(tables_dir / "cluster_robustness_summary.csv")
+    def _safe_read_csv(path: Path) -> pd.DataFrame:
+        return pd.read_csv(path) if path.exists() else pd.DataFrame()
 
-    ref = ref[ref["alternative"] == "all_available"].copy()
-    ref["metric"] = ref["metric"].replace({
-        "slope_0.05": "q0.05",
-        "slope_0.50": "q0.50",
-        "slope_0.95": "q0.95",
-        "Delta1": "Delta1",
-    })
-    ref_mat = ref.pivot(index="index_name", columns="metric", values="mean_abs_diff").reindex(
-        index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
-        columns=["q0.05", "q0.50", "q0.95", "Delta1"],
-    )
+    ref = _safe_read_csv(tables_dir / "reference_period_sensitivity_summary.csv")
+    boot = _safe_read_csv(tables_dir / "bootstrap_method_sensitivity_summary.csv")
+    interp = _safe_read_csv(tables_dir / "interpolation_method_sensitivity_summary.csv")
+    cluster = _safe_read_csv(tables_dir / "cluster_robustness_summary.csv")
 
-    boot = boot[boot["alternative"] == "moving_block"].copy()
-    boot["metric"] = boot["metric"].replace({
-        "boot_mean_0.05": "q0.05 mean",
-        "boot_mean_0.95": "q0.95 mean",
-        "boot_ci_low_0.05": "q0.05 CI low",
-        "boot_ci_low_0.95": "q0.95 CI low",
-        "boot_ci_high_0.05": "q0.05 CI high",
-        "boot_ci_high_0.95": "q0.95 CI high",
-    })
-    boot_mat = boot.pivot(index="index_name", columns="metric", values="mean_abs_diff").reindex(
-        index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
-        columns=["q0.05 mean", "q0.95 mean", "q0.05 CI low", "q0.95 CI low"],
-    )
+    ref_mat = pd.DataFrame()
+    if not ref.empty and {"alternative", "metric", "index_name", "mean_abs_diff"}.issubset(ref.columns):
+        ref = ref[ref["alternative"] == "all_available"].copy()
+        ref["metric"] = ref["metric"].replace({
+            "slope_0.05": "q0.05",
+            "slope_0.50": "q0.50",
+            "slope_0.95": "q0.95",
+            "Delta1": "Delta1",
+        })
+        ref_mat = ref.pivot(index="index_name", columns="metric", values="mean_abs_diff").reindex(
+            index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
+            columns=["q0.05", "q0.50", "q0.95", "Delta1"],
+        )
 
-    interp = interp[(interp["method_left"] == "linear_rbf") & (interp["method_right"] == "linear")].copy()
-    interp["tau_lab"] = interp["tau"].map({0.05: "q0.05", 0.95: "q0.95"})
-    interp_mat = interp.pivot(index="index_name", columns="tau_lab", values="surface_correlation").reindex(
-        index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
-        columns=["q0.05", "q0.95"],
-    )
+    boot_mat = pd.DataFrame()
+    if not boot.empty and {"alternative", "metric", "index_name", "mean_abs_diff"}.issubset(boot.columns):
+        boot = boot[boot["alternative"] == "moving_block"].copy()
+        boot["metric"] = boot["metric"].replace({
+            "boot_mean_0.05": "q0.05 mean",
+            "boot_mean_0.95": "q0.95 mean",
+            "boot_ci_low_0.05": "q0.05 CI low",
+            "boot_ci_low_0.95": "q0.95 CI low",
+            "boot_ci_high_0.05": "q0.05 CI high",
+            "boot_ci_high_0.95": "q0.95 CI high",
+        })
+        boot_mat = boot.pivot(index="index_name", columns="metric", values="mean_abs_diff").reindex(
+            index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
+            columns=["q0.05 mean", "q0.95 mean", "q0.05 CI low", "q0.95 CI low"],
+        )
+
+    interp_mat = pd.DataFrame()
+    if not interp.empty and {"method_left", "method_right", "tau", "index_name", "surface_correlation"}.issubset(interp.columns):
+        interp = interp[(interp["method_left"] == "linear_rbf") & (interp["method_right"] == "linear")].copy()
+        interp["tau_lab"] = interp["tau"].map({0.05: "q0.05", 0.95: "q0.95"})
+        interp_mat = interp.pivot(index="index_name", columns="tau_lab", values="surface_correlation").reindex(
+            index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
+            columns=["q0.05", "q0.95"],
+        )
 
     fig, axes = plt.subplots(2, 2, figsize=(13.2, 9.6), constrained_layout=True)
 
     def draw_heatmap(ax, data, title, cmap, vmin=None, vmax=None, fmt="{:.2f}"):
+        if data.empty:
+            ax.axis("off")
+            ax.text(0.5, 0.5, "Not available", ha="center", va="center", fontsize=10)
+            ax.set_title(title, loc="left")
+            return None
         im = ax.imshow(data.to_numpy(dtype=float), aspect="auto", cmap=cmap, vmin=vmin, vmax=vmax)
         ax.set_xticks(range(data.shape[1]))
         ax.set_xticklabels(data.columns.tolist(), rotation=0)
@@ -1290,27 +1304,34 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
     im2 = draw_heatmap(axes[1, 0], interp_mat, "(c) Interpolation agreement\nSurface correlation", "GnBu", vmin=0.5, vmax=1.0)
 
     ax = axes[1, 1]
-    cluster = cluster.set_index("index_name").reindex(["warm_days", "warm_nights", "cool_days", "cool_nights"])
-    bars = ax.bar(
-        range(len(cluster)),
-        cluster["adjusted_rand_index"],
-        color=["#b22222", "#2e7d32", "#1f77b4", "#9467bd"],
-        edgecolor="black",
-        linewidth=0.35,
-    )
-    ax.set_xticks(range(len(cluster)))
-    ax.set_xticklabels([x.replace("_", " ").title() for x in cluster.index.tolist()], rotation=15, ha="right")
-    ax.set_ylim(0, 1.05)
-    ax.set_ylabel("Adjusted Rand index")
-    ax.set_title("(d) Clustering robustness", loc="left")
-    ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
-    ax.grid(False, axis="x")
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    for bar, value in zip(bars, cluster["adjusted_rand_index"]):
-        ax.text(bar.get_x() + bar.get_width()/2, value + 0.03, f"{value:.2f}", ha="center", va="bottom", fontsize=8.5)
+    if cluster.empty or "adjusted_rand_index" not in cluster.columns:
+        ax.axis("off")
+        ax.text(0.5, 0.5, "Not available", ha="center", va="center", fontsize=10)
+        ax.set_title("(d) Clustering robustness", loc="left")
+    else:
+        cluster = cluster.set_index("index_name").reindex(["warm_days", "warm_nights", "cool_days", "cool_nights"])
+        bars = ax.bar(
+            range(len(cluster)),
+            cluster["adjusted_rand_index"],
+            color=["#b22222", "#2e7d32", "#1f77b4", "#9467bd"],
+            edgecolor="black",
+            linewidth=0.35,
+        )
+        ax.set_xticks(range(len(cluster)))
+        ax.set_xticklabels([x.replace("_", " ").title() for x in cluster.index.tolist()], rotation=15, ha="right")
+        ax.set_ylim(0, 1.05)
+        ax.set_ylabel("Adjusted Rand index")
+        ax.set_title("(d) Clustering robustness", loc="left")
+        ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
+        ax.grid(False, axis="x")
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        for bar, value in zip(bars, cluster["adjusted_rand_index"]):
+            ax.text(bar.get_x() + bar.get_width()/2, value + 0.03, f"{value:.2f}", ha="center", va="bottom", fontsize=8.5)
 
     for ax_, im in zip([axes[0, 0], axes[0, 1], axes[1, 0]], [im0, im1, im2]):
+        if im is None:
+            continue
         cbar = fig.colorbar(im, ax=ax_, shrink=0.82)
         cbar.ax.tick_params(labelsize=8)
 

@@ -6,19 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from .quantile import bootstrap_qr, summarize_bootstrap
+from .quantile import bootstrap_qr, build_station_seed, summarize_bootstrap
 
 
 TARGET_INDICES = ["warm_days", "warm_nights"]
 TARGET_QUANTILES = [0.05, 0.50, 0.95]
-
-
-def _build_station_seed(base_seed: int, index_name: str, station_id: str | int) -> int:
-    token = f"{index_name}|{station_id}"
-    offset = sum(ord(ch) for ch in token)
-    return int(base_seed + offset)
-
-
 def _station_summary_from_boot(
     annual: pd.DataFrame,
     cfg: dict,
@@ -47,7 +39,7 @@ def _station_summary_from_boot(
         if n_years < min_years:
             continue
 
-        rng = np.random.default_rng(_build_station_seed(base_seed, index_name, station_id))
+        rng = np.random.default_rng(build_station_seed(base_seed, index_name, station_id))
         boot = bootstrap_qr(years, values, focus_q, boot_cfg, rng)
         if boot.empty:
             continue

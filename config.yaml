@@ -25,6 +25,7 @@ index_construction:
   upper_percentile: 90
   drop_feb29: true
   min_reference_samples_per_doy: 15
+  annual_min_valid_coverage_pct: 80.0
 indices:
 - name: warm_days
   source_col: tmax
