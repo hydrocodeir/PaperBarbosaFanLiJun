@@ -1074,10 +1074,12 @@ def plot_region_quantile_slopes(annual: pd.DataFrame, outdir: Path, cfg: dict):
 
         fig, ax = plt.subplots(figsize=(8, 5))
         _draw_quantile_coefficient_panel(ax, coeff_df, ols_fit, idx_cfg)
-        ax.set_title(f"Regional quantile regression coefficients - {idx_cfg['title']}")
+        ax.set_title(f"Descriptive regional-average quantile profile - {idx_cfg['title']}")
         _annotate_textbox_bottom_left(
             ax,
-            f"LSM slope: {_format_slope(float(ols_fit['slope']))}\n95% CI: [{_format_slope(float(ols_fit['ci_low']))}, {_format_slope(float(ols_fit['ci_high']))}]",
+            "Annual values were averaged across stations before fitting QR.\n"
+            "Use as a descriptive pooled summary; station-level QR remains the main evidence.\n"
+            f"OLS: {_format_slope(float(ols_fit['slope']))} | 95% CI: [{_format_slope(float(ols_fit['ci_low']))}, {_format_slope(float(ols_fit['ci_high']))}]",
         )
         ax.legend(loc="upper right")
         fig.tight_layout()
@@ -1114,6 +1116,8 @@ def plot_ijoc_regional_quantile_panels(annual: pd.DataFrame, outdir: Path, cfg: 
         ax.text(
             0.02,
             0.03,
+            "Descriptive regional-average panel\n"
+            "Station-level QR and cross-station summaries are primary.\n"
             f"OLS: {_format_slope(float(ols_fit['slope']))}",
             transform=ax.transAxes,
             fontsize=8.3,
@@ -1121,6 +1125,15 @@ def plot_ijoc_regional_quantile_panels(annual: pd.DataFrame, outdir: Path, cfg: 
         )
         if i == 0:
             ax.legend(loc="upper left")
+    fig.text(
+        0.5,
+        -0.01,
+        "Panels summarize quantile-regression fits applied to annual station-mean series and are intended as descriptive pooled views only. "
+        "Primary inference in the manuscript is based on station-level quantile regression, bootstrap summaries, and cross-station diagnostics.",
+        ha="center",
+        va="top",
+        fontsize=9,
+    )
     fig.savefig(outdir / f"ijoc_regional_quantile_panels.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
     plt.close(fig)
 

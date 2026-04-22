@@ -344,6 +344,8 @@ Output:
 
 For each index, annual values are averaged across stations by year and quantile-regression slopes are estimated over the full quantile grid.
 
+These figures are descriptive pooled summaries only. Because the annual station mean smooths over spatial heterogeneity, primary interpretation in the manuscript should remain anchored in station-level quantile regression and cross-station summary tables.
+
 Outputs:
 
 - `outputs/figures/region_quantile_slopes_warm_days.png`

@@ -68,7 +68,7 @@ This formulation permits slope heterogeneity across the response distribution. S
 
 Operationally, for each station-index series, linear trends were estimated across the conditional quantiles of annual counts, with time expressed in decades so that slopes are interpretable in days year^-1 per decade. Estimation was performed over the full quantile grid from `q = 0.05` to `q = 0.95` in increments of `0.01`, while focal interpretation emphasized `q0.05`, `q0.10`, `q0.50`, `q0.90`, and `q0.95`. OLS trends were estimated in parallel as a benchmark for mean change.
 
-The quantile grid serves two different purposes in the manuscript. First, the dense grid is used to characterize the geometry of change across the full distribution and to construct regional quantile-coefficient panels. Second, the focal quantiles are used to build interpretable summary metrics, representative-station comparisons, maps, and significance diagnostics. This dual strategy preserves distributional detail without overloading the main text with an excessive number of parameters.
+The quantile grid serves two different purposes in the manuscript. First, the dense grid is used to characterize the geometry of change across the full distribution and to construct regional quantile-coefficient panels. Those panels are treated as descriptive pooled summaries because they are derived from annual station means and therefore can smooth over spatial heterogeneity. Second, the focal quantiles are used to build interpretable station-level summaries, representative-station comparisons, maps, and significance diagnostics. This dual strategy preserves distributional detail without overloading the main text with an excessive number of parameters while keeping primary inference anchored in the station-specific fits.
 
 To summarize tail asymmetry, the following contrast was computed:
 
@@ -84,7 +84,7 @@ Field significance was assessed through false-discovery-rate control `(Benjamini
 
 ### 2.5. Additional synthesis analyses
 
-Three additional synthesis steps were used to strengthen interpretation. First, day-night asymmetry was quantified by directly comparing the regional behaviour of day and night indices. Second, split-period analysis was used to test temporal nonlinearity by comparing trends in 1961-1990 and 1991-2024. This split was treated as an interpretable synthesis diagnostic rather than as a formal breakpoint attribution exercise. Third, station behaviour was examined by elevation class to complement the geographic regression analysis and provide a more interpretable physiographic context for the observed patterns. These analyses were designed as explanatory layers rather than stand-alone statistical modules; their role is to help interpret the quantile-regression results in climatological rather than purely algorithmic terms.
+Three additional synthesis steps were used to strengthen interpretation. First, day-night asymmetry was quantified by directly comparing the descriptive cross-station summaries of day and night indices rather than by replacing the underlying station-level evidence. Second, split-period analysis was used to test temporal nonlinearity by comparing trends in 1961-1990 and 1991-2024. This split was treated as an interpretable synthesis diagnostic rather than as a formal breakpoint attribution exercise. Third, station behaviour was examined by elevation class to complement the geographic regression analysis and provide a more interpretable physiographic context for the observed patterns. These analyses were designed as explanatory layers rather than stand-alone statistical modules; their role is to help interpret the station-level quantile-regression results in climatological rather than purely algorithmic terms.
 
 Spatial visualization was treated in the same spirit. Station maps of `Delta1` were used as the main spatial summaries, while interpolated quantile maps were used only as visualization tools. The dedicated `paper2_figure3` map set emphasized a thin-plate-spline representation for selected quantiles, whereas the broader sensitivity framework compared alternative interpolation choices to test whether the major qualitative spatial messages were method-dependent. Importantly, these interpolated surfaces were not treated as smooth estimators of a latent national field; they were used only to provide visual orientation between sparse station locations, with scientific interpretation anchored primarily in the station points themselves.
 
@@ -106,11 +106,11 @@ The results support a clear central claim: **thermal-extreme change across Iran 
 
 ### 3.2. Regional synthesis of quantile-dependent change
 
-At the regional scale, warm days and warm nights both increase, whereas cool days and cool nights decline. However, the distributional structure of change differs markedly among indices.
+As a descriptive cross-station summary, warm days and warm nights both increase, whereas cool days and cool nights decline. However, the distributional structure of change differs markedly among indices. These pooled panels are useful for orienting the reader to the overall geometry of change, but they are not treated as the main inferential layer because averaging annual counts across stations can mute climatically meaningful spatial heterogeneity.
 
 ![Figure 3. Regional quantile-coefficient panels.](../outputs/figures/ijoc_regional_quantile_panels.png)
 
-*Figure 3. Regional quantile-regression coefficients for (a) warm days, (b) warm nights, (c) cool days, and (d) cool nights. Black points show quantile-specific slopes, grey shading indicates analytic 95% confidence intervals from the quantile-regression fit, and red lines show the OLS mean trend and its confidence bounds. The display range is restricted to q = 0.05-0.95.*
+*Figure 3. Descriptive regional-average quantile-regression profiles for (a) warm days, (b) warm nights, (c) cool days, and (d) cool nights. For each year, station values were first averaged across the network and quantile regression was then fitted to that pooled annual series. Black points show quantile-specific slopes, grey shading indicates analytic 95% confidence intervals from the quantile-regression fit, and red lines show the OLS mean trend and its confidence bounds. The display range is restricted to q = 0.05-0.95. These panels are descriptive summaries, whereas primary inference in the manuscript rests on station-level quantile regression and cross-station synthesis diagnostics.*
 
 **Table 1.** Regional synthesis of mean trends, focal quantile trends, field significance, and dominant-cluster behaviour. The column `Approx. 1961-2024 change` is a simple slope-based translation over the full record length and is included only as an approximate measure of climatic magnitude.
 
@@ -121,9 +121,9 @@ At the regional scale, warm days and warm nights both increase, whereas cool day
 | Cool days | -2.56 | -1.51 | -2.01 | -8.05 | -16.1 | 0 | 17 | 26 | 1 | -6.64 |
 | Cool nights | -2.98 | -1.77 | -2.47 | -6.78 | -18.8 | 12 | 23 | 25 | 2 | -8.21 |
 
-Three points are especially important. First, warm nights show the strongest mean increase, corresponding to an approximate slope-based rise of about 85.5 days per year across the 1961-2024 record when the OLS estimate is translated over the full record length. Second, warm days display a clear upper-tail ordering (`q0.95 > q0.50 > q0.05`), indicating classical upper-tail amplification. Third, cool days and cool nights show the opposite structure: their strongest declines occur in upper quantiles, implying a rapid loss of years historically characterized by many cool events.
+Three points are especially important at this descriptive pooled level. First, warm nights show the strongest mean increase, corresponding to an approximate slope-based rise of about 85.5 days per year across the 1961-2024 record when the OLS estimate is translated over the full record length. Second, warm days display a clear upper-tail ordering (`q0.95 > q0.50 > q0.05`), indicating classical upper-tail amplification. Third, cool days and cool nights show the opposite structure: their strongest declines occur in upper quantiles, implying a rapid loss of years historically characterized by many cool events.
 
-This structure moves the interpretation beyond significance testing alone. For example, the warm-day OLS slope of +9.53 days year^-1 per decade is not merely statistically non-zero; under a simple linear translation across the record it corresponds to roughly two additional months of warm-day conditions per year relative to the beginning of the period. The regional climate signal is therefore not only detectable, but climatologically large.
+This structure is useful as a compact orientation device, but it should be read together with the station-level results that follow. For example, the warm-day OLS slope of +9.53 days year^-1 per decade implies a climatologically large pooled increase when translated across the full record, yet the later station-based sections show that this increase is not spatially uniform and that its quantile geometry varies materially across the network.
 
 ### 3.3. Day-night asymmetry
 
@@ -198,7 +198,7 @@ Temporal nonlinearity provides an additional layer of evidence.
 
 ![Figure 7. Split-period comparison.](../outputs/figures/ijoc_split_period_comparison.png)
 
-*Figure 7. Comparison of regional trend estimates between 1961-1990 and 1991-2024 for the focal quantiles and OLS trend. The later period shows marked intensification of warm extremes and stronger collapse of cool extremes, especially in upper quantiles.*
+*Figure 7. Comparison of descriptive regional-average trend summaries between 1961-1990 and 1991-2024 for the focal quantiles and OLS trend. The later period shows marked intensification of warm extremes and stronger collapse of cool extremes, especially in upper quantiles.*
 
 The split-period analysis shows that all four indices behave differently after 1990. Warm-day OLS slopes increase from about +0.63 days year^-1 per decade in 1961-1990 to +19.47 in 1991-2024, while warm-night OLS slopes rise from +4.44 to +19.49. Cool-day OLS slopes shift from +1.78 in the early period to -7.86 in the later period, and cool nights shift from -0.44 to -3.33. The strongest acceleration appears in the warm-day upper tail and in the cool-day upper-tail decline. The distributional reorganization detected in the full-period analysis is therefore not an artefact of long averaging; it reflects a marked strengthening of recent change.
 
