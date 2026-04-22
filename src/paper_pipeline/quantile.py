@@ -14,6 +14,7 @@ from .math_utils import (
     maximum_entropy_bootstrap,
     moving_block_bootstrap,
     residual_bootstrap,
+    select_block_length,
 )
 
 
@@ -216,7 +217,6 @@ def fit_ols_line(years: np.ndarray, values: np.ndarray) -> Dict[str, float | np.
 def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[float], cfg: dict, rng: np.random.Generator) -> pd.DataFrame:
     n_reps = int(cfg["bootstrap"]["n_reps"])
     method = str(cfg["bootstrap"]["method"]).lower()
-    block_length = int(cfg["bootstrap"]["block_length"])
     max_iter = int(cfg["quantile_regression"]["max_iter"])
     records = []
     values = np.asarray(values, dtype=float)
@@ -226,6 +226,14 @@ def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[fl
     if len(values_valid) < 3:
         return pd.DataFrame()
     x_decades = (years_valid - years_valid.min()) / 10.0
+    block_cfg = cfg.get("bootstrap", {})
+    block_length = select_block_length(
+        len(values_valid),
+        block_cfg.get("block_length", "auto"),
+        rule=str(block_cfg.get("block_length_rule", "cube_root")),
+        min_block_length=int(block_cfg.get("min_block_length", 2)),
+        max_block_length=block_cfg.get("max_block_length"),
+    )
 
     valid_methods = {"meboot", "residual", "moving_block", "iid"}
     if method not in valid_methods:

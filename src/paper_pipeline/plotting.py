@@ -1255,7 +1255,17 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
 
     boot_mat = pd.DataFrame()
     if not boot.empty and {"alternative", "metric", "index_name", "mean_abs_diff"}.issubset(boot.columns):
-        boot = boot[boot["alternative"] == "moving_block"].copy()
+        current_method = str(cfg.get("bootstrap", {}).get("method", "")).lower()
+        configured_methods = [
+            str(x).lower()
+            for x in cfg.get("advanced_analyses", {}).get("method_sensitivity", {}).get("bootstrap_methods", [])
+        ]
+        candidate_methods = [m for m in configured_methods if m != current_method]
+        preferred_alt = candidate_methods[0] if candidate_methods else None
+        if preferred_alt and preferred_alt in set(boot["alternative"].astype(str).str.lower()):
+            boot = boot[boot["alternative"].astype(str).str.lower() == preferred_alt].copy()
+        else:
+            boot = boot.iloc[:0].copy() if boot.empty else boot[boot["alternative"] == boot["alternative"].iloc[0]].copy()
         boot["metric"] = boot["metric"].replace({
             "boot_mean_0.05": "q0.05 mean",
             "boot_mean_0.95": "q0.95 mean",
@@ -1300,7 +1310,16 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
         return im
 
     im0 = draw_heatmap(axes[0, 0], ref_mat, "(a) Reference-period sensitivity\nMean absolute difference", "YlOrBr")
-    im1 = draw_heatmap(axes[0, 1], boot_mat, "(b) Bootstrap-method sensitivity\nMean absolute difference", "YlOrRd")
+    bootstrap_panel_title = "(b) Bootstrap-method sensitivity\nMean absolute difference"
+    current_method = str(cfg.get("bootstrap", {}).get("method", "")).lower()
+    configured_methods = [
+        str(x).lower()
+        for x in cfg.get("advanced_analyses", {}).get("method_sensitivity", {}).get("bootstrap_methods", [])
+    ]
+    candidate_methods = [m for m in configured_methods if m != current_method]
+    if candidate_methods:
+        bootstrap_panel_title = f"(b) Bootstrap-method sensitivity\n{current_method} vs {candidate_methods[0]}"
+    im1 = draw_heatmap(axes[0, 1], boot_mat, bootstrap_panel_title, "YlOrRd")
     im2 = draw_heatmap(axes[1, 0], interp_mat, "(c) Interpolation agreement\nSurface correlation", "GnBu", vmin=0.5, vmax=1.0)
 
     ax = axes[1, 1]

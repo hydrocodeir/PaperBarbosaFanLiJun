@@ -29,6 +29,35 @@ def circular_day_distance(days: np.ndarray, center: int, max_day: int = 365) -> 
     return np.minimum(raw, max_day - raw)
 
 
+def select_block_length(
+    n_obs: int,
+    block_length: int | str | None = "auto",
+    *,
+    rule: str = "cube_root",
+    min_block_length: int = 2,
+    max_block_length: int | None = None,
+) -> int:
+    n_obs = int(n_obs)
+    if n_obs <= 0:
+        return int(min_block_length)
+
+    if isinstance(block_length, str) and block_length.lower() == "auto":
+        rule_name = str(rule).lower()
+        if rule_name == "sqrt":
+            chosen = int(math.ceil(math.sqrt(n_obs)))
+        else:
+            chosen = int(math.ceil(n_obs ** (1.0 / 3.0)))
+    elif block_length is None:
+        chosen = int(math.ceil(n_obs ** (1.0 / 3.0)))
+    else:
+        chosen = int(block_length)
+
+    lower = max(2, int(min_block_length))
+    upper = n_obs if max_block_length is None else min(int(max_block_length), n_obs)
+    upper = max(lower, upper)
+    return int(np.clip(chosen, lower, upper))
+
+
 def moving_block_bootstrap(arr: np.ndarray, block_length: int, rng: np.random.Generator) -> np.ndarray:
     arr = np.asarray(arr, dtype=float)
     n = len(arr)

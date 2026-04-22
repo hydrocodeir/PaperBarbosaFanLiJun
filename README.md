@@ -45,7 +45,7 @@ flowchart TD
     K --> M[Extract focus quantile slopes<br/>0.05, 0.10, 0.50, 0.90, 0.95]
     M --> N[Compute asymmetry metrics<br/>Delta1, Delta2, Delta3]
 
-    H --> O[Bootstrap annual series<br/>current config: maximum entropy bootstrap]
+    H --> O[Bootstrap annual series<br/>current config: moving block bootstrap]
     O --> P[Refit focus quantile slopes for each replicate]
     P --> Q[Summarize uncertainty<br/>mean, SD, median, 95% CI]
 
@@ -126,7 +126,8 @@ In the current setup:
 - focus quantiles are `0.05`, `0.10`, `0.50`, `0.90`, and `0.95`
 - station-index series shorter than the configured minimum run length are flagged and excluded from QR / OLS estimation
 - publication-oriented sensitivity checks compare analytic QR confidence intervals with bootstrap confidence intervals at `tau = 0.05` and `0.95`
-- bootstrap is enabled using `meboot` with `200` replicates
+- bootstrap is enabled using `moving_block` with `200` replicates
+- block length is selected automatically from series length using a cube-root rule, bounded by configured minimum and maximum values
 - clustering is enabled using hierarchical clustering with average linkage and Euclidean distance
 - a reduced-feature clustering rerun is enabled as a robustness check
 
@@ -221,7 +222,7 @@ The codebase supports several resampling strategies:
 - moving block bootstrap
 - iid bootstrap
 
-In the current configuration, the active method is maximum entropy bootstrap.
+In the current configuration, the active method is moving block bootstrap, and the block length is chosen automatically from the annual-series length using a bounded cube-root rule.
 
 For each station and index:
 
@@ -229,6 +230,8 @@ For each station and index:
 2. Quantile-regression slopes are re-estimated for the focus quantiles.
 3. Derived contrast metrics are computed for every replicate.
 4. Replicate distributions are summarized into mean, standard deviation, median, and confidence intervals.
+
+For annual climate series, this default is intentional: the moving block bootstrap preserves short-range temporal dependence more directly than an iid resample. The repository still supports `meboot` as a sensitivity method because it can behave well for short and non-Gaussian series, but manuscript-facing uncertainty summaries now treat moving-block resampling as the primary baseline and use `meboot` as a comparison.
 
 The main derived asymmetry measures are:
 
@@ -528,5 +531,5 @@ In practical terms, the repository performs the following sequence:
 - The workflow is designed for batch export rather than interactive display.
 - Because full quantile regression and bootstrap are computationally heavy, complete runs may take noticeable time before all figures appear.
 - When `reference_years` is left as `null`, percentile thresholds are estimated from all available years; for strict climatological comparability, a fixed baseline period may be preferable.
-- Quantile-regression significance in the map figures is currently based on analytic confidence intervals from the fitted QR model; bootstrap-based sensitivity checks are recommended for publication use, especially at extreme quantiles.
+- Quantile-regression significance in the map figures is currently based on analytic confidence intervals from the fitted QR model; bootstrap-based sensitivity checks remain recommended for publication use, especially at extreme quantiles, with moving-block resampling preferred as the main time-series sensitivity baseline.
 - Clustering is exploratory and depends on the chosen feature set; correlated features such as slope contrasts and their component slopes should be interpreted with care.

@@ -71,9 +71,12 @@ quantile_regression:
   - 0.95
 bootstrap:
   enabled: true
-  method: meboot
+  method: moving_block
   n_reps: 200
-  block_length: 2
+  block_length: auto
+  block_length_rule: cube_root
+  min_block_length: 2
+  max_block_length: 8
   alpha: 0.05
   save_long_table: true
 feature_engineering:
@@ -160,8 +163,8 @@ advanced_analyses:
       - 1990
       all_available: null
     bootstrap_methods:
-    - meboot
     - moving_block
+    - meboot
     interpolation_methods:
     - thin_plate_spline
     - linear_rbf
