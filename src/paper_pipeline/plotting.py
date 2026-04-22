@@ -20,6 +20,7 @@ from shapely.ops import polygonize, unary_union as shp_unary_union
 from .clustering import screen_clustering_features
 from .quantile import fit_ols_line, fit_quantile_line
 from .math_utils import make_quantile_grid
+from .year_config import build_split_periods, format_year_range_label, get_effective_year_range
 
 
 def apply_publication_theme() -> None:
@@ -58,6 +59,10 @@ def _station_slug(station_name: str) -> str:
 
 def _format_slope(value: float) -> str:
     return "NA" if not np.isfinite(value) else f"{value:+.2f}"
+
+
+def _get_plot_year_range(cfg: dict, df: pd.DataFrame | None = None) -> tuple[int, int] | None:
+    return get_effective_year_range(cfg, df)
 
 
 FIG3_CMAP = LinearSegmentedColormap.from_list(
@@ -1189,6 +1194,7 @@ def _scatter_station_map(df: pd.DataFrame, value_col: str, title: str, outpath: 
 def plot_ijoc_study_area(stations: pd.DataFrame, outdir: Path, cfg: dict):
     apply_publication_theme()
     boundary_geom = _load_boundary_geometry(_get_boundary_path_from_cfg(cfg))
+    year_label = format_year_range_label(_get_plot_year_range(cfg))
     fig, ax = plt.subplots(figsize=(7.6, 6.4))
     _draw_boundary(ax, boundary_geom, linewidth=1.0, zorder=2)
     scatter = ax.scatter(
@@ -1216,7 +1222,7 @@ def plot_ijoc_study_area(stations: pd.DataFrame, outdir: Path, cfg: dict):
     ax.text(
         0.02,
         0.03,
-        f"{len(stations)} stations | 1961-2024",
+        f"{len(stations)} stations | {year_label}",
         transform=ax.transAxes,
         fontsize=9,
         bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#d0d0d0", "alpha": 0.96},
@@ -1399,7 +1405,9 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
 
 def plot_ijoc_split_period_comparison(annual: pd.DataFrame, outdir: Path, cfg: dict):
     apply_publication_theme()
-    periods = [("1961-1990", 1961, 1990), ("1991-2024", 1991, 2024)]
+    periods = build_split_periods(_get_plot_year_range(cfg, annual))
+    if len(periods) < 2:
+        return
     fig, axes = plt.subplots(2, 2, figsize=(12.8, 9.6), constrained_layout=True)
     for i, idx_cfg in enumerate(cfg["indices"]):
         ax = axes.flat[i]
@@ -1417,8 +1425,8 @@ def plot_ijoc_split_period_comparison(annual: pd.DataFrame, outdir: Path, cfg: d
         vals = np.array(vals_by_period, dtype=float)
         x = np.arange(vals.shape[1])
         width = 0.34
-        ax.bar(x - width/2, vals[0], width=width, color="#b0bec5", edgecolor="black", linewidth=0.3, label="1961-1990")
-        ax.bar(x + width/2, vals[1], width=width, color="#ef6c00", edgecolor="black", linewidth=0.3, label="1991-2024")
+        ax.bar(x - width/2, vals[0], width=width, color="#b0bec5", edgecolor="black", linewidth=0.3, label=periods[0][0])
+        ax.bar(x + width/2, vals[1], width=width, color="#ef6c00", edgecolor="black", linewidth=0.3, label=periods[1][0])
         ax.axhline(0, color="#555555", linewidth=0.8, linestyle="--")
         ax.set_xticks(x)
         ax.set_xticklabels(["q0.05", "q0.50", "q0.95", "OLS"])

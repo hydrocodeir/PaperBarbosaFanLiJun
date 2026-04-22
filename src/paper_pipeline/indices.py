@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 
 from .math_utils import circular_day_distance, doy_noleap
+from .year_config import resolve_reference_years
 
 
 def compute_daily_thresholds(
@@ -64,14 +65,12 @@ def create_extreme_indices(df: pd.DataFrame, cfg: dict) -> Tuple[pd.DataFrame, p
         out = out.loc[~((out["date"].dt.month == 2) & (out["date"].dt.day == 29))].copy()
     out["doy"] = doy_noleap(out["date"])
 
-    ref_years = cfg["index_construction"]["reference_years"]
+    ref_years, ref_label = resolve_reference_years(cfg, out)
     if ref_years is None:
         ref_mask = pd.Series(True, index=out.index)
-        ref_label = "all_available_years"
     else:
-        y0, y1 = int(ref_years[0]), int(ref_years[1])
+        y0, y1 = ref_years
         ref_mask = out[year_col].between(y0, y1)
-        ref_label = f"{y0}_{y1}"
 
     thresholds_tmax = compute_daily_thresholds(out, station_col, tmax_col, ref_mask, "doy", cfg)
     thresholds_tmin = compute_daily_thresholds(out, station_col, tmin_col, ref_mask, "doy", cfg)

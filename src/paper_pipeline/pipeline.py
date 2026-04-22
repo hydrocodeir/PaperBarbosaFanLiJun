@@ -39,6 +39,7 @@ from .plotting import (
 )
 from .quantile import add_sensitivity_check_columns, run_station_qr
 from .reporting import generate_report
+from .year_config import filter_to_analysis_years, format_year_range_label, get_effective_year_range
 
 
 def run_pipeline(config_path: str = "config.yaml") -> Path:
@@ -58,8 +59,13 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
             fh.write(line + "\n")
 
     data = pd.read_csv(cfg["paths"]["data_csv"])
+    data = filter_to_analysis_years(data, cfg)
     stations = pd.read_csv(cfg["paths"]["station_csv"])
-    log_status(f"Loaded input tables: data_rows={len(data)}, stations={stations.shape[0]}")
+    analysis_year_range = get_effective_year_range(cfg, data)
+    log_status(
+        f"Loaded input tables: data_rows={len(data)}, stations={stations.shape[0]}, "
+        f"analysis_years={format_year_range_label(analysis_year_range)}"
+    )
 
     log_status("Running data-quality and homogeneity diagnostics...")
     dq_results = run_data_quality_assessment(data, cfg, outdir)

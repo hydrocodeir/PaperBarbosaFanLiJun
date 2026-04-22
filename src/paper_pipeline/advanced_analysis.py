@@ -29,6 +29,7 @@ from .plotting import (
     apply_publication_theme,
 )
 from .quantile import add_sensitivity_check_columns, run_station_qr
+from .year_config import resolve_reference_years
 
 
 def _analytic_pvalue_from_ci(slope: float, ci_low: float, ci_high: float) -> float:
@@ -381,7 +382,7 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
     metric_list = ["slope_0.05", "slope_0.50", "slope_0.95", "Delta1"]
     ref_periods = analysis_cfg.get("reference_periods", {})
     current_label = "current"
-    current_ref = ref_periods.get(current_label, cfg["index_construction"]["reference_years"])
+    current_ref, _ = resolve_reference_years(cfg, data)
     base_qr = qr_summary.copy()
 
     reference_station_parts = []
