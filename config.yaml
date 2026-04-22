@@ -183,3 +183,6 @@ advanced_analyses:
     - slope_0.50
     - slope_0.95
     - Delta1
+  bootstrap_depth_sensitivity:
+    enabled: true
+    n_reps: 800

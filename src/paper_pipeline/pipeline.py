@@ -13,8 +13,10 @@ from .advanced_analysis import (
     run_regionalization_analysis,
     run_spatial_inference,
 )
+from .bootstrap_depth_sensitivity import run_bootstrap_depth_sensitivity
 from .clustering import build_feature_table, compare_clusterings, run_clustering
 from .data_quality import run_data_quality_assessment
+from .homogeneity_sensitivity import run_homogeneity_exclusion_sensitivity
 from .indices import create_extreme_indices
 from .plotting import (
     plot_data_coverage,
@@ -59,13 +61,17 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     log_status(f"Loaded input tables: data_rows={len(data)}, stations={stations.shape[0]}")
 
     log_status("Running data-quality and homogeneity diagnostics...")
-    run_data_quality_assessment(data, cfg, outdir)
+    dq_results = run_data_quality_assessment(data, cfg, outdir)
     log_status("Saved data-quality and homogeneity diagnostics.")
 
     log_status("Building annual extreme indices...")
     _, annual = create_extreme_indices(data, cfg)
     annual.to_csv(tables_dir / "annual_extreme_indices.csv", index=False)
     log_status(f"Saved annual indices table with {len(annual)} rows.")
+
+    log_status("Running sensitivity check excluding homogeneity-flagged stations...")
+    run_homogeneity_exclusion_sensitivity(annual, dq_results["homogeneity"], cfg, outdir)
+    log_status("Saved homogeneity-exclusion sensitivity diagnostics.")
 
     metadata = {
         "project_name": cfg["project"]["name"],
@@ -134,6 +140,10 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     ]
     feature_table[[c for c in focus_cols if c in feature_table.columns]].to_csv(tables_dir / "publication_summary_table.csv", index=False)
     log_status("Saved publication summary table.")
+
+    log_status("Running limited higher-replication bootstrap-depth sensitivity...")
+    run_bootstrap_depth_sensitivity(annual, cfg, outdir)
+    log_status("Saved bootstrap-depth sensitivity diagnostics.")
 
     log_status("Rendering figures...")
     plot_data_coverage(annual, figs_dir, cfg)
