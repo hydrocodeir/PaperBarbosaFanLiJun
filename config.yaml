@@ -139,3 +139,47 @@ spatial_visualization:
   # - quintic
   interpolation_method: linear_rbf
   interpolation_smooth: 0.50
+advanced_analyses:
+  spatial_inference:
+    enabled: true
+    fdr_alpha: 0.05
+    moran_permutations: 499
+    moran_k_neighbors: 5
+    quantiles:
+    - 0.05
+    - 0.10
+    - 0.50
+    - 0.90
+    - 0.95
+  method_sensitivity:
+    enabled: true
+    reference_periods:
+      current:
+      - 1961
+      - 1990
+      all_available: null
+    bootstrap_methods:
+    - meboot
+    - moving_block
+    interpolation_methods:
+    - thin_plate_spline
+    - linear_rbf
+    - linear
+  driver_analysis:
+    enabled: true
+    predictors:
+    - latitude
+    - longitude
+    - elevation
+    metrics:
+    - slope_0.05
+    - slope_0.50
+    - slope_0.95
+    - Delta1
+  regionalization:
+    enabled: true
+    summary_metrics:
+    - slope_0.05
+    - slope_0.50
+    - slope_0.95
+    - Delta1

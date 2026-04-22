@@ -7,6 +7,12 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from .advanced_analysis import (
+    run_driver_analysis,
+    run_method_sensitivity,
+    run_regionalization_analysis,
+    run_spatial_inference,
+)
 from .clustering import build_feature_table, compare_clusterings, run_clustering
 from .indices import create_extreme_indices
 from .plotting import (
@@ -130,6 +136,23 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     plot_station_paper1_figure4(boot_long, qr_summary, figs_dir, cfg)
     plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
     log_status("Finished rendering figures.")
-    generate_report(annual, feature_table, cluster_df, cfg, outdir, cluster_robustness_df=cluster_robustness_df)
+
+    log_status("Running advanced publication analyses...")
+    advanced_results = {}
+    advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir))
+    advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir))
+    advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir))
+    advanced_results.update(run_regionalization_analysis(feature_table, cfg, outdir))
+    log_status("Finished advanced publication analyses.")
+
+    generate_report(
+        annual,
+        feature_table,
+        cluster_df,
+        cfg,
+        outdir,
+        cluster_robustness_df=cluster_robustness_df,
+        advanced_results=advanced_results,
+    )
     log_status("Generated final report.")
     return outdir
