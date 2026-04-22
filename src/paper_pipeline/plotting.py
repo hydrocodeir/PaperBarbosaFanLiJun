@@ -668,7 +668,7 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
             & np.isfinite(map_df[ci_high_col])
             & ((map_df[ci_low_col] > 0) | (map_df[ci_high_col] < 0))
         )
-        map_df["significant_95"] = sig_mask
+        map_df["analytic_significant_95"] = sig_mask
         levels = _fig3_levels_from_values(map_df[slope_col])
         norm = BoundaryNorm(levels, FIG3_CMAP.N, clip=False)
 
@@ -720,12 +720,12 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
             )
             _draw_boundary(ax, boundary_geom, linewidth=1.0)
 
-            if sdf["significant_95"].any():
-                sig_df = sdf.loc[sdf["significant_95"]]
+            if sdf["analytic_significant_95"].any():
+                sig_df = sdf.loc[sdf["analytic_significant_95"]]
             else:
                 sig_df = sdf.iloc[0:0]
 
-            nonsig_df = sdf.loc[~sdf["significant_95"]]
+            nonsig_df = sdf.loc[~sdf["analytic_significant_95"]]
 
             if not nonsig_df.empty:
                 ax.scatter(
@@ -737,7 +737,7 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
                     linewidth=0.55,
                     alpha=0.95,
                     zorder=5,
-                    label="Not significant" if i == 0 else None,
+                    label="Not significant (analytic CI)" if i == 0 else None,
                 )
 
             if not sig_df.empty:
@@ -750,7 +750,7 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
                     linewidth=0.9,
                     alpha=0.98,
                     zorder=6,
-                    label="Significant at 95% CI" if i == 0 else None,
+                    label="Significant at analytic 95% CI" if i == 0 else None,
                 )
 
             ax.scatter(
@@ -772,11 +772,11 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
             row_idx, col_idx = divmod(i, 2)
             _format_geo_axis(ax, show_x=(row_idx == 1), show_y=(col_idx == 0))
 
-            n_sig = int(sdf["significant_95"].sum())
+            n_sig = int(sdf["analytic_significant_95"].sum())
             _annotate_textbox_bottom_left(
                 ax,
                 f"Range: {_format_slope(float(pd.to_numeric(sdf[slope_col], errors='coerce').min()))} to {_format_slope(float(pd.to_numeric(sdf[slope_col], errors='coerce').max()))}\n"
-                f"95% significant: {n_sig}/{len(sdf)}",
+                f"Analytic 95% significant: {n_sig}/{len(sdf)}",
             )
 
         if mappable is not None:
@@ -786,7 +786,7 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
         fig.text(
             0.5,
             -0.01,
-            "Filled teal circles denote stations significant at the 95% level; open grey circles denote non-significant stations. Background shading shows the interpolated quantile-regression slope field.",
+            "Filled teal circles denote stations significant under analytic 95% quantile-regression confidence intervals; open grey circles denote stations not analytically significant. Background shading shows the interpolated quantile-regression slope field.",
             ha="center",
             fontsize=10,
         )
