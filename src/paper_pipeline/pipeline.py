@@ -177,7 +177,6 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     plot_dendrograms(feature_table, artifacts, figs_dir, cfg)
     plot_maps(feature_table, stations, cluster_df, figs_dir, cfg)
     plot_ijoc_main_delta_maps(feature_table, stations, figs_dir, cfg)
-    plot_ijoc_robustness_synthesis(figs_dir, cfg)
     plot_ijoc_split_period_comparison(annual, figs_dir, cfg)
     plot_ijoc_station_comparisons(annual, feature_table, figs_dir, cfg)
     plot_station_paper2_figures(annual, figs_dir, cfg)
@@ -193,6 +192,10 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir))
     advanced_results.update(run_regionalization_analysis(feature_table, cfg, outdir))
     log_status("Finished advanced publication analyses.")
+
+    log_status("Rendering robustness synthesis figure from completed sensitivity outputs...")
+    plot_ijoc_robustness_synthesis(figs_dir, cfg)
+    log_status("Saved robustness synthesis figure.")
 
     generate_report(
         annual,
