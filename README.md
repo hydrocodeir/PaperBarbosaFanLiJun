@@ -427,9 +427,9 @@ For selected quantiles, spatial maps are generated from station-specific slopes.
 1. fits a station-level quantile trend for each index
 2. interpolates the station field using radial basis functions or gridded interpolation
 3. masks the surface to the country boundary when a boundary file is available
-4. overlays station markers and significance based on quantile-regression confidence intervals
+4. overlays the observed station points colored by their estimated slope values
 
-These interpolated surfaces are intended primarily for visualization of broad spatial structure. With a sparse station network, direct station estimates should remain the primary basis for scientific interpretation.
+These interpolated surfaces are intended primarily for visualization of broad spatial structure. With a sparse station network, direct station estimates should remain the primary basis for scientific interpretation, and the background surface should not be read as a standalone inferential field between stations.
 
 Outputs:
 
@@ -534,5 +534,5 @@ In practical terms, the repository performs the following sequence:
 - The workflow is designed for batch export rather than interactive display.
 - Because full quantile regression and bootstrap are computationally heavy, complete runs may take noticeable time before all figures appear.
 - When `reference_years` is left as `null`, percentile thresholds are estimated from all available years; for strict climatological comparability, a fixed baseline period may be preferable.
-- Quantile-regression significance in the map figures is currently based on analytic confidence intervals from the fitted QR model; bootstrap-based sensitivity checks remain recommended for publication use, especially at extreme quantiles, with moving-block resampling preferred as the main time-series sensitivity baseline.
+- Quantile-regression map figures are now framed around station-level slope estimates, with interpolation used only as a visual background. Bootstrap-based sensitivity checks remain recommended for publication use, especially at extreme quantiles, with moving-block resampling preferred as the main time-series sensitivity baseline.
 - Clustering is exploratory and should not be read as a fully inferential regional taxonomy. The main workflow now uses a parsimonious slope-only baseline, screens candidate features for near-collinearity, and treats richer uncertainty-aware clustering as a sensitivity analysis rather than as the default partition.

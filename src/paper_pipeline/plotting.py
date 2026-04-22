@@ -710,8 +710,6 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
     for tau in taus:
         rows = []
         slope_col = f"slope_{tau:0.2f}"
-        ci_low_col = f"ci_low_{tau:0.2f}"
-        ci_high_col = f"ci_high_{tau:0.2f}"
 
         for idx_cfg in cfg["indices"]:
             idx_name = idx_cfg["name"]
@@ -726,18 +724,10 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
                         "station_id": station_id,
                         "station_name": station_name,
                         slope_col: float(fit["slope"]),
-                        ci_low_col: float(fit["ci_low"]),
-                        ci_high_col: float(fit["ci_high"]),
                     }
                 )
 
         map_df = pd.DataFrame(rows).merge(stations, on=["station_id", "station_name"], how="left")
-        sig_mask = (
-            np.isfinite(map_df[ci_low_col])
-            & np.isfinite(map_df[ci_high_col])
-            & ((map_df[ci_low_col] > 0) | (map_df[ci_high_col] < 0))
-        )
-        map_df["analytic_significant_95"] = sig_mask
         levels = _fig3_levels_from_values(map_df[slope_col])
         norm = BoundaryNorm(levels, FIG3_CMAP.N, clip=False)
 
@@ -789,49 +779,17 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
             )
             _draw_boundary(ax, boundary_geom, linewidth=1.0)
 
-            if sdf["analytic_significant_95"].any():
-                sig_df = sdf.loc[sdf["analytic_significant_95"]]
-            else:
-                sig_df = sdf.iloc[0:0]
-
-            nonsig_df = sdf.loc[~sdf["analytic_significant_95"]]
-
-            if not nonsig_df.empty:
-                ax.scatter(
-                    nonsig_df["longitude"],
-                    nonsig_df["latitude"],
-                    s=28,
-                    facecolor="white",
-                    edgecolor="#5f6368",
-                    linewidth=0.55,
-                    alpha=0.95,
-                    zorder=5,
-                    label="Not significant (analytic CI)" if i == 0 else None,
-                )
-
-            if not sig_df.empty:
-                ax.scatter(
-                    sig_df["longitude"],
-                    sig_df["latitude"],
-                    s=68,
-                    facecolor="#1fa3b8",
-                    edgecolor="white",
-                    linewidth=0.9,
-                    alpha=0.98,
-                    zorder=6,
-                    label="Significant at analytic 95% CI" if i == 0 else None,
-                )
-
             ax.scatter(
                 sdf["longitude"],
                 sdf["latitude"],
                 c=sdf[slope_col],
-                s=18,
+                s=38,
                 cmap=FIG3_CMAP,
                 norm=norm,
-                edgecolor="none",
-                alpha=0.9,
-                zorder=4,
+                edgecolor="white",
+                linewidth=0.45,
+                alpha=0.96,
+                zorder=5,
             )
 
             xmin, xmax, ymin, ymax = _get_plot_extent(sdf, boundary_geom=boundary_geom, pad_deg=0.1)
@@ -841,11 +799,10 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
             row_idx, col_idx = divmod(i, 2)
             _format_geo_axis(ax, show_x=(row_idx == 1), show_y=(col_idx == 0))
 
-            n_sig = int(sdf["analytic_significant_95"].sum())
             _annotate_textbox_bottom_left(
                 ax,
                 f"Range: {_format_slope(float(pd.to_numeric(sdf[slope_col], errors='coerce').min()))} to {_format_slope(float(pd.to_numeric(sdf[slope_col], errors='coerce').max()))}\n"
-                f"Analytic 95% significant: {n_sig}/{len(sdf)}",
+                f"Station count: {len(sdf)} | Surface: visual interpolation only",
             )
 
         if mappable is not None:
@@ -855,7 +812,7 @@ def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdi
         fig.text(
             0.5,
             -0.01,
-            "Filled teal circles denote stations significant under analytic 95% quantile-regression confidence intervals; open grey circles denote stations not analytically significant. Background shading shows the interpolated quantile-regression slope field.",
+            "Colored station points are the primary evidence. Background shading shows an interpolated slope surface for visual orientation only and is not used as a standalone inferential layer.",
             ha="center",
             fontsize=10,
         )
