@@ -16,6 +16,8 @@ def generate_report(
 ):
     n_years_total = annual["year"].nunique()
     station_count = annual["station_id"].nunique()
+    tables_dir = outdir / "tables"
+    figs_dir = outdir / "figures"
     rec = int(cfg["quantile_regression"]["min_years_recommended_for_publication"])
     min_years = int(cfg["quantile_regression"]["min_years_required_to_run"])
     short_run_count = int(features["insufficient_years_for_qr"].sum()) if "insufficient_years_for_qr" in features.columns else 0
@@ -31,6 +33,18 @@ def generate_report(
         f"- Station-index series below QR minimum length ({min_years} years): **{short_run_count}**",
         f"- Station-index series below publication recommendation ({rec}+ years): **{short_pub_count}**",
     ]
+
+    module_checks = [
+        ("Data-quality and homogeneity diagnostics", tables_dir / "data_quality_homogeneity_overview.csv"),
+        ("Homogeneity-exclusion sensitivity", tables_dir / "homogeneity_flag_exclusion_sensitivity.csv"),
+        ("Alternative-clustering sensitivity", tables_dir / "alternative_clustering_sensitivity_summary.csv"),
+        ("Bootstrap-depth sensitivity", tables_dir / "bootstrap_depth_sensitivity_summary.csv"),
+        ("Advanced publication analyses", tables_dir / "station_significance_fdr.csv"),
+    ]
+    lines += ["", "## Pipeline-Integrated Robustness Modules"]
+    for label, path in module_checks:
+        status = "available" if path.exists() else "not found"
+        lines.append(f"- {label}: **{status}**")
     if n_years_total < rec:
         lines += [
             f"- WARNING: record length is below the publication recommendation ({rec}+ years).",
