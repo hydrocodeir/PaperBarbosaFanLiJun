@@ -195,7 +195,7 @@ advanced_analyses:
     spatial_validation_permutations: 499
   bootstrap_depth_sensitivity:
     enabled: true
-    n_reps: 400
+    n_reps: 220
   alternative_clustering_methods:
     enabled: true
     methods:

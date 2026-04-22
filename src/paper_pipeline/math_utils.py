@@ -75,6 +75,22 @@ def moving_block_bootstrap(arr: np.ndarray, block_length: int, rng: np.random.Ge
     return np.concatenate(pieces)[:n]
 
 
+def moving_block_bootstrap_indices(n: int, block_length: int, rng: np.random.Generator) -> np.ndarray:
+    n = int(n)
+    if n <= 0:
+        return np.array([], dtype=int)
+    if n < 3:
+        return np.arange(n, dtype=int)
+    block_length = int(np.clip(block_length, 2, n))
+    starts = np.arange(0, n - block_length + 1)
+    n_blocks = int(math.ceil(n / block_length))
+    pieces = []
+    for _ in range(n_blocks):
+        s = int(rng.choice(starts))
+        pieces.append(np.arange(s, s + block_length, dtype=int))
+    return np.concatenate(pieces)[:n]
+
+
 def iid_bootstrap(arr: np.ndarray, rng: np.random.Generator) -> np.ndarray:
     arr = np.asarray(arr, dtype=float)
     n = len(arr)

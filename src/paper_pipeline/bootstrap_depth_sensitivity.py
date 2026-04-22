@@ -9,7 +9,6 @@ import pandas as pd
 from .quantile import bootstrap_qr, build_station_seed, summarize_bootstrap
 
 
-TARGET_INDICES = ["warm_days", "warm_nights"]
 TARGET_QUANTILES = [0.05, 0.50, 0.95]
 def _station_summary_from_boot(
     annual: pd.DataFrame,
@@ -67,9 +66,10 @@ def _regional_comparison_table(
     deeper: pd.DataFrame,
     baseline_reps: int,
     deeper_reps: int,
+    target_indices: list[str],
 ) -> pd.DataFrame:
     records: list[dict] = []
-    for index_name in TARGET_INDICES:
+    for index_name in target_indices:
         bdf = baseline[baseline["index_name"] == index_name].copy()
         ddf = deeper[deeper["index_name"] == index_name].copy()
         merged = bdf.merge(
@@ -117,6 +117,7 @@ def _plot_bootstrap_depth_sensitivity(
     outpath: Path,
     baseline_reps: int,
     deeper_reps: int,
+    target_indices: list[str],
 ) -> None:
     plot_metrics = [
         ("boot_mean_0.05", "q0.05 mean"),
@@ -125,7 +126,8 @@ def _plot_bootstrap_depth_sensitivity(
         ("boot_mean_Delta1", "Delta1 mean"),
     ]
     fig, axes = plt.subplots(2, 2, figsize=(10, 7), constrained_layout=True)
-    color_map = {"warm_days": "#1f1f1f", "warm_nights": "#b22222"}
+    palette = ["#1f1f1f", "#b22222", "#1d3557", "#2a9d8f", "#6d597a", "#8d6e63"]
+    color_map = {name: palette[i % len(palette)] for i, name in enumerate(target_indices)}
 
     for ax, (metric, label) in zip(axes.ravel(), plot_metrics):
         sub = comparison[comparison["metric"] == metric].copy()
@@ -185,10 +187,11 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
     figs_dir = outdir / "figures"
     baseline_reps = int(cfg["bootstrap"]["n_reps"])
     deeper_reps = int(cfg.get("advanced_analyses", {}).get("bootstrap_depth_sensitivity", {}).get("n_reps", 800))
+    target_indices = [idx_cfg["name"] for idx_cfg in cfg["indices"]]
 
     baseline_rows = []
     pub = pd.read_csv(tables_dir / "publication_summary_table.csv")
-    for index_name in TARGET_INDICES:
+    for index_name in target_indices:
         sub = pub[pub["index_name"] == index_name].copy()
         if sub.empty:
             continue
@@ -215,14 +218,14 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
             tmp[f"boot_ci_width_{tau}"] = tmp[f"boot_ci_high_{tau}"] - tmp[f"boot_ci_low_{tau}"]
         tmp["boot_ci_width_Delta1"] = tmp["boot_ci_high_Delta1"] - tmp["boot_ci_low_Delta1"]
         baseline_rows.append(tmp)
-    baseline = pd.concat(baseline_rows, ignore_index=True)
+    baseline = pd.concat(baseline_rows, ignore_index=True) if baseline_rows else pd.DataFrame()
 
     deeper_frames = []
-    for index_name in TARGET_INDICES:
+    for index_name in target_indices:
         deeper_frames.append(_station_summary_from_boot(annual, cfg, index_name, deeper_reps))
-    deeper = pd.concat(deeper_frames, ignore_index=True)
+    deeper = pd.concat(deeper_frames, ignore_index=True) if deeper_frames else pd.DataFrame()
 
-    comparison = _regional_comparison_table(baseline, deeper, baseline_reps, deeper_reps)
+    comparison = _regional_comparison_table(baseline, deeper, baseline_reps, deeper_reps, target_indices)
     station_compare = baseline.merge(
         deeper,
         on=["index_name", "station_id", "station_name"],
@@ -234,7 +237,7 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
 
     comparison.to_csv(comparison_path, index=False)
     station_compare.to_csv(station_path, index=False)
-    _plot_bootstrap_depth_sensitivity(comparison, fig_path, baseline_reps, deeper_reps)
+    _plot_bootstrap_depth_sensitivity(comparison, fig_path, baseline_reps, deeper_reps, target_indices)
 
     return {
         "summary_table": comparison_path,

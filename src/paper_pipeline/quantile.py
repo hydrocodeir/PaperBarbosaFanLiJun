@@ -12,7 +12,7 @@ from .math_utils import (
     iid_bootstrap,
     make_quantile_grid,
     maximum_entropy_bootstrap,
-    moving_block_bootstrap,
+    moving_block_bootstrap_indices,
     residual_bootstrap,
     select_block_length,
 )
@@ -242,15 +242,20 @@ def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[fl
     for rep in range(n_reps):
         if method == "meboot":
             yb = maximum_entropy_bootstrap(values_valid, rng)
+            years_boot = years_valid
         elif method == "residual":
             yb = residual_bootstrap(x_decades, values_valid, rng)
+            years_boot = years_valid
         elif method == "moving_block":
-            yb = moving_block_bootstrap(values_valid, block_length, rng)
+            idx_boot = moving_block_bootstrap_indices(len(values_valid), block_length, rng)
+            yb = values_valid[idx_boot]
+            years_boot = years_valid[idx_boot]
         else:
             yb = iid_bootstrap(values_valid, rng)
+            years_boot = years_valid
         row = {"replicate": rep}
         for tau in focus_quantiles:
-            row[f"slope_{tau:0.2f}"] = fit_quantile_slope(years_valid, yb, tau=tau, max_iter=max_iter)
+            row[f"slope_{tau:0.2f}"] = fit_quantile_slope(years_boot, yb, tau=tau, max_iter=max_iter)
         records.append(row)
 
     boot = pd.DataFrame(records)
