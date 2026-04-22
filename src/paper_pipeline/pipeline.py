@@ -14,11 +14,18 @@ from .advanced_analysis import (
     run_spatial_inference,
 )
 from .clustering import build_feature_table, compare_clusterings, run_clustering
+from .data_quality import run_data_quality_assessment
 from .indices import create_extreme_indices
 from .plotting import (
     plot_data_coverage,
     plot_delta_uncertainty,
     plot_dendrograms,
+    plot_ijoc_station_comparisons,
+    plot_ijoc_main_delta_maps,
+    plot_ijoc_regional_quantile_panels,
+    plot_ijoc_robustness_synthesis,
+    plot_ijoc_split_period_comparison,
+    plot_ijoc_study_area,
     plot_maps,
     plot_paper1_quantile_dendrograms,
     plot_paper2_figure3_maps,
@@ -50,6 +57,10 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     data = pd.read_csv(cfg["paths"]["data_csv"])
     stations = pd.read_csv(cfg["paths"]["station_csv"])
     log_status(f"Loaded input tables: data_rows={len(data)}, stations={stations.shape[0]}")
+
+    log_status("Running data-quality and homogeneity diagnostics...")
+    run_data_quality_assessment(data, cfg, outdir)
+    log_status("Saved data-quality and homogeneity diagnostics.")
 
     log_status("Building annual extreme indices...")
     _, annual = create_extreme_indices(data, cfg)
@@ -127,10 +138,16 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     log_status("Rendering figures...")
     plot_data_coverage(annual, figs_dir, cfg)
     plot_region_quantile_slopes(annual, figs_dir, cfg)
+    plot_ijoc_regional_quantile_panels(annual, figs_dir, cfg)
+    plot_ijoc_study_area(stations, figs_dir, cfg)
     plot_station_heatmap(feature_table, figs_dir, cfg)
     plot_delta_uncertainty(feature_table, figs_dir, cfg)
     plot_dendrograms(feature_table, artifacts, figs_dir, cfg)
     plot_maps(feature_table, stations, cluster_df, figs_dir, cfg)
+    plot_ijoc_main_delta_maps(feature_table, stations, figs_dir, cfg)
+    plot_ijoc_robustness_synthesis(figs_dir, cfg)
+    plot_ijoc_split_period_comparison(annual, figs_dir, cfg)
+    plot_ijoc_station_comparisons(annual, feature_table, figs_dir, cfg)
     plot_station_paper2_figures(annual, figs_dir, cfg)
     plot_paper2_figure3_maps(annual, stations, figs_dir, cfg)
     plot_station_paper1_figure4(boot_long, qr_summary, figs_dir, cfg)

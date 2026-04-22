@@ -17,7 +17,7 @@ from shapely import contains_xy
 from shapely.geometry import Point
 from shapely.ops import polygonize, unary_union as shp_unary_union
 
-from .quantile import fit_ols_line, fit_quantile_line, fit_quantile_slope
+from .quantile import fit_ols_line, fit_quantile_line
 from .math_utils import make_quantile_grid
 
 
@@ -229,6 +229,47 @@ def _style_coeff_axis(ax, idx_cfg: dict, panel_idx: int) -> None:
     ax.spines["right"].set_visible(False)
 
 
+def _draw_quantile_coefficient_panel(ax, coeff_df: pd.DataFrame, ols_fit: dict, idx_cfg: dict, panel_idx: int | None = None) -> None:
+    if coeff_df.empty:
+        return
+
+    shade_df = coeff_df.dropna(subset=["ci_low", "ci_high"])
+    if not shade_df.empty:
+        ax.fill_between(
+            shade_df["tau"].to_numpy(),
+            shade_df["ci_low"].to_numpy(),
+            shade_df["ci_high"].to_numpy(),
+            color="#bdbdbd",
+            alpha=0.45,
+            linewidth=0,
+            zorder=1,
+            label="QR 95% CI",
+        )
+
+    ax.plot(coeff_df["tau"], coeff_df["slope"], color="#1d1d1d", linewidth=0.9, alpha=0.7, zorder=2)
+    ax.scatter(coeff_df["tau"], coeff_df["slope"], s=13, color="#111111", zorder=3, label="QR slope")
+
+    if np.isfinite(float(ols_fit["slope"])):
+        ax.axhline(float(ols_fit["slope"]), color="#c62828", linewidth=2.0, zorder=4, label="LSM mean trend")
+    if np.isfinite(float(ols_fit["ci_low"])):
+        ax.axhline(float(ols_fit["ci_low"]), color="#c62828", linewidth=1.2, linestyle="--", zorder=4, label="LSM 95% CI")
+    if np.isfinite(float(ols_fit["ci_high"])):
+        ax.axhline(float(ols_fit["ci_high"]), color="#c62828", linewidth=1.2, linestyle="--", zorder=4)
+
+    if panel_idx is None:
+        ax.set_xlabel("Quantile, τ")
+        ax.set_ylabel(f"Trend ({idx_cfg['unit']} per decade)")
+        ax.set_xlim(0.05, 0.95)
+        ax.set_xticks([0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95])
+        ax.axhline(0, color="#3a3a3a", linewidth=0.8, linestyle="--", alpha=0.85, zorder=1)
+        ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
+        ax.grid(False, axis="x")
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+    else:
+        _style_coeff_axis(ax, idx_cfg, panel_idx)
+
+
 def _annotate_textbox(ax, text: str) -> None:
     ax.text(
         0.02,
@@ -334,28 +375,7 @@ def plot_station_paper2_figures(annual: pd.DataFrame, outdir: Path, cfg: dict):
             coeff_df = pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
 
             if not coeff_df.empty:
-                shade_df = coeff_df.dropna(subset=["ci_low", "ci_high"])
-                if not shade_df.empty:
-                    ax2.fill_between(
-                        shade_df["tau"].to_numpy(),
-                        shade_df["ci_low"].to_numpy(),
-                        shade_df["ci_high"].to_numpy(),
-                        color="#bdbdbd",
-                        alpha=0.45,
-                        linewidth=0,
-                        zorder=1,
-                        label="QR 95% CI" if i == 0 else None,
-                    )
-                ax2.plot(coeff_df["tau"], coeff_df["slope"], color="#1d1d1d", linewidth=1.2, alpha=0.9, zorder=2)
-                ax2.scatter(coeff_df["tau"], coeff_df["slope"], s=12, color="#111111", zorder=3, label="QR slope" if i == 0 else None)
-
-            if np.isfinite(float(ols_fit["slope"])):
-                ax2.axhline(float(ols_fit["slope"]), color="#c62828", linewidth=2.0, zorder=4, label="LSM mean trend" if i == 0 else None)
-            if np.isfinite(float(ols_fit["ci_low"])) and np.isfinite(float(ols_fit["ci_high"])):
-                ax2.axhline(float(ols_fit["ci_low"]), color="#c62828", linewidth=1.2, linestyle="--", zorder=4, label="LSM 95% CI" if i == 0 else None)
-                ax2.axhline(float(ols_fit["ci_high"]), color="#c62828", linewidth=1.2, linestyle="--", zorder=4)
-
-            _style_coeff_axis(ax2, idx_cfg, i)
+                _draw_quantile_coefficient_panel(ax2, coeff_df, ols_fit, idx_cfg, panel_idx=i)
             _annotate_textbox(
                 ax2,
                 f"LSM slope: {_format_slope(float(ols_fit['slope']))}\n95% CI: [{_format_slope(float(ols_fit['ci_low']))}, {_format_slope(float(ols_fit['ci_high']))}]",
@@ -368,6 +388,243 @@ def plot_station_paper2_figures(annual: pd.DataFrame, outdir: Path, cfg: dict):
         fig2.savefig(fig2_dir / f"{int(station_id)}_{slug}_figure2.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
         plt.close(fig1)
         plt.close(fig2)
+
+
+def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFrame, outdir: Path, cfg: dict):
+    apply_publication_theme()
+    fig_dir = outdir / "ijoc_station_comparisons"
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    qgrid = make_quantile_grid(0.01, 0.99, 0.01)
+    max_iter = int(cfg["quantile_regression"]["max_iter"])
+
+    selected = {
+        "warm_days": [
+            "Esfahan",                  # cluster 1, strongest upper-tail amplification
+            "Bushehr (Airport)",        # cluster 2, negative Delta1
+            "Khoy",                     # cluster 3, high lower-tail slope, negative Delta1
+            "Zanjan",                   # cluster 4, strong upper-tail amplification
+        ],
+        "warm_nights": [
+            "Ramsar",                   # cluster 1, high baseline but negative Delta1
+            "Tabriz",                   # cluster 2, moderate positive amplification
+            "Tehran (Mehrabad Airport)",# cluster 3, strong amplification
+            "Shiraz",                   # cluster 4, exceptional upper-tail amplification
+        ],
+        "cool_days": [
+            "Sanandaj",                 # dominant cluster 1, strong contraction
+            "Zabol",                    # cluster 2, positive q0.05 and negative q0.95
+            "Orumiyeh",                 # cluster 3, extreme q0.95 contraction
+            "Torbat-E Heydariyeh",      # cluster 4, anomalous positive median slope
+        ],
+        "cool_nights": [
+            "Khorramabad",              # cluster 1, most extreme negative Delta1
+            "Qazvin",                   # cluster 2, strong negative contraction
+            "Gorgan",                   # cluster 3, positive low/median slopes
+            "Shahrekord",               # cluster 4, positive tail amplification
+        ],
+    }
+    focus_quantiles = [0.05, 0.50, 0.95]
+    cluster_colors = {1: "#1b5e20", 2: "#1565c0", 3: "#ef6c00", 4: "#8e24aa"}
+    station_short = {
+        "Tehran (Mehrabad Airport)": "Tehran",
+        "Bushehr (Airport)": "Bushehr",
+        "Torbat-E Heydariyeh": "Torbat-e H.",
+    }
+
+    def build_curve_rows(idx_name: str):
+        rows = []
+        for station_name in selected.get(idx_name, []):
+            sdf = annual.loc[annual["station_name"] == station_name].sort_values("year").copy()
+            if sdf.empty:
+                continue
+            values = sdf[idx_name].to_numpy(dtype=float)
+            years = sdf["year"].to_numpy(dtype=float)
+            coeff_rows = []
+            for tau in qgrid:
+                qr_fit = fit_quantile_line(years, values, tau=float(tau), max_iter=max_iter)
+                coeff_rows.append({"tau": float(tau), "slope": float(qr_fit["slope"])})
+            coeff_df = pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
+            if coeff_df.empty:
+                continue
+            meta = feature_table.loc[
+                (feature_table["index_name"] == idx_name) & (feature_table["station_name"] == station_name)
+            ].iloc[0]
+            cluster = int(meta["cluster"]) if pd.notna(meta["cluster"]) else -1
+            rows.append({
+                "station_name": station_name,
+                "label": station_short.get(station_name, station_name),
+                "cluster": cluster,
+                "color": cluster_colors.get(cluster, "#333333"),
+                "coeff_df": coeff_df,
+                "meta": meta,
+            })
+        return rows
+
+    for idx_cfg in cfg["indices"]:
+        idx_name = idx_cfg["name"]
+        curve_rows = build_curve_rows(idx_name)
+        if not curve_rows:
+            continue
+
+        fig, ax = plt.subplots(figsize=(9.5, 6.2))
+        legend_handles = []
+        legend_labels = []
+
+        for row in curve_rows:
+            coeff_df = row["coeff_df"]
+            meta = row["meta"]
+            cluster = row["cluster"]
+            color = row["color"]
+            line, = ax.plot(
+                coeff_df["tau"],
+                coeff_df["slope"],
+                color=color,
+                linewidth=2.3,
+                alpha=0.92,
+            )
+            for fq in focus_quantiles:
+                point = coeff_df.loc[np.isclose(coeff_df["tau"], fq)]
+                if not point.empty:
+                    ax.scatter(
+                        point["tau"],
+                        point["slope"],
+                        s=34,
+                        color=color,
+                        edgecolor="white",
+                        linewidth=0.4,
+                        zorder=4,
+                    )
+
+            legend_handles.append(line)
+            legend_labels.append(
+                f"{row['label']} (C{cluster}; q0.05={meta['slope_0.05']:+.2f}, q0.50={meta['slope_0.50']:+.2f}, q0.95={meta['slope_0.95']:+.2f})"
+            )
+
+        ax.axhline(0, color="#444444", linewidth=0.8, linestyle="--", alpha=0.9)
+        ax.set_xlim(0.01, 0.99)
+        ax.set_xticks([0.05, 0.25, 0.50, 0.75, 0.95])
+        ax.set_xlabel("Quantile, τ")
+        ax.set_ylabel(f"Trend ({idx_cfg['unit']} per decade)")
+        ax.set_title(f"Representative station comparison - {idx_cfg['title']}")
+        ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
+        ax.grid(False, axis="x")
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.legend(legend_handles, legend_labels, loc="upper left", fontsize=8.5, framealpha=0.95)
+        _annotate_textbox_bottom_left(
+            ax,
+            "Representative stations were selected to contrast cluster membership\n"
+            "and q0.05/q0.50/q0.95 behaviour.",
+        )
+        fig.tight_layout()
+        fig.savefig(fig_dir / f"station_comparison_{idx_name}.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+        plt.close(fig)
+
+    # Main multi-panel figure for the manuscript
+    idx_order = [idx["name"] for idx in cfg["indices"]]
+    idx_cfg_map = {idx["name"]: idx for idx in cfg["indices"]}
+    fig, axes = plt.subplots(2, 2, figsize=(13.8, 10.4), sharex=True, constrained_layout=True)
+    fig.suptitle(
+        "Representative station comparisons across cluster-defined quantile structures",
+        fontsize=16,
+        fontweight="semibold",
+        y=1.01,
+    )
+    focus_quantiles = [0.05, 0.50, 0.95]
+
+    for panel_idx, idx_name in enumerate(idx_order):
+        ax = axes.flat[panel_idx]
+        idx_cfg = idx_cfg_map[idx_name]
+        curve_rows = build_curve_rows(idx_name)
+        if not curve_rows:
+            continue
+
+        handles = []
+        labels = []
+        for row in curve_rows:
+            coeff_df = row["coeff_df"]
+            meta = row["meta"]
+            color = row["color"]
+            label = row["label"]
+            line, = ax.plot(
+                coeff_df["tau"],
+                coeff_df["slope"],
+                color=color,
+                linewidth=2.15,
+                alpha=0.95,
+                solid_capstyle="round",
+                zorder=2,
+            )
+            handles.append(line)
+            labels.append(f"{label} (C{row['cluster']})")
+
+            for fq, marker in zip(focus_quantiles, ["o", "s", "D"]):
+                point = coeff_df.loc[np.isclose(coeff_df["tau"], fq)]
+                if not point.empty:
+                    ax.scatter(
+                        point["tau"],
+                        point["slope"],
+                        s=44 if fq == 0.50 else 38,
+                        color=color,
+                        marker=marker,
+                        edgecolor="white",
+                        linewidth=0.55,
+                        zorder=4,
+                    )
+
+            end_point = coeff_df.iloc[-1]
+            ax.text(
+                min(0.985, float(end_point["tau"]) + 0.006),
+                float(end_point["slope"]),
+                label,
+                color=color,
+                fontsize=8.6,
+                va="center",
+                ha="left",
+                clip_on=True,
+            )
+
+        ax.set_title(f"{_panel_label(panel_idx)} {idx_cfg['title']}", loc="left")
+        ax.axhline(0, color="#5b5b5b", linewidth=0.85, linestyle=(0, (3, 2)), alpha=0.95, zorder=1)
+        ax.set_xlim(0.01, 0.99)
+        ax.set_xticks([0.05, 0.25, 0.50, 0.75, 0.95])
+        ax.grid(True, axis="y", alpha=0.18, linewidth=0.6)
+        ax.grid(False, axis="x")
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["left"].set_color("#888888")
+        ax.spines["bottom"].set_color("#888888")
+        if panel_idx % 2 == 0:
+            ax.set_ylabel(f"Trend ({idx_cfg['unit']} per decade)")
+        if panel_idx >= 2:
+            ax.set_xlabel("Quantile, τ")
+
+        summary_lines = [
+            f"{row['label']}: {row['meta']['slope_0.05']:+.1f} / {row['meta']['slope_0.50']:+.1f} / {row['meta']['slope_0.95']:+.1f}"
+            for row in curve_rows
+        ]
+        ax.text(
+            0.02,
+            0.03,
+            "q0.05 / q0.50 / q0.95\n" + "\n".join(summary_lines),
+            transform=ax.transAxes,
+            va="bottom",
+            ha="left",
+            fontsize=7.7,
+            bbox={"boxstyle": "round,pad=0.32", "facecolor": "white", "edgecolor": "#d0d0d0", "alpha": 0.94},
+        )
+
+    fig.text(
+        0.5,
+        -0.01,
+        "Markers denote focal quantiles: circle = q0.05, square = q0.50, diamond = q0.95. "
+        "Stations were selected to represent contrasting cluster memberships and quantile-slope geometries.",
+        ha="center",
+        va="top",
+        fontsize=9,
+    )
+    fig.savefig(fig_dir / f"main_figure_representative_stations.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+    plt.close(fig)
 
 
 def plot_paper2_figure3_maps(annual: pd.DataFrame, stations: pd.DataFrame, outdir: Path, cfg: dict, taus: List[float] | None = None):
@@ -770,25 +1027,76 @@ def plot_region_quantile_slopes(annual: pd.DataFrame, outdir: Path, cfg: dict):
     apply_publication_theme()
     years = np.sort(annual["year"].unique())
     mean_df = annual.groupby("year", as_index=False)[[idx["name"] for idx in cfg["indices"]]].mean()
-    qgrid = make_quantile_grid(**cfg["quantile_regression"]["full_quantiles"])
-    focus = [float(x) for x in cfg["quantile_regression"]["focus_quantiles"]]
+    max_iter = int(cfg["quantile_regression"]["max_iter"])
+    qgrid = make_quantile_grid(0.01, 0.99, 0.01)
 
     for idx_cfg in cfg["indices"]:
         idx_name = idx_cfg["name"]
         vals = mean_df[idx_name].to_numpy(dtype=float)
-        slopes = [fit_quantile_slope(years, vals, tau=q, max_iter=int(cfg["quantile_regression"]["max_iter"])) for q in qgrid]
+
+        coeff_rows = []
+        for tau in qgrid:
+            qr_fit = fit_quantile_line(years, vals, tau=float(tau), max_iter=max_iter)
+            coeff_rows.append({
+                "tau": float(tau),
+                "slope": float(qr_fit["slope"]),
+                "ci_low": float(qr_fit["ci_low"]),
+                "ci_high": float(qr_fit["ci_high"]),
+            })
+        coeff_df = pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
+        ols_fit = fit_ols_line(years, vals)
+
         fig, ax = plt.subplots(figsize=(8, 5))
-        ax.plot(qgrid, slopes, color="#1f4e79", linewidth=1.6)
-        for fq in focus:
-            fq_slope = fit_quantile_slope(years, vals, tau=fq, max_iter=int(cfg["quantile_regression"]["max_iter"]))
-            ax.scatter([fq], [fq_slope], s=35, color="#b22222", zorder=3)
-        ax.axhline(0, color="black", linewidth=0.9)
-        ax.set_xlabel("Quantile τ")
-        ax.set_ylabel(f"Slope ({idx_cfg['unit']} / decade)")
-        ax.set_title(f"Regional quantile-regression slope profile - {idx_cfg['title']}")
+        _draw_quantile_coefficient_panel(ax, coeff_df, ols_fit, idx_cfg)
+        ax.set_title(f"Regional quantile regression coefficients - {idx_cfg['title']}")
+        _annotate_textbox_bottom_left(
+            ax,
+            f"LSM slope: {_format_slope(float(ols_fit['slope']))}\n95% CI: [{_format_slope(float(ols_fit['ci_low']))}, {_format_slope(float(ols_fit['ci_high']))}]",
+        )
+        ax.legend(loc="upper right")
         fig.tight_layout()
         fig.savefig(outdir / f"region_quantile_slopes_{idx_name}.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
         plt.close(fig)
+
+
+def plot_ijoc_regional_quantile_panels(annual: pd.DataFrame, outdir: Path, cfg: dict):
+    apply_publication_theme()
+    years = np.sort(annual["year"].unique())
+    mean_df = annual.groupby("year", as_index=False)[[idx["name"] for idx in cfg["indices"]]].mean()
+    max_iter = int(cfg["quantile_regression"]["max_iter"])
+    qgrid = make_quantile_grid(0.01, 0.99, 0.01)
+    fig, axes = plt.subplots(2, 2, figsize=(13.4, 10.2), constrained_layout=True)
+
+    for i, idx_cfg in enumerate(cfg["indices"]):
+        idx_name = idx_cfg["name"]
+        vals = mean_df[idx_name].to_numpy(dtype=float)
+        coeff_rows = []
+        for tau in qgrid:
+            qr_fit = fit_quantile_line(years, vals, tau=float(tau), max_iter=max_iter)
+            coeff_rows.append({
+                "tau": float(tau),
+                "slope": float(qr_fit["slope"]),
+                "ci_low": float(qr_fit["ci_low"]),
+                "ci_high": float(qr_fit["ci_high"]),
+            })
+        coeff_df = pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
+        ols_fit = fit_ols_line(years, vals)
+        ax = axes.flat[i]
+        _draw_quantile_coefficient_panel(ax, coeff_df, ols_fit, idx_cfg, panel_idx=i)
+        ax.set_xlim(0.05, 0.95)
+        ax.set_xticks([0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95])
+        ax.text(
+            0.02,
+            0.03,
+            f"OLS: {_format_slope(float(ols_fit['slope']))}",
+            transform=ax.transAxes,
+            fontsize=8.3,
+            bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#d0d0d0", "alpha": 0.94},
+        )
+        if i == 0:
+            ax.legend(loc="upper left")
+    fig.savefig(outdir / f"ijoc_regional_quantile_panels.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+    plt.close(fig)
 
 
 def plot_dendrograms(features: pd.DataFrame, artifacts: Dict[str, np.ndarray], outdir: Path, cfg: dict):
@@ -836,6 +1144,214 @@ def _scatter_station_map(df: pd.DataFrame, value_col: str, title: str, outpath: 
     fig.colorbar(scatter, ax=ax, shrink=0.82, label=value_col)
     fig.tight_layout()
     fig.savefig(outpath, dpi=int(cfg["plots"]["dpi"]))
+    plt.close(fig)
+
+
+def plot_ijoc_study_area(stations: pd.DataFrame, outdir: Path, cfg: dict):
+    apply_publication_theme()
+    boundary_geom = _load_boundary_geometry(_get_boundary_path_from_cfg(cfg))
+    fig, ax = plt.subplots(figsize=(7.6, 6.4))
+    _draw_boundary(ax, boundary_geom, linewidth=1.0, zorder=2)
+    scatter = ax.scatter(
+        stations["longitude"],
+        stations["latitude"],
+        c=stations["elevation"],
+        s=72,
+        cmap="terrain",
+        edgecolor="black",
+        linewidth=0.35,
+        zorder=3,
+    )
+    xmin, xmax, ymin, ymax = _get_plot_extent(stations, boundary_geom=boundary_geom, pad_deg=0.25)
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+    ax.set_aspect("equal", adjustable="box")
+    _format_geo_axis(ax, show_x=True, show_y=True)
+    ax.set_facecolor("#f6f6f6")
+    ax.grid(False)
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_title("Study area and meteorological station network", loc="left")
+    cbar = fig.colorbar(scatter, ax=ax, shrink=0.84)
+    cbar.set_label("Elevation (m)")
+    ax.text(
+        0.02,
+        0.03,
+        f"{len(stations)} stations | 1961-2024",
+        transform=ax.transAxes,
+        fontsize=9,
+        bbox={"boxstyle": "round,pad=0.25", "facecolor": "white", "edgecolor": "#d0d0d0", "alpha": 0.96},
+    )
+    fig.tight_layout()
+    fig.savefig(outdir / f"ijoc_study_area.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+    plt.close(fig)
+
+
+def plot_ijoc_main_delta_maps(feature_table: pd.DataFrame, stations: pd.DataFrame, outdir: Path, cfg: dict):
+    apply_publication_theme()
+    boundary_geom = _load_boundary_geometry(_get_boundary_path_from_cfg(cfg))
+    merged = feature_table.merge(stations, on=["station_id", "station_name"], how="left")
+    vals = pd.to_numeric(merged["Delta1"], errors="coerce")
+    vmax = max(4.0, float(np.nanmax(np.abs(vals)))) if np.isfinite(vals).any() else 4.0
+    fig, axes = plt.subplots(2, 2, figsize=(12.6, 10.2), constrained_layout=True)
+    for i, idx_cfg in enumerate(cfg["indices"]):
+        ax = axes.flat[i]
+        sdf = merged.loc[merged["index_name"] == idx_cfg["name"]].copy()
+        _draw_boundary(ax, boundary_geom, linewidth=0.95, zorder=2)
+        scatter = ax.scatter(
+            sdf["longitude"],
+            sdf["latitude"],
+            c=sdf["Delta1"],
+            s=84,
+            cmap="RdBu_r",
+            vmin=-vmax,
+            vmax=vmax,
+            edgecolor="black",
+            linewidth=0.35,
+            zorder=3,
+        )
+        xmin, xmax, ymin, ymax = _get_plot_extent(sdf, boundary_geom=boundary_geom, pad_deg=0.15)
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+        ax.set_aspect("equal", adjustable="box")
+        _format_geo_axis(ax, show_x=(i >= 2), show_y=(i % 2 == 0))
+        ax.set_facecolor("#f7f7f7")
+        ax.grid(False)
+        ax.set_title(f"{_panel_label(i)} {idx_cfg['title']}", loc="left")
+        if i >= 2:
+            ax.set_xlabel("Longitude")
+        if i % 2 == 0:
+            ax.set_ylabel("Latitude")
+    cbar = fig.colorbar(scatter, ax=axes.ravel().tolist(), shrink=0.86, pad=0.02)
+    cbar.set_label("Delta1 = slope(q0.95) - slope(q0.05)")
+    fig.savefig(outdir / f"ijoc_main_delta1_maps.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+    plt.close(fig)
+
+
+def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
+    apply_publication_theme()
+    tables_dir = outdir.parent / "tables"
+    ref = pd.read_csv(tables_dir / "reference_period_sensitivity_summary.csv")
+    boot = pd.read_csv(tables_dir / "bootstrap_method_sensitivity_summary.csv")
+    interp = pd.read_csv(tables_dir / "interpolation_method_sensitivity_summary.csv")
+    cluster = pd.read_csv(tables_dir / "cluster_robustness_summary.csv")
+
+    ref = ref[ref["alternative"] == "all_available"].copy()
+    ref["metric"] = ref["metric"].replace({
+        "slope_0.05": "q0.05",
+        "slope_0.50": "q0.50",
+        "slope_0.95": "q0.95",
+        "Delta1": "Delta1",
+    })
+    ref_mat = ref.pivot(index="index_name", columns="metric", values="mean_abs_diff").reindex(
+        index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
+        columns=["q0.05", "q0.50", "q0.95", "Delta1"],
+    )
+
+    boot = boot[boot["alternative"] == "moving_block"].copy()
+    boot["metric"] = boot["metric"].replace({
+        "boot_mean_0.05": "q0.05 mean",
+        "boot_mean_0.95": "q0.95 mean",
+        "boot_ci_low_0.05": "q0.05 CI low",
+        "boot_ci_low_0.95": "q0.95 CI low",
+        "boot_ci_high_0.05": "q0.05 CI high",
+        "boot_ci_high_0.95": "q0.95 CI high",
+    })
+    boot_mat = boot.pivot(index="index_name", columns="metric", values="mean_abs_diff").reindex(
+        index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
+        columns=["q0.05 mean", "q0.95 mean", "q0.05 CI low", "q0.95 CI low"],
+    )
+
+    interp = interp[(interp["method_left"] == "linear_rbf") & (interp["method_right"] == "linear")].copy()
+    interp["tau_lab"] = interp["tau"].map({0.05: "q0.05", 0.95: "q0.95"})
+    interp_mat = interp.pivot(index="index_name", columns="tau_lab", values="surface_correlation").reindex(
+        index=["warm_days", "warm_nights", "cool_days", "cool_nights"],
+        columns=["q0.05", "q0.95"],
+    )
+
+    fig, axes = plt.subplots(2, 2, figsize=(13.2, 9.6), constrained_layout=True)
+
+    def draw_heatmap(ax, data, title, cmap, vmin=None, vmax=None, fmt="{:.2f}"):
+        im = ax.imshow(data.to_numpy(dtype=float), aspect="auto", cmap=cmap, vmin=vmin, vmax=vmax)
+        ax.set_xticks(range(data.shape[1]))
+        ax.set_xticklabels(data.columns.tolist(), rotation=0)
+        ax.set_yticks(range(data.shape[0]))
+        ax.set_yticklabels([x.replace("_", " ").title() for x in data.index.tolist()])
+        ax.set_title(title, loc="left")
+        for r in range(data.shape[0]):
+            for c in range(data.shape[1]):
+                value = data.iloc[r, c]
+                if pd.notna(value):
+                    ax.text(c, r, fmt.format(float(value)), ha="center", va="center", fontsize=8.5)
+        return im
+
+    im0 = draw_heatmap(axes[0, 0], ref_mat, "(a) Reference-period sensitivity\nMean absolute difference", "YlOrBr")
+    im1 = draw_heatmap(axes[0, 1], boot_mat, "(b) Bootstrap-method sensitivity\nMean absolute difference", "YlOrRd")
+    im2 = draw_heatmap(axes[1, 0], interp_mat, "(c) Interpolation agreement\nSurface correlation", "GnBu", vmin=0.5, vmax=1.0)
+
+    ax = axes[1, 1]
+    cluster = cluster.set_index("index_name").reindex(["warm_days", "warm_nights", "cool_days", "cool_nights"])
+    bars = ax.bar(
+        range(len(cluster)),
+        cluster["adjusted_rand_index"],
+        color=["#b22222", "#2e7d32", "#1f77b4", "#9467bd"],
+        edgecolor="black",
+        linewidth=0.35,
+    )
+    ax.set_xticks(range(len(cluster)))
+    ax.set_xticklabels([x.replace("_", " ").title() for x in cluster.index.tolist()], rotation=15, ha="right")
+    ax.set_ylim(0, 1.05)
+    ax.set_ylabel("Adjusted Rand index")
+    ax.set_title("(d) Clustering robustness", loc="left")
+    ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
+    ax.grid(False, axis="x")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    for bar, value in zip(bars, cluster["adjusted_rand_index"]):
+        ax.text(bar.get_x() + bar.get_width()/2, value + 0.03, f"{value:.2f}", ha="center", va="bottom", fontsize=8.5)
+
+    for ax_, im in zip([axes[0, 0], axes[0, 1], axes[1, 0]], [im0, im1, im2]):
+        cbar = fig.colorbar(im, ax=ax_, shrink=0.82)
+        cbar.ax.tick_params(labelsize=8)
+
+    fig.savefig(outdir / f"ijoc_robustness_synthesis.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+    plt.close(fig)
+
+
+def plot_ijoc_split_period_comparison(annual: pd.DataFrame, outdir: Path, cfg: dict):
+    apply_publication_theme()
+    periods = [("1961-1990", 1961, 1990), ("1991-2024", 1991, 2024)]
+    fig, axes = plt.subplots(2, 2, figsize=(12.8, 9.6), constrained_layout=True)
+    for i, idx_cfg in enumerate(cfg["indices"]):
+        ax = axes.flat[i]
+        vals_by_period = []
+        for label, y0, y1 in periods:
+            sub = annual.loc[annual["year"].between(y0, y1)]
+            mean_df = sub.groupby("year", as_index=False)[idx_cfg["name"]].mean()
+            years = mean_df["year"].to_numpy(dtype=float)
+            values = mean_df[idx_cfg["name"]].to_numpy(dtype=float)
+            ols = fit_ols_line(years, values)
+            q05 = fit_quantile_line(years, values, tau=0.05, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+            q50 = fit_quantile_line(years, values, tau=0.50, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+            q95 = fit_quantile_line(years, values, tau=0.95, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+            vals_by_period.append([float(q05["slope"]), float(q50["slope"]), float(q95["slope"]), float(ols["slope"])])
+        vals = np.array(vals_by_period, dtype=float)
+        x = np.arange(vals.shape[1])
+        width = 0.34
+        ax.bar(x - width/2, vals[0], width=width, color="#b0bec5", edgecolor="black", linewidth=0.3, label="1961-1990")
+        ax.bar(x + width/2, vals[1], width=width, color="#ef6c00", edgecolor="black", linewidth=0.3, label="1991-2024")
+        ax.axhline(0, color="#555555", linewidth=0.8, linestyle="--")
+        ax.set_xticks(x)
+        ax.set_xticklabels(["q0.05", "q0.50", "q0.95", "OLS"])
+        ax.set_title(f"{_panel_label(i)} {idx_cfg['title']}", loc="left")
+        ax.set_ylabel(f"Trend ({idx_cfg['unit']} per decade)")
+        ax.grid(True, axis="y", alpha=0.22, linewidth=0.6)
+        ax.grid(False, axis="x")
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        if i == 0:
+            ax.legend(loc="upper left")
+    fig.savefig(outdir / f"ijoc_split_period_comparison.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
     plt.close(fig)
 
 
