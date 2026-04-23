@@ -13,6 +13,20 @@ from .advanced_analysis import (
     run_regionalization_analysis,
     run_spatial_inference,
 )
+from .config_utils import (
+    boot_ci_high_col,
+    boot_ci_low_col,
+    boot_mean_col,
+    boot_sd_col,
+    ci_high_col,
+    ci_low_col,
+    get_delta_definitions,
+    get_focus_quantiles,
+    get_primary_delta,
+    get_sensitivity_quantiles,
+    slope_col,
+    validate_analysis_config,
+)
 from .bootstrap_depth_sensitivity import run_bootstrap_depth_sensitivity
 from .clustering import build_feature_table, compare_clusterings, run_clustering, screen_clustering_features
 from .clustering_sensitivity import run_alternative_clustering_sensitivity
@@ -44,6 +58,7 @@ from .year_config import filter_to_analysis_years, format_year_range_label, get_
 
 def run_pipeline(config_path: str = "config.yaml") -> Path:
     cfg = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+    validate_analysis_config(cfg)
     outdir = Path(cfg["paths"]["output_dir"])
     tables_dir = outdir / "tables"
     figs_dir = outdir / "figures"
@@ -96,7 +111,7 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     qr_summary = add_sensitivity_check_columns(qr_summary, cfg)
     log_status("Quantile regression stage completed.")
 
-    feature_table = build_feature_table(qr_summary)
+    feature_table = build_feature_table(qr_summary, cfg)
     baseline_screening_df = screen_clustering_features(
         feature_table,
         cfg,
@@ -151,21 +166,36 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     run_alternative_clustering_sensitivity(feature_table, cfg, outdir)
     log_status("Saved alternative-clustering sensitivity diagnostics.")
 
-    focus_cols = [
-        "index_name", "station_id", "station_name", "n_years",
-        "insufficient_years_for_qr",
-        "slope_0.05", "ci_low_0.05", "ci_high_0.05",
-        "slope_0.50", "ci_low_0.50", "ci_high_0.50",
-        "slope_0.95", "ci_low_0.95", "ci_high_0.95",
-        "Delta1", "Delta2", "Delta3",
-        "boot_mean_0.05", "boot_sd_0.05", "boot_ci_low_0.05", "boot_ci_high_0.05",
-        "boot_mean_0.50", "boot_sd_0.50", "boot_ci_low_0.50", "boot_ci_high_0.50",
-        "boot_mean_0.95", "boot_sd_0.95", "boot_ci_low_0.95", "boot_ci_high_0.95",
-        "analytic_sig_0.05", "bootstrap_sig_0.05", "sig_agree_0.05", "sensitivity_status_0.05",
-        "analytic_sig_0.95", "bootstrap_sig_0.95", "sig_agree_0.95", "sensitivity_status_0.95",
-        "boot_mean_Delta1", "boot_sd_Delta1", "boot_ci_low_Delta1", "boot_ci_high_Delta1", "cluster",
+    focus_cols = ["index_name", "station_id", "station_name", "n_years", "insufficient_years_for_qr"]
+    for tau in get_focus_quantiles(cfg):
+        focus_cols.extend([slope_col(tau), ci_low_col(tau), ci_high_col(tau)])
+    for delta_name in get_delta_definitions(cfg):
+        focus_cols.append(delta_name)
+    for tau in get_focus_quantiles(cfg):
+        suffix = f"{tau:0.2f}"
+        focus_cols.extend([
+            boot_mean_col(suffix),
+            boot_sd_col(suffix),
+            boot_ci_low_col(suffix),
+            boot_ci_high_col(suffix),
+        ])
+    for tau in get_sensitivity_quantiles(cfg):
+        suffix = f"{tau:0.2f}"
+        focus_cols.extend([
+            f"analytic_sig_{suffix}",
+            f"bootstrap_sig_{suffix}",
+            f"sig_agree_{suffix}",
+            f"sensitivity_status_{suffix}",
+        ])
+    primary_delta = get_primary_delta(cfg)
+    focus_cols.extend([
+        boot_mean_col(primary_delta),
+        boot_sd_col(primary_delta),
+        boot_ci_low_col(primary_delta),
+        boot_ci_high_col(primary_delta),
+        "cluster",
         "cluster_reduced_features",
-    ]
+    ])
     feature_table[[c for c in focus_cols if c in feature_table.columns]].to_csv(tables_dir / "publication_summary_table.csv", index=False)
     log_status("Saved publication summary table.")
 

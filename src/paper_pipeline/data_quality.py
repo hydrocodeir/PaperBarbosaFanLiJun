@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from .config_utils import get_default_figure_dpi, get_homogeneity_alpha, get_homogeneity_permutations, get_plot_dpi
+
 
 def _pettitt_test(x: np.ndarray) -> tuple[float, float, int | None]:
     x = np.asarray(x, dtype=float)
@@ -152,7 +154,9 @@ def run_data_quality_assessment(
         )
     )
     annual["coverage_pct"] = annual["valid_days"] / 365.0 * 100.0
-    annual = annual.loc[annual["coverage_pct"] >= 80.0].copy()
+    annual = annual.loc[annual["coverage_pct"] >= float(cfg["index_construction"]["annual_min_valid_coverage_pct"])].copy()
+    homogeneity_alpha = get_homogeneity_alpha(cfg)
+    homogeneity_permutations = get_homogeneity_permutations(cfg)
 
     homogeneity_rows = []
     for (sid, sname), g in annual.groupby([station_id_col, station_name_col]):
@@ -168,13 +172,13 @@ def run_data_quality_assessment(
         pettitt_stat, pettitt_p, pettitt_idx = _pettitt_test(series)
         snht_stat, snht_idx = _snht_test(series)
         buishand_stat, buishand_idx = _buishand_range_test(series)
-        snht_p = _permutation_pvalue(series, _snht_test)
-        buishand_p = _permutation_pvalue(series, _buishand_range_test)
+        snht_p = _permutation_pvalue(series, _snht_test, n_perm=homogeneity_permutations)
+        buishand_p = _permutation_pvalue(series, _buishand_range_test, n_perm=homogeneity_permutations)
         pettitt_dt_stat, pettitt_dt_p, pettitt_dt_idx = _pettitt_test(detrended)
         snht_dt_stat, snht_dt_idx = _snht_test(detrended)
         buishand_dt_stat, buishand_dt_idx = _buishand_range_test(detrended)
-        snht_dt_p = _permutation_pvalue(detrended, _snht_test)
-        buishand_dt_p = _permutation_pvalue(detrended, _buishand_range_test)
+        snht_dt_p = _permutation_pvalue(detrended, _snht_test, n_perm=homogeneity_permutations)
+        buishand_dt_p = _permutation_pvalue(detrended, _buishand_range_test, n_perm=homogeneity_permutations)
         homogeneity_rows.append(
             {
                 station_id_col: sid,
@@ -200,15 +204,15 @@ def run_data_quality_assessment(
                 "buishand_detrended_stat": buishand_dt_stat,
                 "buishand_detrended_pvalue": buishand_dt_p,
                 "buishand_detrended_change_year": int(years[buishand_dt_idx]) if buishand_dt_idx is not None else np.nan,
-                "any_homogeneity_flag_p_lt_0_05": bool(
-                    (np.isfinite(pettitt_p) and pettitt_p < 0.05)
-                    or (np.isfinite(snht_p) and snht_p < 0.05)
-                    or (np.isfinite(buishand_p) and buishand_p < 0.05)
+                "any_homogeneity_flag_p_lt_alpha": bool(
+                    (np.isfinite(pettitt_p) and pettitt_p < homogeneity_alpha)
+                    or (np.isfinite(snht_p) and snht_p < homogeneity_alpha)
+                    or (np.isfinite(buishand_p) and buishand_p < homogeneity_alpha)
                 ),
-                "any_detrended_homogeneity_flag_p_lt_0_05": bool(
-                    (np.isfinite(pettitt_dt_p) and pettitt_dt_p < 0.05)
-                    or (np.isfinite(snht_dt_p) and snht_dt_p < 0.05)
-                    or (np.isfinite(buishand_dt_p) and buishand_dt_p < 0.05)
+                "any_detrended_homogeneity_flag_p_lt_alpha": bool(
+                    (np.isfinite(pettitt_dt_p) and pettitt_dt_p < homogeneity_alpha)
+                    or (np.isfinite(snht_dt_p) and snht_dt_p < homogeneity_alpha)
+                    or (np.isfinite(buishand_dt_p) and buishand_dt_p < homogeneity_alpha)
                 ),
             }
         )
@@ -224,8 +228,8 @@ def run_data_quality_assessment(
                 "stations_with_duplicate_dates",
                 "stations_with_tmin_gt_tmax",
                 "stations_with_tmean_outside_range",
-                "stations_flagged_by_any_raw_homogeneity_test_p_lt_0_05",
-                "stations_flagged_by_any_detrended_homogeneity_test_p_lt_0_05",
+                "stations_flagged_by_any_raw_homogeneity_test_p_lt_alpha",
+                "stations_flagged_by_any_detrended_homogeneity_test_p_lt_alpha",
             ],
             "value": [
                 int(station_qc.shape[0]),
@@ -235,8 +239,8 @@ def run_data_quality_assessment(
                 int((station_qc["duplicate_dates"] > 0).sum()),
                 int((station_qc["inconsistent_tmin_gt_tmax"] > 0).sum()),
                 int((station_qc["inconsistent_tmean_outside_range"] > 0).sum()),
-                int(homogeneity["any_homogeneity_flag_p_lt_0_05"].sum()),
-                int(homogeneity["any_detrended_homogeneity_flag_p_lt_0_05"].sum()),
+                int(homogeneity["any_homogeneity_flag_p_lt_alpha"].sum()),
+                int(homogeneity["any_detrended_homogeneity_flag_p_lt_alpha"].sum()),
             ],
         }
     )
@@ -245,7 +249,7 @@ def run_data_quality_assessment(
     homogeneity.to_csv(tables_dir / "data_homogeneity_tests_station_summary.csv", index=False)
     summary.to_csv(tables_dir / "data_quality_homogeneity_overview.csv", index=False)
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5), dpi=300)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5), dpi=get_default_figure_dpi(cfg))
     fig.patch.set_facecolor("white")
 
     completeness = station_qc[["tmin_completeness_pct", "tmax_completeness_pct", "tmean_completeness_pct"]]
@@ -264,10 +268,10 @@ def run_data_quality_assessment(
     axes[0].grid(axis="y", alpha=0.25)
 
     test_counts = [
-        int((homogeneity["pettitt_detrended_pvalue"] < 0.05).sum()),
-        int((homogeneity["snht_detrended_pvalue"] < 0.05).sum()),
-        int((homogeneity["buishand_detrended_pvalue"] < 0.05).sum()),
-        int(homogeneity["any_detrended_homogeneity_flag_p_lt_0_05"].sum()),
+        int((homogeneity["pettitt_detrended_pvalue"] < homogeneity_alpha).sum()),
+        int((homogeneity["snht_detrended_pvalue"] < homogeneity_alpha).sum()),
+        int((homogeneity["buishand_detrended_pvalue"] < homogeneity_alpha).sum()),
+        int(homogeneity["any_detrended_homogeneity_flag_p_lt_alpha"].sum()),
     ]
     axes[1].bar(
         ["Pettitt", "SNHT", "Buishand", "Any"],
@@ -275,7 +279,7 @@ def run_data_quality_assessment(
         color=["#7aa6d1", "#97c79c", "#f0b775", "#d98f8f"],
         edgecolor="#44546a",
     )
-    axes[1].set_ylabel("Stations flagged (p < 0.05)")
+    axes[1].set_ylabel(f"Stations flagged (p < {homogeneity_alpha:.2f})")
     axes[1].set_title("(b) Detrended homogeneity-test summary")
     axes[1].grid(axis="y", alpha=0.25)
 
@@ -290,7 +294,7 @@ def run_data_quality_assessment(
         color="#4a5568",
     )
     fig.tight_layout(rect=[0, 0.04, 1, 0.95])
-    fig.savefig(figs_dir / "ijoc_data_quality_homogeneity.png", bbox_inches="tight")
+    fig.savefig(figs_dir / "ijoc_data_quality_homogeneity.png", dpi=get_plot_dpi(cfg), bbox_inches="tight")
     plt.close(fig)
 
     return {

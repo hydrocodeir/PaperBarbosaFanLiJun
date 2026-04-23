@@ -8,9 +8,21 @@ import pandas as pd
 import statsmodels.api as sm
 from statsmodels.tools.sm_exceptions import IterationLimitWarning
 
+from .config_utils import (
+    boot_ci_high_col,
+    boot_ci_low_col,
+    ci_high_col,
+    ci_low_col,
+    compute_defined_deltas,
+    format_tau_suffix,
+    get_focus_quantiles,
+    get_full_quantiles,
+    get_sensitivity_quantiles,
+    get_time_scale_years,
+    slope_col,
+)
 from .math_utils import (
     iid_bootstrap,
-    make_quantile_grid,
     maximum_entropy_bootstrap,
     moving_block_bootstrap_indices,
     residual_bootstrap,
@@ -29,8 +41,14 @@ def quantile_loss(u: np.ndarray, tau: float) -> float:
     return float(np.sum(np.where(u >= 0, tau * u, (tau - 1.0) * u)))
 
 
-def exact_small_sample_quantile_slope(years: np.ndarray, values: np.ndarray, tau: float) -> float:
-    x = ((np.asarray(years, dtype=float) - np.min(years)) / 10.0).astype(float)
+def exact_small_sample_quantile_slope(
+    years: np.ndarray,
+    values: np.ndarray,
+    tau: float,
+    *,
+    time_scale_years: float,
+) -> float:
+    x = ((np.asarray(years, dtype=float) - np.min(years)) / float(time_scale_years)).astype(float)
     y = np.asarray(values, dtype=float)
     n = len(y)
     if n < 3:
@@ -54,7 +72,14 @@ def exact_small_sample_quantile_slope(years: np.ndarray, values: np.ndarray, tau
     return float(best_b)
 
 
-def fit_quantile_slope(years: np.ndarray, values: np.ndarray, tau: float, max_iter: int = 5000) -> float:
+def fit_quantile_slope(
+    years: np.ndarray,
+    values: np.ndarray,
+    tau: float,
+    *,
+    time_scale_years: float,
+    max_iter: int = 5000,
+) -> float:
     years = np.asarray(years, dtype=float)
     values = np.asarray(values, dtype=float)
     mask = np.isfinite(years) & np.isfinite(values)
@@ -65,8 +90,8 @@ def fit_quantile_slope(years: np.ndarray, values: np.ndarray, tau: float, max_it
     if np.nanstd(values) == 0:
         return 0.0
     if len(values) <= 12:
-        return exact_small_sample_quantile_slope(years, values, tau)
-    x = (years - years.min()) / 10.0
+        return exact_small_sample_quantile_slope(years, values, tau, time_scale_years=time_scale_years)
+    x = (years - years.min()) / float(time_scale_years)
     X = sm.add_constant(x)
     try:
         result = _fit_quantreg_with_retry(values, X, tau=tau, max_iter=max_iter)
@@ -75,7 +100,7 @@ def fit_quantile_slope(years: np.ndarray, values: np.ndarray, tau: float, max_it
         return np.nan
 
 
-def fit_ols_slope(years: np.ndarray, values: np.ndarray) -> float:
+def fit_ols_slope(years: np.ndarray, values: np.ndarray, *, time_scale_years: float) -> float:
     years = np.asarray(years, dtype=float)
     values = np.asarray(values, dtype=float)
     mask = np.isfinite(years) & np.isfinite(values)
@@ -83,7 +108,7 @@ def fit_ols_slope(years: np.ndarray, values: np.ndarray) -> float:
     values = values[mask]
     if len(values) < 3:
         return np.nan
-    x = (years - years.min()) / 10.0
+    x = (years - years.min()) / float(time_scale_years)
     X = sm.add_constant(x)
     try:
         return float(sm.OLS(values, X).fit().params[1])
@@ -91,7 +116,14 @@ def fit_ols_slope(years: np.ndarray, values: np.ndarray) -> float:
         return np.nan
 
 
-def fit_quantile_line(years: np.ndarray, values: np.ndarray, tau: float, max_iter: int = 5000) -> Dict[str, float | np.ndarray]:
+def fit_quantile_line(
+    years: np.ndarray,
+    values: np.ndarray,
+    tau: float,
+    *,
+    time_scale_years: float,
+    max_iter: int = 5000,
+) -> Dict[str, float | np.ndarray]:
     years = np.asarray(years, dtype=float)
     values = np.asarray(values, dtype=float)
     mask = np.isfinite(years) & np.isfinite(values)
@@ -112,7 +144,7 @@ def fit_quantile_line(years: np.ndarray, values: np.ndarray, tau: float, max_ite
     order = np.argsort(years)
     years = years[order]
     values = values[order]
-    x = (years - years.min()) / 10.0
+    x = (years - years.min()) / float(time_scale_years)
 
     try:
         X = sm.add_constant(x)
@@ -131,7 +163,7 @@ def fit_quantile_line(years: np.ndarray, values: np.ndarray, tau: float, max_ite
             "ci_high": ci_high,
         }
     except Exception:
-        slope = fit_quantile_slope(years, values, tau=tau, max_iter=max_iter)
+        slope = fit_quantile_slope(years, values, tau=tau, time_scale_years=time_scale_years, max_iter=max_iter)
         intercept = float(np.quantile(values - slope * x, tau)) if np.isfinite(slope) else np.nan
         fitted = intercept + slope * x if np.isfinite(intercept) and np.isfinite(slope) else np.array([], dtype=float)
         return {
@@ -160,7 +192,7 @@ def _fit_quantreg_with_retry(values: np.ndarray, X: np.ndarray, tau: float, max_
     return result
 
 
-def fit_ols_line(years: np.ndarray, values: np.ndarray) -> Dict[str, float | np.ndarray]:
+def fit_ols_line(years: np.ndarray, values: np.ndarray, *, time_scale_years: float) -> Dict[str, float | np.ndarray]:
     years = np.asarray(years, dtype=float)
     values = np.asarray(values, dtype=float)
     mask = np.isfinite(years) & np.isfinite(values)
@@ -181,7 +213,7 @@ def fit_ols_line(years: np.ndarray, values: np.ndarray) -> Dict[str, float | np.
     order = np.argsort(years)
     years = years[order]
     values = values[order]
-    x = (years - years.min()) / 10.0
+    x = (years - years.min()) / float(time_scale_years)
     X = sm.add_constant(x)
     try:
         res = sm.OLS(values, X).fit()
@@ -199,7 +231,7 @@ def fit_ols_line(years: np.ndarray, values: np.ndarray) -> Dict[str, float | np.
             "ci_high": ci_high,
         }
     except Exception:
-        slope = fit_ols_slope(years, values)
+        slope = fit_ols_slope(years, values, time_scale_years=time_scale_years)
         intercept = float(np.nanmean(values) - slope * np.nanmean(x)) if np.isfinite(slope) else np.nan
         fitted = intercept + slope * x if np.isfinite(intercept) and np.isfinite(slope) else np.array([], dtype=float)
         return {
@@ -218,6 +250,7 @@ def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[fl
     n_reps = int(cfg["bootstrap"]["n_reps"])
     method = str(cfg["bootstrap"]["method"]).lower()
     max_iter = int(cfg["quantile_regression"]["max_iter"])
+    time_scale_years = get_time_scale_years(cfg)
     records = []
     values = np.asarray(values, dtype=float)
     valid = np.isfinite(values)
@@ -225,7 +258,7 @@ def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[fl
     values_valid = values[valid]
     if len(values_valid) < 3:
         return pd.DataFrame()
-    x_decades = (years_valid - years_valid.min()) / 10.0
+    x_scaled = (years_valid - years_valid.min()) / float(time_scale_years)
     block_cfg = cfg.get("bootstrap", {})
     block_length = select_block_length(
         len(values_valid),
@@ -244,7 +277,7 @@ def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[fl
             yb = maximum_entropy_bootstrap(values_valid, rng)
             years_boot = years_valid
         elif method == "residual":
-            yb = residual_bootstrap(x_decades, values_valid, rng)
+            yb = residual_bootstrap(x_scaled, values_valid, rng)
             years_boot = years_valid
         elif method == "moving_block":
             idx_boot = moving_block_bootstrap_indices(len(values_valid), block_length, rng)
@@ -255,16 +288,19 @@ def bootstrap_qr(years: np.ndarray, values: np.ndarray, focus_quantiles: List[fl
             years_boot = years_valid
         row = {"replicate": rep}
         for tau in focus_quantiles:
-            row[f"slope_{tau:0.2f}"] = fit_quantile_slope(years_boot, yb, tau=tau, max_iter=max_iter)
+            row[slope_col(tau)] = fit_quantile_slope(
+                years_boot,
+                yb,
+                tau=tau,
+                time_scale_years=time_scale_years,
+                max_iter=max_iter,
+            )
         records.append(row)
 
     boot = pd.DataFrame(records)
     if boot.empty:
         return boot
-    boot["Delta1"] = boot["slope_0.95"] - boot["slope_0.05"]
-    boot["Delta2"] = boot["slope_0.95"] - boot["slope_0.50"]
-    boot["Delta3"] = boot["slope_0.50"] - boot["slope_0.05"]
-    return boot
+    return compute_defined_deltas(boot, cfg)
 
 
 def summarize_bootstrap(boot: pd.DataFrame, alpha: float) -> Dict[str, float]:
@@ -294,13 +330,13 @@ def add_sensitivity_check_columns(summary: pd.DataFrame, cfg: dict) -> pd.DataFr
         return summary
 
     out = summary.copy()
-    taus = [float(x) for x in cfg["quantile_regression"].get("sensitivity_check_quantiles", [0.05, 0.95])]
+    taus = get_sensitivity_quantiles(cfg)
     for tau in taus:
-        suffix = f"{tau:0.2f}"
-        analytic_low = f"ci_low_{suffix}"
-        analytic_high = f"ci_high_{suffix}"
-        boot_low = f"boot_ci_low_{suffix}"
-        boot_high = f"boot_ci_high_{suffix}"
+        suffix = format_tau_suffix(tau)
+        analytic_low = ci_low_col(tau)
+        analytic_high = ci_high_col(tau)
+        boot_low = boot_ci_low_col(suffix)
+        boot_high = boot_ci_high_col(suffix)
         analytic_sig = f"analytic_sig_{suffix}"
         bootstrap_sig = f"bootstrap_sig_{suffix}"
         agreement = f"sig_agree_{suffix}"
@@ -357,12 +393,13 @@ def run_station_qr(
     station_col = dcfg["station_id_col"]
     station_name_col = dcfg["station_name_col"]
     year_col = dcfg["year_col"]
-    full_q = make_quantile_grid(**cfg["quantile_regression"]["full_quantiles"])
-    focus_q = [float(x) for x in cfg["quantile_regression"]["focus_quantiles"]]
+    full_q = get_full_quantiles(cfg)
+    focus_q = get_focus_quantiles(cfg)
     min_years = int(cfg["quantile_regression"]["min_years_required_to_run"])
     recommended_years = int(cfg["quantile_regression"]["min_years_recommended_for_publication"])
     alpha = float(cfg["bootstrap"]["alpha"])
     base_seed = int(cfg["project"]["random_seed"])
+    time_scale_years = get_time_scale_years(cfg)
 
     all_quant_records, summary_records, boot_records = [], [], []
     total_stations = annual[[station_col, station_name_col]].drop_duplicates().shape[0]
@@ -385,25 +422,40 @@ def run_station_qr(
             can_run_qr = n_years >= min_years
             focus_fits = {}
 
-            all_slopes = {}
             for tau in full_q:
                 slope = (
-                    fit_quantile_slope(years, values, tau=tau, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+                    fit_quantile_slope(
+                        years,
+                        values,
+                        tau=tau,
+                        time_scale_years=time_scale_years,
+                        max_iter=int(cfg["quantile_regression"]["max_iter"]),
+                    )
                     if can_run_qr
                     else np.nan
                 )
-                all_quant_records.append({"index_name": idx_name, "station_id": station_id, "station_name": station_name, "tau": tau, "slope": slope, "n_years": n_years})
-                all_slopes[tau] = slope
+                all_quant_records.append(
+                    {
+                        "index_name": idx_name,
+                        "station_id": station_id,
+                        "station_name": station_name,
+                        "tau": tau,
+                        "slope": slope,
+                        "n_years": n_years,
+                    }
+                )
 
             for tau in focus_q:
                 if can_run_qr:
-                    focus_fits[tau] = fit_quantile_line(years, values, tau=tau, max_iter=int(cfg["quantile_regression"]["max_iter"]))
+                    focus_fits[tau] = fit_quantile_line(
+                        years,
+                        values,
+                        tau=tau,
+                        time_scale_years=time_scale_years,
+                        max_iter=int(cfg["quantile_regression"]["max_iter"]),
+                    )
                 else:
-                    focus_fits[tau] = {
-                        "slope": np.nan,
-                        "ci_low": np.nan,
-                        "ci_high": np.nan,
-                    }
+                    focus_fits[tau] = {"slope": np.nan, "ci_low": np.nan, "ci_high": np.nan}
 
             row = {
                 "index_name": idx_name,
@@ -412,17 +464,14 @@ def run_station_qr(
                 "n_years": n_years,
                 "insufficient_years_for_qr": bool(not can_run_qr),
                 "publication_warning_short_record": bool(n_years < recommended_years),
-                "ols_slope": fit_ols_slope(years, values) if can_run_qr else np.nan,
+                "ols_slope": fit_ols_slope(years, values, time_scale_years=time_scale_years) if can_run_qr else np.nan,
             }
             for tau in focus_q:
-                suffix = f"{tau:0.2f}"
-                row[f"slope_{suffix}"] = float(focus_fits[tau]["slope"])
-                row[f"ci_low_{suffix}"] = float(focus_fits[tau]["ci_low"])
-                row[f"ci_high_{suffix}"] = float(focus_fits[tau]["ci_high"])
+                row[slope_col(tau)] = float(focus_fits[tau]["slope"])
+                row[ci_low_col(tau)] = float(focus_fits[tau]["ci_low"])
+                row[ci_high_col(tau)] = float(focus_fits[tau]["ci_high"])
 
-            row["Delta1"] = row["slope_0.95"] - row["slope_0.05"]
-            row["Delta2"] = row["slope_0.95"] - row["slope_0.50"]
-            row["Delta3"] = row["slope_0.50"] - row["slope_0.05"]
+            row = compute_defined_deltas(pd.DataFrame([row]), cfg).iloc[0].to_dict()
 
             if cfg["bootstrap"]["enabled"] and can_run_qr:
                 rng = np.random.default_rng(build_station_seed(base_seed, idx_name, station_id))
@@ -436,4 +485,8 @@ def run_station_qr(
 
             summary_records.append(row)
 
-    return pd.DataFrame(all_quant_records), pd.DataFrame(summary_records), (pd.concat(boot_records, ignore_index=True) if boot_records else pd.DataFrame())
+    return (
+        pd.DataFrame(all_quant_records),
+        pd.DataFrame(summary_records),
+        (pd.concat(boot_records, ignore_index=True) if boot_records else pd.DataFrame()),
+    )

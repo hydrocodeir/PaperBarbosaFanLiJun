@@ -9,13 +9,11 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score
 from sklearn.preprocessing import StandardScaler
 
+from .config_utils import compute_defined_deltas
 
-def build_feature_table(summary: pd.DataFrame) -> pd.DataFrame:
-    features = summary.copy()
-    features["Delta1"] = features["slope_0.95"] - features["slope_0.05"]
-    features["Delta2"] = features["slope_0.95"] - features["slope_0.50"]
-    features["Delta3"] = features["slope_0.50"] - features["slope_0.05"]
-    return features
+
+def build_feature_table(summary: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    return compute_defined_deltas(summary.copy(), cfg)
 
 
 def _resolve_feature_cols(cfg: dict, feature_cols: list[str] | None = None) -> list[str]:

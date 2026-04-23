@@ -7,7 +7,7 @@ from src.paper_pipeline import run_pipeline
 
 def main():
     parser = argparse.ArgumentParser(description="Quantile regression + bootstrap + clustering pipeline for temperature extremes.")
-    parser.add_argument("--config", type=str, default="config.yaml")
+    parser.add_argument("--config", type=str, required=True)
     args = parser.parse_args()
     outdir = run_pipeline(args.config)
     print(f"Done. Outputs written to: {outdir}")

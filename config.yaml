@@ -1,127 +1,499 @@
+# ===================================================================
+# Central configuration file for the full analysis pipeline.
+#
+# General rules:
+# - This file is the single source of truth for runtime parameters.
+# - If a parameter is required by the code, it should be defined here.
+# - YAML is indentation-sensitive. Use spaces, not tabs.
+# - Lists are defined with `- item`.
+# - `null` means intentionally unset / disabled / use alternative logic.
+# - Booleans must be `true` or `false`.
+# - Numeric quantiles must always be between 0 and 1.
+# ===================================================================
+
+# -------------------------------------------------------------------
+# project:
+# High-level metadata and global reproducibility settings.
+# -------------------------------------------------------------------
 project:
+  # Free text project title.
+  # Used only as metadata in reports / outputs.
+  # Type: string
   name: Quantile Regression + Bootstrap + Clustering for Temperature Extremes
+
+  # Language tag for project-facing text.
+  # Current code does not strongly enforce this, but it is useful metadata.
+  # Suggested values:
+  # - fa
+  # - en
+  # Type: string
   language: fa
+
+  # Global random seed used wherever deterministic randomization is needed
+  # (bootstrap, clustering sensitivity, etc.).
+  # Change this if you intentionally want a different random realization.
+  # Type: integer > 0
   random_seed: 42
+
+# -------------------------------------------------------------------
+# paths:
+# File system locations for inputs and outputs.
+# Use relative paths from the repository root or absolute paths.
+# -------------------------------------------------------------------
 paths:
+  # Main daily station observations file.
+  # Expected to contain columns referenced under `data:`.
+  # Type: string path
   data_csv: data/data.csv
+
+  # Station metadata file.
+  # Usually contains station coordinates / elevation / names / ids.
+  # Type: string path
   station_csv: data/stationsInfo.csv
+
+  # Root directory where pipeline outputs will be written.
+  # The code will create subfolders under this directory.
+  # Type: string path
   output_dir: outputs
+
+# -------------------------------------------------------------------
+# data:
+# Column mapping and analysis time window for the raw daily dataset.
+# Every column name here must exactly match a column in your CSV.
+# -------------------------------------------------------------------
 data:
+  # Unique station identifier column in the raw daily file.
+  # Type: string
   station_id_col: station_id
+
+  # Human-readable station name column in the raw daily file.
+  # Type: string
   station_name_col: station_name
+
+  # Year column in the raw daily file.
+  # Type: string
   year_col: year
+
+  # Analysis period [start_year, end_year].
+  # Only rows inside this range are used in the main analysis.
+  # Type: list of exactly 2 integers
+  # Example:
+  # analysis_years:
+  #   - 1991
+  #   - 2024
   analysis_years:
-  - 1991
-  - 2024
+    - 1991
+    - 2024
+
+  # Month column in the raw daily file.
+  # Type: string
   month_col: month
+
+  # Day column in the raw daily file.
+  # Type: string
   day_col: day
+
+  # Minimum temperature column.
+  # Type: string
   tmin_col: tmin
+
+  # Maximum temperature column.
+  # Type: string
   tmax_col: tmax
+
+  # Mean temperature column.
+  # If missing in the data, some QC logic can infer it from Tmin/Tmax.
+  # Type: string
   tmean_col: tmean
+
+  # Precipitation column.
+  # Included as part of generic station dataset mapping.
+  # Type: string
   precip_col: precip
+
+# -------------------------------------------------------------------
+# quality_control:
+# Parameters for data-quality and homogeneity diagnostics.
+# -------------------------------------------------------------------
+quality_control:
+  # Significance threshold for homogeneity tests.
+  # Used instead of hard-coded 0.05.
+  # Type: float in (0, 1)
+  # Common values:
+  # - 0.10  less strict
+  # - 0.05  standard
+  # - 0.01  more strict
+  homogeneity_alpha: 0.05
+
+  # Number of permutations used in permutation-based homogeneity p-values.
+  # Larger values are more stable but slower.
+  # Type: integer > 0
+  # Typical values:
+  # - 199   fast
+  # - 499   standard
+  # - 999   more stable
+  homogeneity_permutations: 499
+
+# -------------------------------------------------------------------
+# index_construction:
+# Controls how annual extreme indices are created from daily data.
+# -------------------------------------------------------------------
 index_construction:
+  # Reference period used to compute day-of-year percentile thresholds.
+  # If null:
+  # - the pipeline falls back to the configured analysis period or
+  #   another internal default logic.
+  # If provided:
+  # - must be a two-year list [start_year, end_year]
+  # Type: null OR list of 2 integers
   reference_years: null
+  # Example:
   # reference_years:
-  # - 1961
-  # - 1990
+  #   - 1961
+  #   - 1990
+
+  # Half-window size around each day-of-year when estimating climatological
+  # percentiles. A value of 5 means the percentile uses a moving window around
+  # each calendar day.
+  # Type: integer >= 0
   percentile_window_days: 5
+
+  # Lower-tail percentile used for low-extreme threshold definition.
+  # Example: 10 means the 10th percentile.
+  # Type: number between 0 and 100
   lower_percentile: 10
+
+  # Upper-tail percentile used for high-extreme threshold definition.
+  # Example: 90 means the 90th percentile.
+  # Type: number between 0 and 100
   upper_percentile: 90
+
+  # Whether Feb 29 should be removed before day-of-year climatology work.
+  # Recommended: true for no-leap climatology workflows.
+  # Type: boolean
   drop_feb29: true
+
+  # Minimum number of reference samples required for a day-of-year percentile
+  # estimate to be considered valid.
+  # Type: integer > 0
   min_reference_samples_per_doy: 15
+
+  # Minimum valid daily coverage required to keep an annual aggregate.
+  # Example: 80.0 means at least 80 percent of days must be valid.
+  # Type: float between 0 and 100
   annual_min_valid_coverage_pct: 80.0
+
+# -------------------------------------------------------------------
+# indices:
+# Definitions of annual climate indices to be built from daily data.
+#
+# Each list item defines one index.
+# You can add more indices if the code supports the logic and the
+# corresponding source columns / tails / percentiles are meaningful.
+# -------------------------------------------------------------------
 indices:
-- name: warm_days
-  source_col: tmax
-  tail: upper
-  percentile: 90
-  title: Warm Days
-  unit: days/year
-- name: warm_nights
-  source_col: tmin
-  tail: upper
-  percentile: 90
-  title: Warm Nights
-  unit: days/year
-- name: cool_days
-  source_col: tmax
-  tail: lower
-  percentile: 10
-  title: Cool Days
-  unit: days/year
-- name: cool_nights
-  source_col: tmin
-  tail: lower
-  percentile: 10
-  title: Cool Nights
-  unit: days/year
+  # Internal short name used as output column name.
+  # source_col:
+  #   Which daily variable to threshold (must refer to a raw-data column alias
+  #   such as tmin / tmax defined under data).
+  # tail:
+  #   Allowed values:
+  #   - upper
+  #   - lower
+  # percentile:
+  #   Threshold percentile in [0, 100].
+  # title:
+  #   Human-readable label used in figures / tables.
+  # unit:
+  #   Human-readable unit label used in plots / reports.
+  - name: warm_days
+    source_col: tmax
+    tail: upper
+    percentile: 90
+    title: Warm Days
+    unit: days/year
+
+  - name: warm_nights
+    source_col: tmin
+    tail: upper
+    percentile: 90
+    title: Warm Nights
+    unit: days/year
+
+  - name: cool_days
+    source_col: tmax
+    tail: lower
+    percentile: 10
+    title: Cool Days
+    unit: days/year
+
+  - name: cool_nights
+    source_col: tmin
+    tail: lower
+    percentile: 10
+    title: Cool Nights
+    unit: days/year
+
+# -------------------------------------------------------------------
+# quantile_regression:
+# Controls station-level quantile regression.
+# This is one of the core sections of the whole pipeline.
+# -------------------------------------------------------------------
 quantile_regression:
+  # Time scaling used inside regression.
+  # Example:
+  # - 10  => slope is estimated per 10 years
+  # - 1   => slope is estimated per year
+  # - 5   => slope is estimated per 5 years
+  # Type: float > 0
+  time_scale_years: 10
+
+  # Dense quantile grid used for full quantile-profile estimation.
+  # This is the continuous profile used in profile plots and some analyses.
   full_quantiles:
+    # Starting quantile of the full grid.
+    # Type: float in (0, 1)
     start: 0.05
+
+    # Ending quantile of the full grid.
+    # Type: float in (0, 1)
     stop: 0.95
+
+    # Step size between quantiles.
+    # Type: float > 0
+    # Example:
+    # - 0.01 gives 0.05, 0.06, ..., 0.95
     step: 0.01
+
+  # Focus quantiles used for main summaries, tables, deltas, clustering inputs,
+  # and bootstrap outputs.
+  # This field is REQUIRED.
+  # Every delta definition must refer to slope columns that come from this list.
+  # Type: list of unique floats in (0, 1)
   focus_quantiles:
-  - 0.05
-  - 0.10
-  - 0.50
-  - 0.90
-  - 0.95
-  time_unit: decade
+    - 0.05
+    - 0.10
+    - 0.50
+    - 0.90
+    - 0.95
+
+  # Human-readable label for the time scale.
+  # Only affects output text / axis labels.
+  # Example:
+  # - year
+  # - decade
+  # - 5-years
+  # Type: string
+  time_unit_label: decade
+
+  # Absolute minimum number of valid annual observations required to run QR.
+  # Below this threshold, the station/index remains in outputs but QR values
+  # become NaN.
+  # Type: integer >= 3
   min_years_required_to_run: 3
+
+  # Soft recommendation threshold used to flag short records for publication.
+  # Type: integer >= min_years_required_to_run
   min_years_recommended_for_publication: 20
+
+  # Maximum optimizer iterations for statsmodels QuantReg.
+  # Higher values may help difficult fits but will increase runtime.
+  # Type: integer > 0
   max_iter: 200
+
+  # Quantiles used for analytic-vs-bootstrap significance comparison.
+  # Must be a subset of `focus_quantiles`.
+  # Type: list of floats in (0, 1)
   sensitivity_check_quantiles:
-  - 0.05
-  - 0.95
+    - 0.05
+    - 0.95
+
+# -------------------------------------------------------------------
+# bootstrap:
+# Bootstrap uncertainty settings for quantile slopes and derived deltas.
+# -------------------------------------------------------------------
 bootstrap:
+  # Master on/off switch for bootstrap uncertainty estimation.
+  # Type: boolean
   enabled: true
+
+  # Bootstrap method.
+  # Allowed values:
+  # - moving_block
+  # - meboot
+  # - residual
+  # - iid
+  # Notes:
+  # - moving_block: recommended for short-range temporal dependence
+  # - meboot: maximum entropy bootstrap
+  # - residual: bootstrap OLS residual structure
+  # - iid: simple independent resampling
+  # Type: string
   method: moving_block
+
+  # Number of bootstrap replicates.
+  # Larger values improve stability but increase runtime heavily.
+  # Type: integer > 0
   n_reps: 200
+
+  # Block length for moving-block bootstrap.
+  # Allowed values:
+  # - auto
+  # - integer >= 2
+  # If auto, `block_length_rule` is used.
   block_length: auto
+
+  # Rule used when block_length = auto.
+  # Allowed values:
+  # - cube_root
+  # - sqrt
   block_length_rule: cube_root
+
+  # Lower bound for auto-selected block length.
+  # Type: integer >= 2
   min_block_length: 2
+
+  # Upper bound for auto-selected block length.
+  # Type: integer >= min_block_length OR null
   max_block_length: 8
+
+  # Confidence interval alpha for bootstrap summaries.
+  # 0.05 means a 95% interval.
+  # Type: float in (0, 1)
   alpha: 0.05
+
+  # Whether to save the full long bootstrap distribution table.
+  # Can be large on disk.
+  # Type: boolean
   save_long_table: true
+
+# -------------------------------------------------------------------
+# feature_engineering:
+# Derived features created after quantile regression.
+# In particular, this section controls delta metrics dynamically.
+# -------------------------------------------------------------------
 feature_engineering:
+  # The delta treated as the main / headline delta in reporting and some plots.
+  # Must match one key from delta_definitions below.
+  # Type: string
+  primary_delta: Delta1
+
+  # Arbitrary delta definitions.
+  # Each item is:
+  #   delta_name:
+  #     - left_operand_column
+  #     - right_operand_column
+  #
+  # Operands must currently refer to slope columns derived from focus quantiles.
+  # Example:
+  # Delta1:
+  #   - slope_0.95
+  #   - slope_0.05
+  #
+  # Meaning:
+  # Delta1 = slope_0.95 - slope_0.05
+  #
+  # Type: mapping of name -> 2-item list
   delta_definitions:
     Delta1:
-    - slope_0.95
-    - slope_0.05
+      - slope_0.95
+      - slope_0.05
     Delta2:
-    - slope_0.95
-    - slope_0.50
+      - slope_0.95
+      - slope_0.50
     Delta3:
-    - slope_0.50
-    - slope_0.05
+      - slope_0.50
+      - slope_0.05
+
+# -------------------------------------------------------------------
+# clustering:
+# Configuration for station clustering on trend / uncertainty features.
+# -------------------------------------------------------------------
 clustering:
+  # Master on/off switch for clustering.
+  # Type: boolean
   enabled: true
+
+  # Clustering algorithm.
+  # Allowed values:
+  # - hierarchical
+  # - kmeans
   algorithm: hierarchical
+
+  # Linkage used only when algorithm = hierarchical.
+  # Common values:
+  # - average
+  # - complete
+  # - ward
+  # Type: string
   linkage: average
+
+  # Distance metric.
+  # Used in hierarchical clustering except when linkage=ward, where the code
+  # internally forces Euclidean.
+  # Common values:
+  # - euclidean
+  # - cityblock
+  # - cosine
+  # Type: string
   metric: euclidean
+
+  # Number of clusters requested.
+  # The code automatically caps this at the available sample size.
+  # Type: integer >= 1
   n_clusters: 4
+
+  # Whether features should be standardized before clustering.
+  # Recommended true when features have different scales.
+  # Type: boolean
   standardize: true
+
+  # Which configured feature list should be used by default.
+  # Allowed values:
+  # - simple
+  # - uncertainty
   feature_mode: simple
+
+  # Collinearity screening before clustering.
+  # Used to avoid nearly duplicate features dominating the result.
   collinearity_screen:
+    # Turn collinearity screening on/off.
     enabled: true
+
+    # If absolute pairwise correlation is >= this threshold, the later feature
+    # in the configured order is dropped.
+    # Type: float in (0, 1]
     abs_correlation_threshold: 0.95
+
+  # Feature list used when feature_mode = simple.
+  # These must correspond to existing columns after QR / feature generation.
+  # Type: list of strings
   simple_features:
-  - slope_0.05
-  - slope_0.50
-  - slope_0.95
+    - slope_0.05
+    - slope_0.50
+    - slope_0.95
+
+  # Feature list used when feature_mode = uncertainty.
+  # Type: list of strings
   uncertainty_features:
-  - slope_0.05
-  - slope_0.50
-  - slope_0.95
-  - Delta1
-  - boot_mean_0.05
-  - boot_mean_0.50
-  - boot_mean_0.95
-  - boot_sd_0.05
-  - boot_sd_0.50
-  - boot_sd_0.95
+    - slope_0.05
+    - slope_0.50
+    - slope_0.95
+    - Delta1
+    - boot_mean_0.05
+    - boot_mean_0.50
+    - boot_mean_0.95
+    - boot_sd_0.05
+    - boot_sd_0.50
+    - boot_sd_0.95
+
+  # Optional internal robustness rerun for clustering.
   robustness_check:
+    # Enable/disable the second clustering run.
     enabled: true
+
+    # Feature list for the robustness rerun.
+    # Type: list of strings
     reduced_features:
       - slope_0.05
       - slope_0.50
@@ -133,80 +505,261 @@ clustering:
       - boot_sd_0.05
       - boot_sd_0.50
       - boot_sd_0.95
+
+# -------------------------------------------------------------------
+# plots:
+# Generic plotting/export settings.
+# -------------------------------------------------------------------
 plots:
+  # Final save DPI for exported figures.
+  # Higher values increase file size and rendering time.
+  # Type: integer > 0
   dpi: 600
+
+  # Named plotting style preset.
+  # Current code mostly uses a publication theme, but this is kept as metadata
+  # and for future style routing.
+  # Suggested values:
+  # - default
+  # Type: string
   style: default
+
+  # Whether station names should be annotated directly on maps.
+  # Type: boolean
   annotate_stations_on_map: false
+
+  # Output image format.
+  # Common values:
+  # - png
+  # - jpg
+  # - tif
+  # Use a format supported by matplotlib.
+  # Type: string
   save_format: png
+
+  # Ordering rule for station heatmaps.
+  # Allowed values:
+  # - delta_desc   sort by primary delta descending
+  # - alphabetic   sort by station name
   heatmap_station_order: delta_desc
+
+  # Default figure DPI used in matplotlib rcParams / figure creation.
+  # This is separate from final export DPI.
+  # Type: integer > 0
+  default_figure_dpi: 600
+
+  # Quantile selections for specific plot families.
+  # These lists control which quantiles appear in each output.
+  # Notes:
+  # - bootstrap_distributions must be a subset of focus_quantiles
+  # - paper1_dendrograms must be a subset of focus_quantiles
+  # - split_period_bars must be a subset of focus_quantiles
+  quantile_selections:
+    # Quantile lines shown on station time-series figures.
+    station_timeseries:
+      - 0.10
+      - 0.50
+      - 0.90
+
+    # Marker quantiles shown in representative-station comparison figures.
+    station_comparison:
+      - 0.05
+      - 0.50
+      - 0.95
+
+    # Quantiles for Paper 2 map outputs.
+    paper2_maps:
+      - 0.05
+      - 0.10
+      - 0.50
+      - 0.90
+      - 0.95
+
+    # Quantiles for bootstrap distribution panels.
+    bootstrap_distributions:
+      - 0.05
+      - 0.50
+      - 0.95
+
+    # Quantiles used in single-quantile dendrogram figures.
+    paper1_dendrograms:
+      - 0.05
+      - 0.50
+      - 0.95
+
+    # Quantiles compared in split-period bar charts.
+    split_period_bars:
+      - 0.05
+      - 0.50
+      - 0.95
+
+# -------------------------------------------------------------------
+# spatial_visualization:
+# Controls map interpolation and study-area geometry.
+# -------------------------------------------------------------------
 spatial_visualization:
+  # Path to boundary polygon / geojson used for masking and plotting.
+  # Type: string path
   iran_boundary_geojson: data/Iran.geojson
-  # options:
-  # - thin_plate_spline (default)
+
+  # Interpolation method for visual map surfaces.
+  # Allowed values:
+  # - thin_plate_spline
   # - multiquadric
   # - inverse
   # - gaussian
-  # - linear / cubic / nearest
+  # - linear
+  # - cubic
+  # - nearest
   # - linear_rbf
   # - quintic
   interpolation_method: linear_rbf
+
+  # Smoothness parameter used for RBF-like interpolation methods.
+  # Higher values usually mean smoother surfaces.
+  # Type: float >= 0
   interpolation_smooth: 0.50
+
+# -------------------------------------------------------------------
+# advanced_analyses:
+# Optional publication-oriented analyses beyond the core run.
+# -------------------------------------------------------------------
 advanced_analyses:
+  # ---------------------------------------------------------------
+  # spatial_inference:
+  # Multiple-testing and spatial autocorrelation analyses.
+  # ---------------------------------------------------------------
   spatial_inference:
+    # Enable/disable this module.
     enabled: true
+
+    # False discovery rate alpha.
+    # Type: float in (0, 1)
     fdr_alpha: 0.05
+
+    # Number of permutations used in Moran's I permutation test.
+    # Type: integer > 0
     moran_permutations: 499
+
+    # Number of nearest neighbors used for Moran's I weights.
+    # Type: integer >= 1
     moran_k_neighbors: 5
+
+    # Quantiles to test spatially.
+    # Usually a subset of focus_quantiles, but can be broader if supported.
     quantiles:
-    - 0.05
-    - 0.10
-    - 0.50
-    - 0.90
-    - 0.95
+      - 0.05
+      - 0.10
+      - 0.50
+      - 0.90
+      - 0.95
+
+  # ---------------------------------------------------------------
+  # method_sensitivity:
+  # Sensitivity to alternative methodological choices.
+  # ---------------------------------------------------------------
   method_sensitivity:
     enabled: true
+
     reference_periods:
+      # Label for the baseline run.
+      # `analysis_years` means use the configured analysis window.
       current: analysis_years
+
+      # Alternative reference period.
+      # null usually means "all available data".
       all_available: null
+
+    # Bootstrap methods to compare against the current baseline method.
+    # Allowed values:
+    # - moving_block
+    # - meboot
+    # - residual
+    # - iid
     bootstrap_methods:
-    - moving_block
-    - meboot
+      - moving_block
+      - meboot
+
+    # Interpolation methods to compare in map sensitivity.
+    # Allowed values are the same as in spatial_visualization.interpolation_method.
     interpolation_methods:
-    - thin_plate_spline
-    - linear_rbf
-    - linear
+      - thin_plate_spline
+      - linear_rbf
+      - linear
+
+  # ---------------------------------------------------------------
+  # driver_analysis:
+  # Association of trend metrics with station-level predictors.
+  # ---------------------------------------------------------------
   driver_analysis:
     enabled: true
+
+    # Station predictors to test.
+    # Must exist in station metadata.
     predictors:
-    - latitude
-    - longitude
-    - elevation
+      - latitude
+      - longitude
+      - elevation
+
+    # Metrics to regress against predictors.
+    # Must exist in the feature table.
     metrics:
-    - slope_0.05
-    - slope_0.50
-    - slope_0.95
-    - Delta1
+      - slope_0.05
+      - slope_0.50
+      - slope_0.95
+      - Delta1
+
+  # ---------------------------------------------------------------
+  # regionalization:
+  # Cluster composite summaries and spatial cluster validation.
+  # ---------------------------------------------------------------
   regionalization:
     enabled: true
+
+    # Metrics summarized by cluster.
     summary_metrics:
-    - slope_0.05
-    - slope_0.50
-    - slope_0.95
-    - Delta1
+      - slope_0.05
+      - slope_0.50
+      - slope_0.95
+      - Delta1
+
+    # Permutations for spatial compactness validation of clusters.
     spatial_validation_permutations: 499
+
+  # ---------------------------------------------------------------
+  # bootstrap_depth_sensitivity:
+  # Compare baseline bootstrap depth against a larger number of reps.
+  # ---------------------------------------------------------------
   bootstrap_depth_sensitivity:
     enabled: true
+
+    # Larger bootstrap sample size for the sensitivity rerun.
+    # Type: integer > bootstrap.n_reps
     n_reps: 400
+
+  # ---------------------------------------------------------------
+  # alternative_clustering_methods:
+  # Compare baseline clustering with alternative cluster specifications.
+  # ---------------------------------------------------------------
   alternative_clustering_methods:
     enabled: true
+
+    # Each list item defines one alternative clustering setup.
+    # Fields:
+    # - algorithm: hierarchical | kmeans
+    # - linkage: only relevant for hierarchical
+    # - metric: distance metric
     methods:
-    - algorithm: hierarchical
-      linkage: complete
-      metric: euclidean
-    - algorithm: hierarchical
-      linkage: ward
-      metric: euclidean
-    - algorithm: hierarchical
-      linkage: average
-      metric: cityblock
-    - algorithm: kmeans
+      - algorithm: hierarchical
+        linkage: complete
+        metric: euclidean
+
+      - algorithm: hierarchical
+        linkage: ward
+        metric: euclidean
+
+      - algorithm: hierarchical
+        linkage: average
+        metric: cityblock
+
+      - algorithm: kmeans

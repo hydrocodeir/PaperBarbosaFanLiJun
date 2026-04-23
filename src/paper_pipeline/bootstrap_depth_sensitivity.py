@@ -6,10 +6,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from .config_utils import (
+    boot_ci_high_col,
+    boot_ci_low_col,
+    boot_mean_col,
+    get_focus_quantiles,
+    get_plot_dpi,
+    get_primary_delta,
+    metric_label,
+)
 from .quantile import bootstrap_qr, build_station_seed, summarize_bootstrap
 
 
-TARGET_QUANTILES = [0.05, 0.50, 0.95]
 def _station_summary_from_boot(
     annual: pd.DataFrame,
     cfg: dict,
@@ -25,7 +33,8 @@ def _station_summary_from_boot(
 
     boot_cfg = {**cfg}
     boot_cfg["bootstrap"] = {**cfg["bootstrap"], "n_reps": int(n_reps)}
-    focus_q = [float(x) for x in TARGET_QUANTILES]
+    focus_q = get_focus_quantiles(cfg)
+    primary_delta = get_primary_delta(cfg)
 
     rows: list[dict] = []
     sub = annual[[station_col, station_name_col, year_col, index_name]].copy()
@@ -52,10 +61,10 @@ def _station_summary_from_boot(
             "n_reps": int(n_reps),
         }
         row.update(summary)
-        for tau in TARGET_QUANTILES:
+        for tau in focus_q:
             suffix = f"{tau:0.2f}"
-            row[f"boot_ci_width_{suffix}"] = row[f"boot_ci_high_{suffix}"] - row[f"boot_ci_low_{suffix}"]
-        row["boot_ci_width_Delta1"] = row["boot_ci_high_Delta1"] - row["boot_ci_low_Delta1"]
+            row[f"boot_ci_width_{suffix}"] = row[boot_ci_high_col(suffix)] - row[boot_ci_low_col(suffix)]
+        row[f"boot_ci_width_{primary_delta}"] = row[boot_ci_high_col(primary_delta)] - row[boot_ci_low_col(primary_delta)]
         rows.append(row)
 
     return pd.DataFrame(rows)
@@ -67,8 +76,14 @@ def _regional_comparison_table(
     baseline_reps: int,
     deeper_reps: int,
     target_indices: list[str],
+    focus_quantiles: list[float],
+    primary_delta: str,
 ) -> pd.DataFrame:
     records: list[dict] = []
+    metrics = [boot_mean_col(f"{tau:0.2f}") for tau in focus_quantiles]
+    metrics.append(boot_mean_col(primary_delta))
+    metrics.extend([f"boot_ci_width_{tau:0.2f}" for tau in focus_quantiles])
+    metrics.append(f"boot_ci_width_{primary_delta}")
     for index_name in target_indices:
         bdf = baseline[baseline["index_name"] == index_name].copy()
         ddf = deeper[deeper["index_name"] == index_name].copy()
@@ -80,16 +95,7 @@ def _regional_comparison_table(
         if merged.empty:
             continue
 
-        for metric in [
-            "boot_mean_0.05",
-            "boot_mean_0.50",
-            "boot_mean_0.95",
-            "boot_mean_Delta1",
-            "boot_ci_width_0.05",
-            "boot_ci_width_0.50",
-            "boot_ci_width_0.95",
-            "boot_ci_width_Delta1",
-        ]:
+        for metric in metrics:
             old_col = f"{metric}_{baseline_reps}"
             new_col = f"{metric}_{deeper_reps}"
             old_vals = pd.to_numeric(merged[old_col], errors="coerce")
@@ -118,18 +124,21 @@ def _plot_bootstrap_depth_sensitivity(
     baseline_reps: int,
     deeper_reps: int,
     target_indices: list[str],
+    focus_quantiles: list[float],
+    primary_delta: str,
+    cfg: dict,
 ) -> None:
-    plot_metrics = [
-        ("boot_mean_0.05", "q0.05 mean"),
-        ("boot_mean_0.50", "q0.50 mean"),
-        ("boot_mean_0.95", "q0.95 mean"),
-        ("boot_mean_Delta1", "Delta1 mean"),
-    ]
-    fig, axes = plt.subplots(2, 2, figsize=(10, 7), constrained_layout=True)
+    plot_metrics = [(boot_mean_col(f"{tau:0.2f}"), f"{metric_label(f'slope_{tau:0.2f}')} mean") for tau in focus_quantiles]
+    plot_metrics.append((boot_mean_col(primary_delta), f"{primary_delta} mean"))
+    n_panels = len(plot_metrics)
+    ncols = 2
+    nrows = int(np.ceil(n_panels / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(10, max(7, 3.2 * nrows)), constrained_layout=True)
+    axes_arr = np.atleast_1d(axes).ravel()
     palette = ["#1f1f1f", "#b22222", "#1d3557", "#2a9d8f", "#6d597a", "#8d6e63"]
     color_map = {name: palette[i % len(palette)] for i, name in enumerate(target_indices)}
 
-    for ax, (metric, label) in zip(axes.ravel(), plot_metrics):
+    for ax, (metric, label) in zip(axes_arr, plot_metrics):
         sub = comparison[comparison["metric"] == metric].copy()
         if sub.empty:
             ax.axis("off")
@@ -140,24 +149,8 @@ def _plot_bootstrap_depth_sensitivity(
         width = 0.34
         for i, (_, row) in enumerate(sub.iterrows()):
             color = color_map.get(row["index_name"], "#555555")
-            ax.bar(
-                i - width / 2,
-                row[old_col],
-                width=width,
-                color=color,
-                alpha=0.55,
-                edgecolor="black",
-                linewidth=0.6,
-            )
-            ax.bar(
-                i + width / 2,
-                row[new_col],
-                width=width,
-                color=color,
-                alpha=0.9,
-                edgecolor="black",
-                linewidth=0.6,
-            )
+            ax.bar(i - width / 2, row[old_col], width=width, color=color, alpha=0.55, edgecolor="black", linewidth=0.6)
+            ax.bar(i + width / 2, row[new_col], width=width, color=color, alpha=0.9, edgecolor="black", linewidth=0.6)
             ax.text(
                 i,
                 max(row[old_col], row[new_col]) + (0.04 * max(1.0, abs(max(row[old_col], row[new_col])))),
@@ -171,14 +164,16 @@ def _plot_bootstrap_depth_sensitivity(
         ax.set_title(label, fontsize=10)
         ax.grid(axis="y", alpha=0.25, linewidth=0.6)
         ax.set_axisbelow(True)
+    for ax in axes_arr[len(plot_metrics):]:
+        ax.axis("off")
 
     handles = [
         plt.Line2D([0], [0], color="black", lw=8, alpha=0.55, label=f"{baseline_reps} replicates"),
         plt.Line2D([0], [0], color="black", lw=8, alpha=0.9, label=f"{deeper_reps} replicates"),
     ]
     fig.legend(handles=handles, loc="upper center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 1.02))
-    fig.suptitle("Bootstrap-depth sensitivity for core regional summaries", fontsize=12, y=1.04)
-    fig.savefig(outpath, dpi=400, bbox_inches="tight")
+    fig.suptitle("Bootstrap-depth sensitivity for configured regional summaries", fontsize=12, y=1.04)
+    fig.savefig(outpath, dpi=get_plot_dpi(cfg), bbox_inches="tight")
     plt.close(fig)
 
 
@@ -188,6 +183,8 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
     baseline_reps = int(cfg["bootstrap"]["n_reps"])
     deeper_reps = int(cfg.get("advanced_analyses", {}).get("bootstrap_depth_sensitivity", {}).get("n_reps", 800))
     target_indices = [idx_cfg["name"] for idx_cfg in cfg["indices"]]
+    focus_quantiles = get_focus_quantiles(cfg)
+    primary_delta = get_primary_delta(cfg)
 
     baseline_rows = []
     pub = pd.read_csv(tables_dir / "publication_summary_table.csv")
@@ -195,28 +192,19 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
         sub = pub[pub["index_name"] == index_name].copy()
         if sub.empty:
             continue
-        keep = [
-            "index_name",
-            "station_id",
-            "station_name",
-            "boot_mean_0.05",
-            "boot_mean_0.50",
-            "boot_mean_0.95",
-            "boot_mean_Delta1",
-            "boot_ci_low_0.05",
-            "boot_ci_high_0.05",
-            "boot_ci_low_0.50",
-            "boot_ci_high_0.50",
-            "boot_ci_low_0.95",
-            "boot_ci_high_0.95",
-            "boot_ci_low_Delta1",
-            "boot_ci_high_Delta1",
-        ]
+        keep = ["index_name", "station_id", "station_name"]
+        keep.extend([boot_mean_col(f"{tau:0.2f}") for tau in focus_quantiles])
+        keep.append(boot_mean_col(primary_delta))
+        for tau in focus_quantiles:
+            suffix = f"{tau:0.2f}"
+            keep.extend([boot_ci_low_col(suffix), boot_ci_high_col(suffix)])
+        keep.extend([boot_ci_low_col(primary_delta), boot_ci_high_col(primary_delta)])
         tmp = sub[keep].copy()
         tmp["n_reps"] = baseline_reps
-        for tau in ["0.05", "0.50", "0.95"]:
-            tmp[f"boot_ci_width_{tau}"] = tmp[f"boot_ci_high_{tau}"] - tmp[f"boot_ci_low_{tau}"]
-        tmp["boot_ci_width_Delta1"] = tmp["boot_ci_high_Delta1"] - tmp["boot_ci_low_Delta1"]
+        for tau in focus_quantiles:
+            suffix = f"{tau:0.2f}"
+            tmp[f"boot_ci_width_{suffix}"] = tmp[boot_ci_high_col(suffix)] - tmp[boot_ci_low_col(suffix)]
+        tmp[f"boot_ci_width_{primary_delta}"] = tmp[boot_ci_high_col(primary_delta)] - tmp[boot_ci_low_col(primary_delta)]
         baseline_rows.append(tmp)
     baseline = pd.concat(baseline_rows, ignore_index=True) if baseline_rows else pd.DataFrame()
 
@@ -225,7 +213,16 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
         deeper_frames.append(_station_summary_from_boot(annual, cfg, index_name, deeper_reps))
     deeper = pd.concat(deeper_frames, ignore_index=True) if deeper_frames else pd.DataFrame()
 
-    comparison = _regional_comparison_table(baseline, deeper, baseline_reps, deeper_reps, target_indices)
+    comparison = _regional_comparison_table(
+        baseline,
+        deeper,
+        baseline_reps,
+        deeper_reps,
+        target_indices,
+        focus_quantiles,
+        primary_delta,
+        cfg,
+    )
     station_compare = baseline.merge(
         deeper,
         on=["index_name", "station_id", "station_name"],
@@ -237,7 +234,15 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
 
     comparison.to_csv(comparison_path, index=False)
     station_compare.to_csv(station_path, index=False)
-    _plot_bootstrap_depth_sensitivity(comparison, fig_path, baseline_reps, deeper_reps, target_indices)
+    _plot_bootstrap_depth_sensitivity(
+        comparison,
+        fig_path,
+        baseline_reps,
+        deeper_reps,
+        target_indices,
+        focus_quantiles,
+        primary_delta,
+    )
 
     return {
         "summary_table": comparison_path,

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from .clustering import compare_clusterings, run_clustering
+from .config_utils import get_plot_dpi
 
 
 def _method_specs(cfg: dict) -> list[dict]:
@@ -19,7 +20,7 @@ def _method_label(spec: dict) -> str:
     return str(spec["algorithm"])
 
 
-def _plot_alternative_clustering_heatmap(summary: pd.DataFrame, outpath: Path) -> None:
+def _plot_alternative_clustering_heatmap(summary: pd.DataFrame, outpath: Path, cfg: dict) -> None:
     if summary.empty:
         return
 
@@ -50,7 +51,7 @@ def _plot_alternative_clustering_heatmap(summary: pd.DataFrame, outpath: Path) -
 
     cbar = fig.colorbar(im, ax=ax, shrink=0.9)
     cbar.set_label("Adjusted Rand index", fontsize=10)
-    fig.savefig(outpath, dpi=400, bbox_inches="tight")
+    fig.savefig(outpath, dpi=get_plot_dpi(cfg), bbox_inches="tight")
     plt.close(fig)
 
 
@@ -120,7 +121,7 @@ def run_alternative_clustering_sensitivity(feature_table: pd.DataFrame, cfg: dic
 
     summary.to_csv(summary_path, index=False)
     assignments.to_csv(assignments_path, index=False)
-    _plot_alternative_clustering_heatmap(summary, fig_path)
+    _plot_alternative_clustering_heatmap(summary, fig_path, cfg)
 
     return {
         "summary_table": summary_path,

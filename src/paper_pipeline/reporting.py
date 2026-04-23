@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from .config_utils import get_primary_delta, get_sensitivity_quantiles
+
 
 def generate_report(
     annual: pd.DataFrame,
@@ -22,6 +24,7 @@ def generate_report(
     min_years = int(cfg["quantile_regression"]["min_years_required_to_run"])
     short_run_count = int(features["insufficient_years_for_qr"].sum()) if "insufficient_years_for_qr" in features.columns else 0
     short_pub_count = int(features["publication_warning_short_record"].sum()) if "publication_warning_short_record" in features.columns else 0
+    primary_delta = get_primary_delta(cfg)
 
     lines = [
         "# Quantile Regression + Bootstrap + Clustering Report",
@@ -51,15 +54,15 @@ def generate_report(
             "- Output is suitable for method validation, not final climatological inference.",
         ]
 
-    lines += ["", "## Highest Delta1 stations by index"]
+    lines += ["", f"## Highest {primary_delta} stations by index"]
     for idx_cfg in cfg["indices"]:
         idx_name = idx_cfg["name"]
-        sdf = features.loc[features["index_name"] == idx_name, ["station_name", "Delta1"]].dropna().sort_values("Delta1", ascending=False).head(5)
+        sdf = features.loc[features["index_name"] == idx_name, ["station_name", primary_delta]].dropna().sort_values(primary_delta, ascending=False).head(5)
         lines.append(f"### {idx_cfg['title']}")
-        lines += [f"- {r['station_name']}: Delta1 = {r['Delta1']:.3f}" for _, r in sdf.iterrows()] if not sdf.empty else ["- No results"]
+        lines += [f"- {r['station_name']}: {primary_delta} = {r[primary_delta]:.3f}" for _, r in sdf.iterrows()] if not sdf.empty else ["- No results"]
         lines.append("")
 
-    sensitivity_taus = [float(x) for x in cfg["quantile_regression"].get("sensitivity_check_quantiles", [0.05, 0.95])]
+    sensitivity_taus = get_sensitivity_quantiles(cfg)
     lines.append("## Sensitivity Checks")
     for tau in sensitivity_taus:
         suffix = f"{tau:0.2f}"
@@ -105,13 +108,14 @@ def generate_report(
         lines.append("## Spatial Inference")
         for tau in sorted(pd.to_numeric(fdr_df["tau"], errors="coerce").dropna().unique().tolist()):
             sdf = fdr_df.loc[pd.to_numeric(fdr_df["tau"], errors="coerce") == tau].copy()
-            raw_sig = int((pd.to_numeric(sdf["analytic_p"], errors="coerce") < 0.05).sum())
+            raw_sig = int((pd.to_numeric(sdf["analytic_p"], errors="coerce") < float(cfg["advanced_analyses"]["spatial_inference"]["fdr_alpha"])).sum())
             fdr_sig = int(pd.to_numeric(sdf["fdr_reject"], errors="coerce").fillna(0).sum())
             lines.append(f"- τ = {tau:.2f}: raw significant station-results = {raw_sig}, FDR-retained = {fdr_sig}")
         lines.append("")
     if isinstance(moran_df, pd.DataFrame) and not moran_df.empty:
-        sig_moran = moran_df.loc[pd.to_numeric(moran_df["moran_p_perm"], errors="coerce") < 0.05]
-        lines.append(f"- Moran's I tests with p < 0.05: {len(sig_moran)}/{len(moran_df)} station-slope fields")
+        alpha = float(cfg["advanced_analyses"]["spatial_inference"]["fdr_alpha"])
+        sig_moran = moran_df.loc[pd.to_numeric(moran_df["moran_p_perm"], errors="coerce") < alpha]
+        lines.append(f"- Moran's I tests with p < {alpha:.2f}: {len(sig_moran)}/{len(moran_df)} station-slope fields")
         lines.append("")
 
     ref_sens = advanced_results.get("reference_period_sensitivity_summary")
@@ -143,12 +147,12 @@ def generate_report(
     driver_df = advanced_results.get("driver_analysis_summary")
     if isinstance(driver_df, pd.DataFrame) and not driver_df.empty:
         lines.append("## Driver Analysis")
-        delta_drivers = driver_df.loc[driver_df["metric"] == "Delta1"].copy()
+        delta_drivers = driver_df.loc[driver_df["metric"] == primary_delta].copy()
         if not delta_drivers.empty:
             top = delta_drivers.reindex(delta_drivers["std_beta"].abs().sort_values(ascending=False).index).head(6)
             for _, row in top.iterrows():
                 lines.append(
-                    f"- {row['index_name']} | Delta1 ~ {row['predictor']}: "
+                    f"- {row['index_name']} | {primary_delta} ~ {row['predictor']}: "
                     f"std beta = {float(row['std_beta']):+.3f}, p = {float(row['std_beta_pvalue']):.3f}, "
                     f"rho = {float(row['spearman_rho']):+.3f}"
                 )
@@ -157,13 +161,13 @@ def generate_report(
     regional_df = advanced_results.get("regional_cluster_composites")
     if isinstance(regional_df, pd.DataFrame) and not regional_df.empty:
         lines.append("## Regional Composites")
-        delta_region = regional_df.loc[regional_df["metric"] == "Delta1"].copy()
+        delta_region = regional_df.loc[regional_df["metric"] == primary_delta].copy()
         if not delta_region.empty:
             top = delta_region.sort_values("median", ascending=False).head(6)
             for _, row in top.iterrows():
                 lines.append(
                     f"- {row['index_name']} | cluster {int(row['cluster'])}: "
-                    f"median Delta1 = {float(row['median']):+.3f} (n={int(row['n_stations'])})"
+                    f"median {primary_delta} = {float(row['median']):+.3f} (n={int(row['n_stations'])})"
                 )
             lines.append("")
 

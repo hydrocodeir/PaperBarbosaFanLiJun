@@ -12,6 +12,17 @@ from scipy.stats import norm, spearmanr
 from sklearn.preprocessing import StandardScaler
 from statsmodels.stats.multitest import multipletests
 
+from .config_utils import (
+    get_default_figure_dpi,
+    get_focus_quantiles,
+    get_plot_quantiles,
+    get_plot_dpi,
+    get_primary_delta,
+    get_sensitivity_quantiles,
+    get_time_scale_years,
+    metric_label,
+    slope_col,
+)
 from .indices import create_extreme_indices
 from .plotting import (
     FIG3_CMAP,
@@ -161,7 +172,7 @@ def _spatial_cluster_validation(
     }
 
 
-def _plot_two_heatmaps(left: pd.DataFrame, right: pd.DataFrame, left_title: str, right_title: str, outpath: Path, cmap: str = "viridis") -> None:
+def _plot_two_heatmaps(left: pd.DataFrame, right: pd.DataFrame, left_title: str, right_title: str, outpath: Path, cfg: dict, cmap: str = "viridis") -> None:
     apply_publication_theme()
     fig, axes = plt.subplots(1, 2, figsize=(14, 5.5), constrained_layout=True)
     for ax, data, title in zip(axes, [left, right], [left_title, right_title]):
@@ -178,11 +189,11 @@ def _plot_two_heatmaps(left: pd.DataFrame, right: pd.DataFrame, left_title: str,
                 if pd.notna(val):
                     ax.text(j, i, f"{val:.0f}", ha="center", va="center", fontsize=8.5, color="white")
         fig.colorbar(im, ax=ax, shrink=0.82)
-    fig.savefig(outpath, dpi=300)
+    fig.savefig(outpath, dpi=get_plot_dpi(cfg))
     plt.close(fig)
 
 
-def _plot_single_heatmap(data: pd.DataFrame, title: str, outpath: Path, cmap: str = "coolwarm", fmt: str = "{:.2f}") -> None:
+def _plot_single_heatmap(data: pd.DataFrame, title: str, outpath: Path, cfg: dict, cmap: str = "coolwarm", fmt: str = "{:.2f}") -> None:
     apply_publication_theme()
     fig, ax = plt.subplots(figsize=(7.8, 5.8), constrained_layout=True)
     im = ax.imshow(data.to_numpy(dtype=float), aspect="auto", cmap=cmap)
@@ -197,7 +208,7 @@ def _plot_single_heatmap(data: pd.DataFrame, title: str, outpath: Path, cmap: st
             if pd.notna(val):
                 ax.text(j, i, fmt.format(float(val)), ha="center", va="center", fontsize=8.5, color="black")
     fig.colorbar(im, ax=ax, shrink=0.86)
-    fig.savefig(outpath, dpi=300)
+    fig.savefig(outpath, dpi=get_plot_dpi(cfg))
     plt.close(fig)
 
 
@@ -295,6 +306,7 @@ def run_spatial_inference(qr_summary: pd.DataFrame, stations: pd.DataFrame, cfg:
             "Raw Significant Counts",
             "FDR-Rejected Counts",
             figs_dir / f"raw_vs_fdr_counts.{cfg['plots']['save_format']}",
+            cfg=cfg,
             cmap="YlGnBu",
         )
     if not moran_df.empty:
@@ -303,6 +315,7 @@ def run_spatial_inference(qr_summary: pd.DataFrame, stations: pd.DataFrame, cfg:
             moran_pivot,
             "Moran's I of Station Slopes",
             figs_dir / f"moran_i_heatmap.{cfg['plots']['save_format']}",
+            cfg=cfg,
             cmap="RdBu_r",
             fmt="{:.2f}",
         )
@@ -312,7 +325,12 @@ def run_spatial_inference(qr_summary: pd.DataFrame, stations: pd.DataFrame, cfg:
 
 def _prepare_fast_sensitivity_cfg(cfg: dict, bootstrap_enabled: bool, bootstrap_method: str | None = None) -> dict:
     cfg_alt = deepcopy(cfg)
-    cfg_alt["quantile_regression"]["full_quantiles"] = {"start": 0.05, "stop": 0.95, "step": 0.45}
+    focus_quantiles = get_focus_quantiles(cfg)
+    cfg_alt["quantile_regression"]["full_quantiles"] = {
+        "start": min(focus_quantiles),
+        "stop": max(focus_quantiles),
+        "step": max(0.01, round((max(focus_quantiles) - min(focus_quantiles)) / max(1, len(focus_quantiles) - 1), 2)),
+    }
     cfg_alt["bootstrap"]["enabled"] = bool(bootstrap_enabled)
     if bootstrap_method is not None:
         cfg_alt["bootstrap"]["method"] = bootstrap_method
@@ -352,7 +370,7 @@ def _summarize_metric_comparison(base_df: pd.DataFrame, alt_df: pd.DataFrame, me
     return merged, pd.DataFrame(summary_rows)
 
 
-def _plot_metric_sensitivity(summary_df: pd.DataFrame, title: str, outpath: Path) -> None:
+def _plot_metric_sensitivity(summary_df: pd.DataFrame, title: str, outpath: Path, cfg: dict) -> None:
     if summary_df.empty:
         return
     apply_publication_theme()
@@ -364,7 +382,7 @@ def _plot_metric_sensitivity(summary_df: pd.DataFrame, title: str, outpath: Path
     ax.set_yticklabels(plot_df["label"].tolist(), fontsize=8.5)
     ax.set_xlabel("Mean absolute difference")
     ax.set_title(title)
-    fig.savefig(outpath, dpi=300)
+    fig.savefig(outpath, dpi=get_plot_dpi(cfg))
     plt.close(fig)
 
 
@@ -372,7 +390,7 @@ def _plot_interpolation_comparison(qr_summary: pd.DataFrame, stations: pd.DataFr
     figs_dir = outdir / "figures" / "advanced_method_sensitivity"
     figs_dir.mkdir(parents=True, exist_ok=True)
     boundary_geom = _load_boundary_geometry(_get_boundary_path_from_cfg(cfg))
-    taus = [float(x) for x in cfg["quantile_regression"].get("sensitivity_check_quantiles", [0.05, 0.95])]
+    taus = get_sensitivity_quantiles(cfg)
     rows = []
     for tau in taus:
         suffix = f"{tau:0.2f}"
@@ -450,7 +468,9 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
     figs_dir.mkdir(parents=True, exist_ok=True)
     results: Dict[str, pd.DataFrame] = {}
 
-    metric_list = ["slope_0.05", "slope_0.50", "slope_0.95", "Delta1"]
+    focus_quantiles = get_focus_quantiles(cfg)
+    primary_delta = get_primary_delta(cfg)
+    metric_list = [slope_col(tau) for tau in focus_quantiles] + [primary_delta]
     ref_periods = analysis_cfg.get("reference_periods", {})
     current_label = "current"
     current_ref, _ = resolve_reference_years(cfg, data)
@@ -478,17 +498,17 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
         results["reference_period_sensitivity_station_level"] = reference_station_df
     if not reference_summary_df.empty:
         reference_summary_df.to_csv(tables_dir / "reference_period_sensitivity_summary.csv", index=False)
-        _plot_metric_sensitivity(reference_summary_df, "Reference-Period Sensitivity", figs_dir / f"reference_period_sensitivity.{cfg['plots']['save_format']}")
+        _plot_metric_sensitivity(reference_summary_df, "Reference-Period Sensitivity", figs_dir / f"reference_period_sensitivity.{cfg['plots']['save_format']}", cfg)
         results["reference_period_sensitivity_summary"] = reference_summary_df
 
     bootstrap_station_parts = []
     bootstrap_summary_parts = []
     bootstrap_methods = [str(x) for x in analysis_cfg.get("bootstrap_methods", [cfg["bootstrap"]["method"]])]
     current_method = str(cfg["bootstrap"]["method"]).lower()
-    boot_metrics = [
-        "boot_mean_0.05", "boot_ci_low_0.05", "boot_ci_high_0.05",
-        "boot_mean_0.95", "boot_ci_low_0.95", "boot_ci_high_0.95",
-    ]
+    boot_metrics = []
+    for tau in get_sensitivity_quantiles(cfg):
+        suffix = f"{tau:0.2f}"
+        boot_metrics.extend([f"boot_mean_{suffix}", f"boot_ci_low_{suffix}", f"boot_ci_high_{suffix}"])
     for method in bootstrap_methods:
         if method.lower() == current_method:
             continue
@@ -508,7 +528,7 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
         results["bootstrap_method_sensitivity_station_level"] = bootstrap_station_df
     if not bootstrap_summary_df.empty:
         bootstrap_summary_df.to_csv(tables_dir / "bootstrap_method_sensitivity_summary.csv", index=False)
-        _plot_metric_sensitivity(bootstrap_summary_df, "Bootstrap-Method Sensitivity", figs_dir / f"bootstrap_method_sensitivity.{cfg['plots']['save_format']}")
+        _plot_metric_sensitivity(bootstrap_summary_df, "Bootstrap-Method Sensitivity", figs_dir / f"bootstrap_method_sensitivity.{cfg['plots']['save_format']}", cfg)
         results["bootstrap_method_sensitivity_summary"] = bootstrap_summary_df
 
     interpolation_methods = [str(x) for x in analysis_cfg.get("interpolation_methods", [cfg["spatial_visualization"]["interpolation_method"]])]
@@ -530,7 +550,7 @@ def run_driver_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg
     tables_dir.mkdir(parents=True, exist_ok=True)
     figs_dir.mkdir(parents=True, exist_ok=True)
     predictors = list(analysis_cfg.get("predictors", ["latitude", "longitude", "elevation"]))
-    metrics = list(analysis_cfg.get("metrics", ["slope_0.05", "slope_0.50", "slope_0.95", "Delta1"]))
+    metrics = list(analysis_cfg.get("metrics", [slope_col(tau) for tau in get_focus_quantiles(cfg)] + [get_primary_delta(cfg)]))
     merged = feature_table.merge(stations, on=["station_id", "station_name"], how="left")
 
     rows = []
@@ -567,12 +587,14 @@ def run_driver_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg
     if not driver_df.empty:
         driver_df.to_csv(tables_dir / "driver_analysis_summary.csv", index=False)
 
-        delta_df = driver_df.loc[driver_df["metric"] == "Delta1"].pivot(index="index_name", columns="predictor", values="std_beta").sort_index()
+        primary_delta = get_primary_delta(cfg)
+        delta_df = driver_df.loc[driver_df["metric"] == primary_delta].pivot(index="index_name", columns="predictor", values="std_beta").sort_index()
         if not delta_df.empty:
             _plot_single_heatmap(
                 delta_df,
-                "Standardized Driver Effects on Delta1",
-                figs_dir / f"driver_effects_delta1_heatmap.{cfg['plots']['save_format']}",
+                f"Standardized Driver Effects on {primary_delta}",
+                figs_dir / f"driver_effects_{primary_delta.lower()}_heatmap.{cfg['plots']['save_format']}",
+                cfg,
                 cmap="RdBu_r",
                 fmt="{:.2f}",
             )
@@ -586,21 +608,21 @@ def run_driver_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg
                 axes = [axes]
             for i, predictor in enumerate(predictors):
                 ax = axes[i]
-                local = sdf[[predictor, "Delta1"]].apply(pd.to_numeric, errors="coerce").dropna()
-                ax.scatter(local[predictor], local["Delta1"], s=42, color="#2a6f97", alpha=0.85)
+                local = sdf[[predictor, primary_delta]].apply(pd.to_numeric, errors="coerce").dropna()
+                ax.scatter(local[predictor], local[primary_delta], s=42, color="#2a6f97", alpha=0.85)
                 if len(local) >= 2:
-                    coeff = np.polyfit(local[predictor], local["Delta1"], deg=1)
+                    coeff = np.polyfit(local[predictor], local[primary_delta], deg=1)
                     xs = np.linspace(local[predictor].min(), local[predictor].max(), 100)
                     ax.plot(xs, coeff[0] * xs + coeff[1], color="#c1121f", linewidth=1.8)
                 driver_row = driver_df.loc[
-                    (driver_df["index_name"] == idx_name) & (driver_df["metric"] == "Delta1") & (driver_df["predictor"] == predictor)
+                    (driver_df["index_name"] == idx_name) & (driver_df["metric"] == primary_delta) & (driver_df["predictor"] == predictor)
                 ]
                 rho_text = ""
                 if not driver_row.empty:
                     rho_text = f"rho={float(driver_row.iloc[0]['spearman_rho']):+.2f}\np={float(driver_row.iloc[0]['spearman_pvalue']):.3f}"
                 ax.set_title(f"{_panel_label(i)} {predictor}")
                 ax.set_xlabel(predictor)
-                ax.set_ylabel("Delta1")
+                ax.set_ylabel(primary_delta)
                 ax.text(0.02, 0.98, rho_text, transform=ax.transAxes, va="top", ha="left", fontsize=8.5)
             fig.suptitle(f"Driver Relationships for {idx_cfg['title']}", fontsize=14, fontweight="bold")
             fig.savefig(figs_dir / f"driver_scatter_{idx_name}.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
@@ -617,7 +639,7 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataF
     figs_dir = outdir / "figures" / "advanced_regionalization"
     tables_dir.mkdir(parents=True, exist_ok=True)
     figs_dir.mkdir(parents=True, exist_ok=True)
-    metrics = list(analysis_cfg.get("summary_metrics", ["slope_0.05", "slope_0.50", "slope_0.95", "Delta1"]))
+    metrics = list(analysis_cfg.get("summary_metrics", [slope_col(tau) for tau in get_focus_quantiles(cfg)] + [get_primary_delta(cfg)]))
     spatial_validation_perms = int(analysis_cfg.get("spatial_validation_permutations", 499))
     rng = np.random.default_rng(int(cfg["project"]["random_seed"]))
     cluster_df = feature_table.dropna(subset=["cluster"]).copy()
@@ -688,6 +710,7 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataF
                     heat_df,
                     f"Cluster Median Composite - {idx_cfg['title']}",
                     figs_dir / f"cluster_composite_heatmap_{idx_name}.{cfg['plots']['save_format']}",
+                    cfg,
                     cmap="RdBu_r",
                     fmt="{:.2f}",
                 )
@@ -696,7 +719,8 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataF
             groups = []
             labels = []
             for cluster_id, cdf in sdf.groupby("cluster"):
-                vals = pd.to_numeric(cdf["Delta1"], errors="coerce").dropna()
+                primary_delta = get_primary_delta(cfg)
+                vals = pd.to_numeric(cdf[primary_delta], errors="coerce").dropna()
                 if vals.empty:
                     continue
                 groups.append(vals.to_numpy(dtype=float))
@@ -704,9 +728,9 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataF
             if groups:
                 ax.boxplot(groups, labels=labels, patch_artist=True, boxprops={"facecolor": "#a8dadc"}, medianprops={"color": "#1d3557"})
                 ax.axhline(0, color="black", linewidth=0.8)
-                ax.set_ylabel("Delta1")
-                ax.set_title(f"Cluster-wise Delta1 Distribution - {idx_cfg['title']}")
-                fig.savefig(figs_dir / f"cluster_delta1_boxplot_{idx_name}.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+                ax.set_ylabel(primary_delta)
+                ax.set_title(f"Cluster-wise {primary_delta} Distribution - {idx_cfg['title']}")
+                fig.savefig(figs_dir / f"cluster_{primary_delta.lower()}_boxplot_{idx_name}.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
             plt.close(fig)
 
     if not spatial_df.empty:
