@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Callable
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,6 +16,7 @@ from .config_utils import (
     get_primary_delta,
     metric_label,
 )
+from .progress_utils import ProgressTracker
 from .quantile import bootstrap_qr, build_station_seed, summarize_bootstrap
 
 
@@ -23,6 +25,7 @@ def _station_summary_from_boot(
     cfg: dict,
     index_name: str,
     n_reps: int,
+    progress_callback: Callable[[str], None] | None = None,
 ) -> pd.DataFrame:
     station_col = cfg["data"]["station_id_col"]
     station_name_col = cfg["data"]["station_name_col"]
@@ -39,7 +42,15 @@ def _station_summary_from_boot(
     rows: list[dict] = []
     sub = annual[[station_col, station_name_col, year_col, index_name]].copy()
 
-    for (station_id, station_name), sdf in sub.groupby([station_col, station_name_col]):
+    station_groups = list(sub.groupby([station_col, station_name_col]))
+    total_stations = len(station_groups)
+    tracker = ProgressTracker(
+        f"Bootstrap-depth sensitivity [{index_name}, {n_reps} reps]",
+        total_stations,
+        progress_callback,
+    )
+    for station_no, ((station_id, station_name), sdf) in enumerate(station_groups, start=1):
+        tracker.emit(station_no, detail=f"station={station_name} ({station_id})")
         sdf = sdf.sort_values(year_col)
         years = sdf[year_col].to_numpy(dtype=float)
         values = sdf[index_name].to_numpy(dtype=float)
@@ -175,9 +186,12 @@ def _plot_bootstrap_depth_sensitivity(
     fig.suptitle("Bootstrap-depth sensitivity for configured regional summaries", fontsize=12, y=1.04)
     fig.savefig(outpath, dpi=get_plot_dpi(cfg), bbox_inches="tight")
     plt.close(fig)
-
-
-def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Path) -> dict[str, Path]:
+def run_bootstrap_depth_sensitivity(
+    annual: pd.DataFrame,
+    cfg: dict,
+    outdir: Path,
+    progress_callback: Callable[[str], None] | None = None,
+) -> dict[str, Path]:
     tables_dir = outdir / "tables"
     figs_dir = outdir / "figures"
     baseline_reps = int(cfg["bootstrap"]["n_reps"])
@@ -188,6 +202,8 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
 
     baseline_rows = []
     pub = pd.read_csv(tables_dir / "publication_summary_table.csv")
+    if progress_callback is not None:
+        progress_callback("Bootstrap-depth sensitivity: preparing baseline summary from publication table")
     for index_name in target_indices:
         sub = pub[pub["index_name"] == index_name].copy()
         if sub.empty:
@@ -209,10 +225,27 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
     baseline = pd.concat(baseline_rows, ignore_index=True) if baseline_rows else pd.DataFrame()
 
     deeper_frames = []
-    for index_name in target_indices:
-        deeper_frames.append(_station_summary_from_boot(annual, cfg, index_name, deeper_reps))
+    total_indices = len(target_indices)
+    index_tracker = ProgressTracker(
+        f"Bootstrap-depth sensitivity index loop [{deeper_reps} reps]",
+        total_indices,
+        progress_callback,
+    )
+    for index_no, index_name in enumerate(target_indices, start=1):
+        index_tracker.emit(index_no, detail=f"index={index_name}")
+        deeper_frames.append(
+            _station_summary_from_boot(
+                annual,
+                cfg,
+                index_name,
+                deeper_reps,
+                progress_callback=progress_callback,
+            )
+        )
     deeper = pd.concat(deeper_frames, ignore_index=True) if deeper_frames else pd.DataFrame()
 
+    if progress_callback is not None:
+        progress_callback("Bootstrap-depth sensitivity: summarizing baseline vs deeper-bootstrap comparison")
     comparison = _regional_comparison_table(
         baseline,
         deeper,
@@ -221,7 +254,6 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
         target_indices,
         focus_quantiles,
         primary_delta,
-        cfg,
     )
     station_compare = baseline.merge(
         deeper,
@@ -234,6 +266,8 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
 
     comparison.to_csv(comparison_path, index=False)
     station_compare.to_csv(station_path, index=False)
+    if progress_callback is not None:
+        progress_callback("Bootstrap-depth sensitivity: exporting summary figure and tables")
     _plot_bootstrap_depth_sensitivity(
         comparison,
         fig_path,
@@ -242,6 +276,7 @@ def run_bootstrap_depth_sensitivity(annual: pd.DataFrame, cfg: dict, outdir: Pat
         target_indices,
         focus_quantiles,
         primary_delta,
+        cfg,
     )
 
     return {

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Callable, Tuple
 
 import numpy as np
 import pandas as pd
 
 from .math_utils import circular_day_distance, doy_noleap
+from .progress_utils import ProgressTracker
 from .year_config import resolve_reference_years
 
 
@@ -16,6 +17,8 @@ def compute_daily_thresholds(
     ref_mask: pd.Series,
     doy_col: str,
     cfg: dict,
+    progress_callback: Callable[[str], None] | None = None,
+    progress_label: str | None = None,
 ) -> pd.DataFrame:
     window = int(cfg["index_construction"]["percentile_window_days"])
     low_p = float(cfg["index_construction"]["lower_percentile"])
@@ -27,7 +30,10 @@ def compute_daily_thresholds(
     all_days = np.arange(1, 366)
     rows = []
 
-    for st in stations:
+    total_stations = len(stations)
+    tracker = ProgressTracker(f"Threshold estimation {progress_label or variable_col}", total_stations, progress_callback)
+    for station_no, st in enumerate(stations, start=1):
+        tracker.emit(station_no, detail=f"station={st}")
         sdf = ref_df.loc[ref_df[station_col] == st]
         day_vals = sdf[doy_col].to_numpy(dtype=int)
         vals = sdf[variable_col].to_numpy(dtype=float)
@@ -45,11 +51,11 @@ def compute_daily_thresholds(
                 }
             )
     return pd.DataFrame(rows)
-
-
-
-
-def create_extreme_indices(df: pd.DataFrame, cfg: dict) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def create_extreme_indices(
+    df: pd.DataFrame,
+    cfg: dict,
+    progress_callback: Callable[[str], None] | None = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     dcfg = cfg["data"]
     station_col = dcfg["station_id_col"]
     station_name_col = dcfg["station_name_col"]
@@ -72,8 +78,26 @@ def create_extreme_indices(df: pd.DataFrame, cfg: dict) -> Tuple[pd.DataFrame, p
         y0, y1 = ref_years
         ref_mask = out[year_col].between(y0, y1)
 
-    thresholds_tmax = compute_daily_thresholds(out, station_col, tmax_col, ref_mask, "doy", cfg)
-    thresholds_tmin = compute_daily_thresholds(out, station_col, tmin_col, ref_mask, "doy", cfg)
+    thresholds_tmax = compute_daily_thresholds(
+        out,
+        station_col,
+        tmax_col,
+        ref_mask,
+        "doy",
+        cfg,
+        progress_callback=progress_callback,
+        progress_label="tmax",
+    )
+    thresholds_tmin = compute_daily_thresholds(
+        out,
+        station_col,
+        tmin_col,
+        ref_mask,
+        "doy",
+        cfg,
+        progress_callback=progress_callback,
+        progress_label="tmin",
+    )
     thresholds = thresholds_tmax.merge(thresholds_tmin, on=[station_col, "doy"], how="outer")
 
     out = out.merge(thresholds, on=[station_col, "doy"], how="left")

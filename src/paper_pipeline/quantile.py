@@ -28,6 +28,7 @@ from .math_utils import (
     residual_bootstrap,
     select_block_length,
 )
+from .progress_utils import ProgressTracker
 
 
 def build_station_seed(base_seed: int, index_name: str, station_id: str | int) -> int:
@@ -406,16 +407,13 @@ def run_station_qr(
     total_indices = len(cfg["indices"])
     total_tasks = total_indices * total_stations
     task_no = 0
+    tracker = ProgressTracker("Quantile regression", total_tasks, progress_callback)
 
     for index_cfg in cfg["indices"]:
         idx_name = index_cfg["name"]
         for (station_id, station_name), sdf in annual.groupby([station_col, station_name_col]):
             task_no += 1
-            if progress_callback is not None:
-                progress_callback(
-                    f"Quantile regression {task_no}/{total_tasks}: "
-                    f"index={idx_name}, station={station_name} ({station_id})"
-                )
+            tracker.emit(task_no, detail=f"index={idx_name} | station={station_name} ({station_id})")
             sdf = sdf[[year_col, idx_name]].sort_values(year_col).copy()
             years, values = sdf[year_col].to_numpy(dtype=float), sdf[idx_name].to_numpy(dtype=float)
             n_years = int(np.isfinite(values).sum())

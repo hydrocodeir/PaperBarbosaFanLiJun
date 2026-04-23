@@ -51,6 +51,7 @@ from .plotting import (
     plot_station_paper2_figures,
     plot_station_heatmap,
 )
+from .progress_utils import ProgressTracker
 from .quantile import add_sensitivity_check_columns, run_station_qr
 from .reporting import generate_report
 from .year_config import filter_to_analysis_years, format_year_range_label, get_effective_year_range
@@ -63,37 +64,80 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     tables_dir = outdir / "tables"
     figs_dir = outdir / "figures"
     status_path = outdir / "run_status.txt"
+    status_summary_path = outdir / "run_status_summary.txt"
+    status_detail_path = outdir / "run_status_detail.txt"
     for p in (outdir, tables_dir, figs_dir):
         p.mkdir(parents=True, exist_ok=True)
 
-    def log_status(message: str):
+    def _write_status_line(path: Path, line: str) -> None:
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write(line + "\n")
+
+    def log_status(message: str, *, level: str = "summary"):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         line = f"[{timestamp}] {message}"
         print(line, flush=True)
-        with status_path.open("a", encoding="utf-8") as fh:
-            fh.write(line + "\n")
+        _write_status_line(status_path, line)
+        if level == "summary":
+            _write_status_line(status_summary_path, line)
+        elif level == "detail":
+            _write_status_line(status_detail_path, line)
+        else:
+            _write_status_line(status_summary_path, line)
+            _write_status_line(status_detail_path, line)
+
+    def log_summary(message: str) -> None:
+        log_status(message, level="summary")
+
+    def log_detail(message: str) -> None:
+        log_status(message, level="detail")
+
+    phase_names = [
+        "Load input tables",
+        "Data-quality diagnostics",
+        "Annual index construction",
+        "Homogeneity sensitivity",
+        "Quantile regression and bootstrap",
+        "Clustering and feature tables",
+        "Bootstrap-depth sensitivity",
+        "Figure rendering",
+        "Advanced publication analyses",
+        "Final reporting",
+    ]
+    pipeline_tracker = ProgressTracker("Pipeline", len(phase_names), log_summary)
+
+    def log_phase_start(phase_no: int, detail: str | None = None) -> None:
+        phase_label = phase_names[phase_no - 1]
+        extra = f"[PHASE {phase_no}/{len(phase_names)}] {phase_label}"
+        if detail is not None:
+            extra = f"{extra} | {detail}"
+        pipeline_tracker.emit(phase_no, detail=extra)
 
     data = pd.read_csv(cfg["paths"]["data_csv"])
     data = filter_to_analysis_years(data, cfg)
     stations = pd.read_csv(cfg["paths"]["station_csv"])
     analysis_year_range = get_effective_year_range(cfg, data)
-    log_status(
+    log_phase_start(1, detail=f"data_rows={len(data)} | stations={stations.shape[0]}")
+    log_summary(
         f"Loaded input tables: data_rows={len(data)}, stations={stations.shape[0]}, "
         f"analysis_years={format_year_range_label(analysis_year_range)}"
     )
 
-    log_status("Running data-quality and homogeneity diagnostics...")
+    log_phase_start(2)
+    log_summary("Running data-quality and homogeneity diagnostics...")
     dq_results = run_data_quality_assessment(data, cfg, outdir)
-    log_status("Saved data-quality and homogeneity diagnostics.")
+    log_summary("Saved data-quality and homogeneity diagnostics.")
 
-    log_status("Building annual extreme indices...")
-    _, annual = create_extreme_indices(data, cfg)
+    log_phase_start(3)
+    log_summary("Building annual extreme indices...")
+    _, annual = create_extreme_indices(data, cfg, progress_callback=log_detail)
     annual.to_csv(tables_dir / "annual_extreme_indices.csv", index=False)
-    log_status(f"Saved annual indices table with {len(annual)} rows.")
+    log_summary(f"Saved annual indices table with {len(annual)} rows.")
 
-    log_status("Running sensitivity check excluding homogeneity-flagged stations...")
+    log_phase_start(4)
+    log_summary("Running sensitivity check excluding homogeneity-flagged stations...")
     run_homogeneity_exclusion_sensitivity(annual, dq_results["homogeneity"], cfg, outdir)
-    log_status("Saved homogeneity-exclusion sensitivity diagnostics.")
+    log_summary("Saved homogeneity-exclusion sensitivity diagnostics.")
 
     metadata = {
         "project_name": cfg["project"]["name"],
@@ -104,13 +148,15 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
         "focus_quantiles": cfg["quantile_regression"]["focus_quantiles"],
     }
     (outdir / "run_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
-    log_status("Wrote run metadata.")
+    log_summary("Wrote run metadata.")
 
-    log_status("Starting quantile regression and bootstrap stage. This can take a while with current settings.")
-    qr_all, qr_summary, boot_long = run_station_qr(annual, cfg, progress_callback=log_status)
+    log_phase_start(5)
+    log_summary("Starting quantile regression and bootstrap stage. This can take a while with current settings.")
+    qr_all, qr_summary, boot_long = run_station_qr(annual, cfg, progress_callback=log_detail)
     qr_summary = add_sensitivity_check_columns(qr_summary, cfg)
-    log_status("Quantile regression stage completed.")
+    log_summary("Quantile regression stage completed.")
 
+    log_phase_start(6)
     feature_table = build_feature_table(qr_summary, cfg)
     baseline_screening_df = screen_clustering_features(
         feature_table,
@@ -160,11 +206,11 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
         cluster_robustness_df.to_csv(tables_dir / "cluster_robustness_summary.csv", index=False)
     if cfg["bootstrap"]["save_long_table"] and not boot_long.empty:
         boot_long.to_csv(tables_dir / "bootstrap_distributions_long.csv", index=False)
-    log_status("Saved quantile, bootstrap, and clustering tables.")
+    log_summary("Saved quantile, bootstrap, and clustering tables.")
 
-    log_status("Running alternative-clustering sensitivity analysis...")
+    log_summary("Running alternative-clustering sensitivity analysis...")
     run_alternative_clustering_sensitivity(feature_table, cfg, outdir)
-    log_status("Saved alternative-clustering sensitivity diagnostics.")
+    log_summary("Saved alternative-clustering sensitivity diagnostics.")
 
     focus_cols = ["index_name", "station_id", "station_name", "n_years", "insufficient_years_for_qr"]
     for tau in get_focus_quantiles(cfg):
@@ -197,13 +243,15 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
         "cluster_reduced_features",
     ])
     feature_table[[c for c in focus_cols if c in feature_table.columns]].to_csv(tables_dir / "publication_summary_table.csv", index=False)
-    log_status("Saved publication summary table.")
+    log_summary("Saved publication summary table.")
 
-    log_status("Running limited higher-replication bootstrap-depth sensitivity...")
-    run_bootstrap_depth_sensitivity(annual, cfg, outdir)
-    log_status("Saved bootstrap-depth sensitivity diagnostics.")
+    log_phase_start(7)
+    log_summary("Running limited higher-replication bootstrap-depth sensitivity...")
+    run_bootstrap_depth_sensitivity(annual, cfg, outdir, progress_callback=log_detail)
+    log_summary("Saved bootstrap-depth sensitivity diagnostics.")
 
-    log_status("Rendering figures...")
+    log_phase_start(8)
+    log_summary("Rendering figures...")
     plot_data_coverage(annual, figs_dir, cfg)
     plot_region_quantile_slopes(annual, figs_dir, cfg)
     plot_ijoc_regional_quantile_panels(annual, figs_dir, cfg)
@@ -219,20 +267,22 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
     plot_paper2_figure3_maps(annual, stations, figs_dir, cfg)
     plot_station_paper1_figure4(boot_long, qr_summary, figs_dir, cfg)
     plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
-    log_status("Finished rendering figures.")
+    log_summary("Finished rendering figures.")
 
-    log_status("Running advanced publication analyses...")
+    log_phase_start(9)
+    log_summary("Running advanced publication analyses...")
     advanced_results = {}
-    advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir))
-    advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir))
-    advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir))
-    advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir))
-    log_status("Finished advanced publication analyses.")
+    advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir, progress_callback=log_detail))
+    advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
+    advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
+    advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
+    log_summary("Finished advanced publication analyses.")
 
-    log_status("Rendering robustness synthesis figure from completed sensitivity outputs...")
+    log_summary("Rendering robustness synthesis figure from completed sensitivity outputs...")
     plot_ijoc_robustness_synthesis(figs_dir, cfg)
-    log_status("Saved robustness synthesis figure.")
+    log_summary("Saved robustness synthesis figure.")
 
+    log_phase_start(10)
     generate_report(
         annual,
         feature_table,
@@ -242,5 +292,5 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
         cluster_robustness_df=cluster_robustness_df,
         advanced_results=advanced_results,
     )
-    log_status("Generated final report.")
+    log_summary("Generated final report.")
     return outdir

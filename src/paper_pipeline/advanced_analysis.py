@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict
+from typing import Callable, Dict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,6 +39,7 @@ from .plotting import (
     _short_tau_label,
     apply_publication_theme,
 )
+from .progress_utils import ProgressTracker
 from .quantile import add_sensitivity_check_columns, run_station_qr
 from .year_config import resolve_reference_years
 
@@ -212,7 +213,13 @@ def _plot_single_heatmap(data: pd.DataFrame, title: str, outpath: Path, cfg: dic
     plt.close(fig)
 
 
-def run_spatial_inference(qr_summary: pd.DataFrame, stations: pd.DataFrame, cfg: dict, outdir: Path) -> Dict[str, pd.DataFrame]:
+def run_spatial_inference(
+    qr_summary: pd.DataFrame,
+    stations: pd.DataFrame,
+    cfg: dict,
+    outdir: Path,
+    progress_callback: Callable[[str], None] | None = None,
+) -> Dict[str, pd.DataFrame]:
     analysis_cfg = cfg.get("advanced_analyses", {}).get("spatial_inference", {})
     if not analysis_cfg.get("enabled", False) or qr_summary.empty:
         return {}
@@ -231,7 +238,10 @@ def run_spatial_inference(qr_summary: pd.DataFrame, stations: pd.DataFrame, cfg:
     station_rows = []
     moran_rows = []
 
-    for tau in quantiles:
+    total_quantiles = len(quantiles)
+    quantile_tracker = ProgressTracker("Spatial inference", total_quantiles, progress_callback)
+    for tau_no, tau in enumerate(quantiles, start=1):
+        quantile_tracker.emit(tau_no, detail=f"tau={tau:.2f}")
         suffix = f"{tau:0.2f}"
         slope_col = f"slope_{suffix}"
         ci_low_col = f"ci_low_{suffix}"
@@ -457,7 +467,15 @@ def _plot_interpolation_comparison(qr_summary: pd.DataFrame, stations: pd.DataFr
     return pd.DataFrame(rows)
 
 
-def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary: pd.DataFrame, stations: pd.DataFrame, cfg: dict, outdir: Path) -> Dict[str, pd.DataFrame]:
+def run_method_sensitivity(
+    data: pd.DataFrame,
+    annual: pd.DataFrame,
+    qr_summary: pd.DataFrame,
+    stations: pd.DataFrame,
+    cfg: dict,
+    outdir: Path,
+    progress_callback: Callable[[str], None] | None = None,
+) -> Dict[str, pd.DataFrame]:
     analysis_cfg = cfg.get("advanced_analyses", {}).get("method_sensitivity", {})
     if not analysis_cfg.get("enabled", False):
         return {}
@@ -478,13 +496,20 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
 
     reference_station_parts = []
     reference_summary_parts = []
-    for label, ref_years in ref_periods.items():
-        if label == current_label or ref_years == current_ref:
-            continue
+    ref_items = [(label, ref_years) for label, ref_years in ref_periods.items() if label != current_label and ref_years != current_ref]
+    ref_tracker = ProgressTracker("Method sensitivity [reference periods]", len(ref_items), progress_callback)
+    for ref_no, (label, ref_years) in enumerate(ref_items, start=1):
+        ref_tracker.emit(ref_no, detail=f"alternative={label}")
         cfg_alt = _prepare_fast_sensitivity_cfg(cfg, bootstrap_enabled=False)
         cfg_alt["index_construction"]["reference_years"] = ref_years
-        _, annual_alt = create_extreme_indices(data, cfg_alt)
-        _, qr_alt, _ = run_station_qr(annual_alt, cfg_alt)
+        nested_prefix = f"Method sensitivity [reference={label}]"
+        nested_callback = (
+            (lambda message, prefix=nested_prefix: progress_callback(f"{prefix} -> {message}"))
+            if progress_callback is not None
+            else None
+        )
+        _, annual_alt = create_extreme_indices(data, cfg_alt, progress_callback=nested_callback)
+        _, qr_alt, _ = run_station_qr(annual_alt, cfg_alt, progress_callback=nested_callback)
         station_cmp, summary_cmp = _summarize_metric_comparison(base_qr, qr_alt, metric_list, f"reference_period:{label}")
         station_cmp["alternative"] = label
         summary_cmp["alternative"] = label
@@ -509,11 +534,22 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
     for tau in get_sensitivity_quantiles(cfg):
         suffix = f"{tau:0.2f}"
         boot_metrics.extend([f"boot_mean_{suffix}", f"boot_ci_low_{suffix}", f"boot_ci_high_{suffix}"])
-    for method in bootstrap_methods:
-        if method.lower() == current_method:
-            continue
+    alternative_bootstrap_methods = [method for method in bootstrap_methods if method.lower() != current_method]
+    bootstrap_tracker = ProgressTracker(
+        "Method sensitivity [bootstrap methods]",
+        len(alternative_bootstrap_methods),
+        progress_callback,
+    )
+    for method_no, method in enumerate(alternative_bootstrap_methods, start=1):
+        bootstrap_tracker.emit(method_no, detail=f"alternative={method}")
         cfg_alt = _prepare_fast_sensitivity_cfg(cfg, bootstrap_enabled=True, bootstrap_method=method)
-        _, qr_alt, _ = run_station_qr(annual, cfg_alt)
+        nested_prefix = f"Method sensitivity [bootstrap={method}]"
+        nested_callback = (
+            (lambda message, prefix=nested_prefix: progress_callback(f"{prefix} -> {message}"))
+            if progress_callback is not None
+            else None
+        )
+        _, qr_alt, _ = run_station_qr(annual, cfg_alt, progress_callback=nested_callback)
         qr_alt = add_sensitivity_check_columns(qr_alt, cfg_alt)
         station_cmp, summary_cmp = _summarize_metric_comparison(base_qr, qr_alt, boot_metrics, f"bootstrap_method:{method}")
         station_cmp["alternative"] = method
@@ -531,6 +567,8 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
         _plot_metric_sensitivity(bootstrap_summary_df, "Bootstrap-Method Sensitivity", figs_dir / f"bootstrap_method_sensitivity.{cfg['plots']['save_format']}", cfg)
         results["bootstrap_method_sensitivity_summary"] = bootstrap_summary_df
 
+    if progress_callback is not None:
+        progress_callback("Method sensitivity [interpolation]: starting comparison across configured methods")
     interpolation_methods = [str(x) for x in analysis_cfg.get("interpolation_methods", [cfg["spatial_visualization"]["interpolation_method"]])]
     interpolation_df = _plot_interpolation_comparison(qr_summary, stations, cfg, interpolation_methods, outdir)
     if not interpolation_df.empty:
@@ -540,7 +578,13 @@ def run_method_sensitivity(data: pd.DataFrame, annual: pd.DataFrame, qr_summary:
     return results
 
 
-def run_driver_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg: dict, outdir: Path) -> Dict[str, pd.DataFrame]:
+def run_driver_analysis(
+    feature_table: pd.DataFrame,
+    stations: pd.DataFrame,
+    cfg: dict,
+    outdir: Path,
+    progress_callback: Callable[[str], None] | None = None,
+) -> Dict[str, pd.DataFrame]:
     analysis_cfg = cfg.get("advanced_analyses", {}).get("driver_analysis", {})
     if not analysis_cfg.get("enabled", False) or feature_table.empty:
         return {}
@@ -554,8 +598,14 @@ def run_driver_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg
     merged = feature_table.merge(stations, on=["station_id", "station_name"], how="left")
 
     rows = []
-    for idx_name, sdf in merged.groupby("index_name"):
-        for metric in metrics:
+    grouped = list(merged.groupby("index_name"))
+    driver_tracker = ProgressTracker("Driver analysis", max(1, len(grouped) * len(metrics)), progress_callback)
+    for idx_no, (idx_name, sdf) in enumerate(grouped, start=1):
+        for metric_no, metric in enumerate(metrics, start=1):
+            driver_tracker.emit(
+                (idx_no - 1) * len(metrics) + metric_no,
+                detail=f"index={idx_name} | metric={metric}",
+            )
             use_cols = predictors + [metric]
             local = sdf[use_cols].apply(pd.to_numeric, errors="coerce").dropna()
             if len(local) < len(predictors) + 2:
@@ -630,7 +680,13 @@ def run_driver_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg
     return {"driver_analysis_summary": driver_df}
 
 
-def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataFrame, cfg: dict, outdir: Path) -> Dict[str, pd.DataFrame]:
+def run_regionalization_analysis(
+    feature_table: pd.DataFrame,
+    stations: pd.DataFrame,
+    cfg: dict,
+    outdir: Path,
+    progress_callback: Callable[[str], None] | None = None,
+) -> Dict[str, pd.DataFrame]:
     analysis_cfg = cfg.get("advanced_analyses", {}).get("regionalization", {})
     if not analysis_cfg.get("enabled", False) or feature_table.empty or "cluster" not in feature_table.columns:
         return {}
@@ -654,7 +710,10 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataF
 
     rows = []
     spatial_rows = []
-    for (idx_name, cluster), sdf in cluster_df.groupby(["index_name", "cluster"]):
+    grouped_clusters = list(cluster_df.groupby(["index_name", "cluster"]))
+    cluster_tracker = ProgressTracker("Regionalization [cluster composites]", len(grouped_clusters), progress_callback)
+    for group_no, ((idx_name, cluster), sdf) in enumerate(grouped_clusters, start=1):
+        cluster_tracker.emit(group_no, detail=f"index={idx_name} | cluster={int(cluster)}")
         for metric in metrics:
             vals = pd.to_numeric(sdf[metric], errors="coerce").dropna()
             if vals.empty:
@@ -672,7 +731,10 @@ def run_regionalization_analysis(feature_table: pd.DataFrame, stations: pd.DataF
                     "max": float(vals.max()),
                 }
             )
-    for idx_name, sdf in cluster_df.groupby("index_name"):
+    grouped_indices = list(cluster_df.groupby("index_name"))
+    spatial_tracker = ProgressTracker("Regionalization [spatial validation]", len(grouped_indices), progress_callback)
+    for idx_no, (idx_name, sdf) in enumerate(grouped_indices, start=1):
+        spatial_tracker.emit(idx_no, detail=f"index={idx_name}")
         result = _spatial_cluster_validation(sdf, permutations=spatial_validation_perms, rng=rng)
         if result:
             result["index_name"] = idx_name
