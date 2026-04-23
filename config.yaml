@@ -11,7 +11,7 @@ data:
   station_name_col: station_name
   year_col: year
   analysis_years:
-  - 1985
+  - 1991
   - 2024
   month_col: month
   day_col: day
@@ -20,6 +20,7 @@ data:
   tmean_col: tmean
   precip_col: precip
 index_construction:
+  reference_years: null
   # reference_years:
   # - 1961
   # - 1990
@@ -195,7 +196,7 @@ advanced_analyses:
     spatial_validation_permutations: 499
   bootstrap_depth_sensitivity:
     enabled: true
-    n_reps: 220
+    n_reps: 400
   alternative_clustering_methods:
     enabled: true
     methods:
