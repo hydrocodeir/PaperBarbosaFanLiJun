@@ -253,11 +253,11 @@ quantile_regression:
   full_quantiles:
     # Starting quantile of the full grid.
     # Type: float in (0, 1)
-    start: 0.05
+    start: 0.10
 
     # Ending quantile of the full grid.
     # Type: float in (0, 1)
-    stop: 0.95
+    stop: 0.90
 
     # Step size between quantiles.
     # Type: float > 0
@@ -271,11 +271,9 @@ quantile_regression:
   # Every delta definition must refer to slope columns that come from this list.
   # Type: list of unique floats in (0, 1)
   focus_quantiles:
-    - 0.05
     - 0.10
     - 0.50
     - 0.90
-    - 0.95
 
   # Human-readable label for the time scale.
   # Only affects output text / axis labels.
@@ -294,7 +292,7 @@ quantile_regression:
 
   # Soft recommendation threshold used to flag short records for publication.
   # Type: integer >= min_years_required_to_run
-  min_years_recommended_for_publication: 20
+  min_years_recommended_for_publication: 30
 
   # Maximum optimizer iterations for statsmodels QuantReg.
   # Higher values may help difficult fits but will increase runtime.
@@ -305,8 +303,8 @@ quantile_regression:
   # Must be a subset of `focus_quantiles`.
   # Type: list of floats in (0, 1)
   sensitivity_check_quantiles:
-    - 0.05
-    - 0.95
+    - 0.10
+    - 0.90
 
 # -------------------------------------------------------------------
 # bootstrap:
@@ -396,14 +394,14 @@ feature_engineering:
   # Type: mapping of name -> 2-item list
   delta_definitions:
     Delta1:
-      - slope_0.95
-      - slope_0.05
+      - slope_0.90
+      - slope_0.10
     Delta2:
-      - slope_0.95
+      - slope_0.90
       - slope_0.50
     Delta3:
       - slope_0.50
-      - slope_0.05
+      - slope_0.10
 
 # -------------------------------------------------------------------
 # clustering:
@@ -469,23 +467,23 @@ clustering:
   # These must correspond to existing columns after QR / feature generation.
   # Type: list of strings
   simple_features:
-    - slope_0.05
+    - slope_0.10
     - slope_0.50
-    - slope_0.95
+    - slope_0.90
 
   # Feature list used when feature_mode = uncertainty.
   # Type: list of strings
   uncertainty_features:
-    - slope_0.05
+    - slope_0.10
     - slope_0.50
-    - slope_0.95
+    - slope_0.90
     - Delta1
-    - boot_mean_0.05
+    - boot_mean_0.10
     - boot_mean_0.50
-    - boot_mean_0.95
-    - boot_sd_0.05
+    - boot_mean_0.90
+    - boot_sd_0.10
     - boot_sd_0.50
-    - boot_sd_0.95
+    - boot_sd_0.90
 
   # Optional internal robustness rerun for clustering.
   robustness_check:
@@ -495,16 +493,16 @@ clustering:
     # Feature list for the robustness rerun.
     # Type: list of strings
     reduced_features:
-      - slope_0.05
+      - slope_0.10
       - slope_0.50
-      - slope_0.95
+      - slope_0.90
       - Delta1
-      - boot_mean_0.05
+      - boot_mean_0.10
       - boot_mean_0.50
-      - boot_mean_0.95
-      - boot_sd_0.05
+      - boot_mean_0.90
+      - boot_sd_0.10
       - boot_sd_0.50
-      - boot_sd_0.95
+      - boot_sd_0.90
 
 # -------------------------------------------------------------------
 # plots:
@@ -563,35 +561,33 @@ plots:
 
     # Marker quantiles shown in representative-station comparison figures.
     station_comparison:
-      - 0.05
-      - 0.50
-      - 0.95
-
-    # Quantiles for Paper 2 map outputs.
-    paper2_maps:
-      - 0.05
       - 0.10
       - 0.50
       - 0.90
-      - 0.95
+
+    # Quantiles for Paper 2 map outputs.
+    paper2_maps:
+      - 0.10
+      - 0.50
+      - 0.90
 
     # Quantiles for bootstrap distribution panels.
     bootstrap_distributions:
-      - 0.05
+      - 0.10
       - 0.50
-      - 0.95
+      - 0.90
 
     # Quantiles used in single-quantile dendrogram figures.
     paper1_dendrograms:
-      - 0.05
+      - 0.10
       - 0.50
-      - 0.95
+      - 0.90
 
     # Quantiles compared in split-period bar charts.
     split_period_bars:
-      - 0.05
+      - 0.10
       - 0.50
-      - 0.95
+      - 0.90
 
 # -------------------------------------------------------------------
 # spatial_visualization:
@@ -648,11 +644,9 @@ advanced_analyses:
     # Quantiles to test spatially.
     # Usually a subset of focus_quantiles, but can be broader if supported.
     quantiles:
-      - 0.05
       - 0.10
       - 0.50
       - 0.90
-      - 0.95
 
   # ---------------------------------------------------------------
   # method_sensitivity:
@@ -704,9 +698,9 @@ advanced_analyses:
     # Metrics to regress against predictors.
     # Must exist in the feature table.
     metrics:
-      - slope_0.05
+      - slope_0.10
       - slope_0.50
-      - slope_0.95
+      - slope_0.90
       - Delta1
 
   # ---------------------------------------------------------------
@@ -718,9 +712,9 @@ advanced_analyses:
 
     # Metrics summarized by cluster.
     summary_metrics:
-      - slope_0.05
+      - slope_0.10
       - slope_0.50
-      - slope_0.95
+      - slope_0.90
       - Delta1
 
     # Permutations for spatial compactness validation of clusters.

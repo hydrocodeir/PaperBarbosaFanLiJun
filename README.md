@@ -1,540 +1,514 @@
 # PaperBarbosaFanLiJun
 
-This repository implements a complete end-to-end Python workflow for analyzing temperature-extreme indices at station scale, estimating distribution-sensitive temporal trends with quantile regression, quantifying uncertainty with bootstrap resampling, grouping stations by trend behavior, and exporting publication-oriented tables, maps, and figures.
+This repository contains a full end-to-end Python pipeline for station-based analysis of temperature-extreme indices. The workflow builds annual warm/cool extreme indices from daily observations, fits station-level quantile regression, estimates uncertainty with bootstrap resampling, derives asymmetric trend metrics, clusters stations by trend structure, runs several sensitivity analyses, and exports publication-oriented tables, figures, metadata, and summary reports.
 
-## Purpose
+The current codebase is now configuration-driven. Core analysis behavior is controlled from `config.yaml`, including quantiles, delta definitions, bootstrap settings, clustering features, plotting quantile selections, QC thresholds, and many output settings. The intent is that analysis logic should be changed through configuration rather than by editing hard-coded values in the source.
 
-The pipeline was designed to answer three connected questions:
+## What The Pipeline Does
+
+At a high level, the workflow answers four connected questions:
 
 1. How have annual warm and cool temperature-extreme indices changed over time at each station?
-2. Do temporal trends differ across the lower, median, and upper parts of the distribution?
-3. Can stations be grouped into interpretable clusters based on asymmetric trend behavior and uncertainty metrics?
+2. Do those trends differ across the distribution rather than only in the mean?
+3. How uncertain are quantile-specific slopes and derived asymmetry metrics?
+4. Can stations be grouped into interpretable regional trend signatures?
 
-The current configuration analyzes four annual temperature-extreme indices:
+The pipeline supports:
 
-- `warm_days`
-- `warm_nights`
-- `cool_days`
-- `cool_nights`
+- annual extreme-index construction from daily observations
+- station-level quantile regression on a configurable full quantile grid
+- configurable focus quantiles for summary outputs
+- configurable delta metrics derived from focus-quantile slopes
+- bootstrap uncertainty using several resampling methods
+- station clustering with optional collinearity screening
+- homogeneity and data-quality diagnostics
+- advanced sensitivity and publication-oriented analyses
+- figure export for station, regional, and spatial summaries
 
 ## Run
+
+The entry point is:
 
 ```bash
 python run_analysis.py --config config.yaml
 ```
 
-The command runs the full workflow defined in `src/paper_pipeline/pipeline.py` and writes outputs into `outputs/`.
+`--config` is required. The pipeline validates the configuration before running. If required settings are missing or inconsistent, the run stops with a configuration error instead of silently falling back to hidden defaults.
 
-## Materials And Methods
+## Main Inputs
 
-## Workflow Diagram
+The pipeline expects two tabular inputs defined in `config.yaml`:
+
+- `paths.data_csv`: daily station observations
+- `paths.station_csv`: station metadata
+
+The daily table is expected to contain the columns mapped in `config.yaml` under `data`, typically including:
+
+- station id
+- station name
+- year
+- month
+- day
+- Tmin
+- Tmax
+- Tmean
+- precipitation
+
+The station table is used for:
+
+- geographic joins
+- elevation / latitude / longitude based analyses
+- map generation
+- driver analysis
+
+## Configuration-Driven Design
+
+The current repository is organized around a central principle:
+
+- analysis choices should be declared in `config.yaml`
+- source code should interpret configuration, validate it, and execute accordingly
+
+The validation layer lives in [src/paper_pipeline/config_utils.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/config_utils.py). It currently enforces several important rules, including:
+
+- required config keys must exist
+- `focus_quantiles` must be explicitly provided
+- `sensitivity_check_quantiles` must be a subset of `focus_quantiles`
+- plot-specific quantile selections must satisfy expected subset rules
+- `primary_delta` must exist in `delta_definitions`
+- every configured delta must reference focus-quantile slope columns
+- DPI, QC thresholds, and time scaling must be valid positive values
+
+This means the code no longer assumes fixed quantiles like `0.05`, `0.50`, and `0.95` as universal truths. Those values are only used if you choose them in the config.
+
+## High-Level Workflow
 
 ```mermaid
 flowchart TD
-    A[Daily station observations<br/>data/data.csv] --> B[Load configuration<br/>config.yaml]
-    C[Station metadata<br/>data/stationsInfo.csv] --> J
-    B --> D[Parse dates and remove Feb 29]
-    D --> E[Compute no-leap day-of-year]
-    E --> F[Estimate station-specific daily thresholds<br/>moving-window p10 and p90]
-    F --> G[Construct daily exceedance flags<br/>warm_days, warm_nights, cool_days, cool_nights]
-    G --> H[Aggregate to annual station-level indices]
-    H --> I[Save annual index table<br/>annual_extreme_indices.csv]
-
-    H --> K[Run station-level quantile regression<br/>full tau grid 0.05 to 0.95]
-    H --> L[Run OLS benchmark trend]
-    K --> M[Extract focus quantile slopes<br/>0.05, 0.10, 0.50, 0.90, 0.95]
-    M --> N[Compute asymmetry metrics<br/>Delta1, Delta2, Delta3]
-
-    H --> O[Bootstrap annual series<br/>current config: moving block bootstrap]
-    O --> P[Refit focus quantile slopes for each replicate]
-    P --> Q[Summarize uncertainty<br/>mean, SD, median, 95% CI]
-
-    M --> R[Assemble feature table]
-    N --> R
-    Q --> R
-    R --> S[Standardize and cluster stations<br/>hierarchical average linkage]
-    S --> T[Save cluster assignments<br/>cluster_assignments.csv]
-    R --> U[Save feature and summary tables]
-
-    I --> V[Generate publication-oriented figures]
-    M --> V
-    Q --> V
-    S --> V
-    C --> V
-
-    V --> W[Coverage plots]
-    V --> X[Regional quantile-slope profiles]
-    V --> Y[Station heatmaps]
-    V --> Z[Delta uncertainty plots]
-    V --> AA[Dendrograms]
-    V --> AB[Station maps and quantile maps]
-    V --> AC[Paper-style station panels]
-    V --> AD[Bootstrap distribution figures]
-
-    U --> AE[Generate REPORT.md]
-    T --> AE
-    V --> AE
-
-    B --> AF[Write run metadata and status logs]
-    AE --> AG[Final outputs in outputs/]
-    AF --> AG
+    A[Daily observations CSV] --> B[Load and validate config.yaml]
+    C[Station metadata CSV] --> H
+    B --> D[Quality control and homogeneity diagnostics]
+    B --> E[Build annual extreme indices]
+    E --> F[Run station-level quantile regression]
+    F --> G[Compute configured focus-slope summaries]
+    G --> I[Compute configured delta metrics]
+    F --> J[Run bootstrap uncertainty]
+    I --> K[Build feature table]
+    J --> K
+    K --> L[Clustering and clustering sensitivity]
+    G --> M[Advanced analyses]
+    J --> M
+    L --> N[Figures]
+    M --> N
+    K --> O[Tables]
+    N --> P[REPORT.md / metadata / status log]
+    O --> P
 ```
 
-### 1. Input Data Assembly
+## Pipeline Stages
 
-Two tabular datasets are used as inputs:
+### 1. Data Quality And Homogeneity
 
-- `data/data.csv`: daily station observations
-- `data/stationsInfo.csv`: station metadata, including station identity and map coordinates
+Implemented in [src/paper_pipeline/data_quality.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/data_quality.py).
 
-The daily dataset is expected to contain:
+This stage:
 
-- `station_id`
-- `station_name`
-- `year`
-- `month`
-- `day`
-- `tmin`
-- `tmean`
-- `tmax`
-- `precip`
+- parses dates from year / month / day columns
+- checks duplicates and basic consistency
+- evaluates completeness of Tmin / Tmax / Tmean
+- constructs annual mean temperature series for QC
+- runs Pettitt, SNHT, and Buishand-style diagnostics
+- evaluates raw and detrended homogeneity flags
 
-The station metadata file is used later for spatial visualization and station-level joins.
+The thresholds for this stage are now configurable through:
 
-### 2. Configuration Of The Analysis
+- `quality_control.homogeneity_alpha`
+- `quality_control.homogeneity_permutations`
+- `index_construction.annual_min_valid_coverage_pct`
 
-All major analysis choices are controlled through `config.yaml`, including:
+Primary outputs:
 
-- input and output paths
-- variable names in the source tables
-- extreme-index settings
-- quantile grid and focus quantiles
-- minimum sample-length thresholds for modeling and publication screening
-- bootstrap method and replication count
-- clustering algorithm and feature set
-- plot resolution and output format
-- spatial boundary and interpolation settings for map figures
+- `outputs/tables/data_quality_station_summary.csv`
+- `outputs/tables/data_homogeneity_tests_station_summary.csv`
+- `outputs/tables/data_quality_homogeneity_overview.csv`
+- `outputs/figures/ijoc_data_quality_homogeneity.<save_format>`
 
-In the current setup:
+### 2. Annual Extreme Index Construction
 
-- the output directory is `outputs/`
-- the reference period for thresholds is `1961-1990`
-- the percentile window is 5 calendar days
-- lower and upper thresholds are the 10th and 90th percentiles
-- February 29 is removed
-- full quantile regression is computed from `tau = 0.05` to `0.95` with step `0.01`
-- focus quantiles are `0.05`, `0.10`, `0.50`, `0.90`, and `0.95`
-- station-index series shorter than the configured minimum run length are flagged and excluded from QR / OLS estimation
-- publication-oriented sensitivity checks compare analytic QR confidence intervals with bootstrap confidence intervals at `tau = 0.05` and `0.95`
-- bootstrap is enabled using `moving_block` with `200` replicates
-- block length is selected automatically from series length using a cube-root rule, bounded by configured minimum and maximum values
-- clustering is enabled using hierarchical clustering with average linkage and Euclidean distance
-- the main clustering baseline uses a parsimonious slope-only feature set
-- candidate clustering features are screened for near-collinearity before fitting
-- an expanded uncertainty-aware clustering rerun is enabled as a robustness check
+Implemented in [src/paper_pipeline/indices.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/indices.py).
 
-For spatial maps, the current configuration can also specify:
+This stage:
 
-- `spatial_visualization.iran_boundary_geojson`
-- `spatial_visualization.interpolation_method`
-- `spatial_visualization.interpolation_smooth`
+- removes leap-day observations if configured
+- builds no-leap day-of-year climatology
+- computes moving-window daily percentile thresholds by station
+- derives annual warm/cool extreme indices from configured index definitions
 
-Supported interpolation labels currently include:
+The behavior is controlled by:
 
-- `thin_plate_spline`
-- `multiquadric`
-- `inverse`
-- `gaussian`
-- `linear`
-- `cubic`
-- `nearest`
-- `linear_rbf`
-- `quintic`
+- `index_construction.reference_years`
+- `index_construction.percentile_window_days`
+- `index_construction.lower_percentile`
+- `index_construction.upper_percentile`
+- `index_construction.drop_feb29`
+- `indices`
 
-### 3. Daily Preprocessing
-
-The preprocessing stage is implemented in `src/paper_pipeline/indices.py`.
-
-The following operations are performed:
-
-1. Daily records are converted into calendar dates from `year`, `month`, and `day`.
-2. February 29 is removed to enforce a consistent 365-day climatological year.
-3. A no-leap day-of-year index is computed.
-4. For each station and each calendar day, moving-window empirical thresholds are estimated from surrounding days using circular day distance.
-
-This produces station-specific, seasonally varying percentile thresholds rather than one fixed threshold for the whole year.
-
-### 4. Construction Of Annual Extreme Indices
-
-Using the daily thresholds, four annual indices are created:
-
-- `warm_days`: number of days per year with `tmax > tmax_p90`
-- `warm_nights`: number of days per year with `tmin > tmin_p90`
-- `cool_days`: number of days per year with `tmax < tmax_p10`
-- `cool_nights`: number of days per year with `tmin < tmin_p10`
-
-These binary daily exceedance indicators are aggregated to annual counts for each station and year.
-
-Primary output from this stage:
+Primary output:
 
 - `outputs/tables/annual_extreme_indices.csv`
 
-This file is the core annual analysis table used by all downstream modeling steps.
+### 3. Station-Level Quantile Regression
 
-### 5. Quantile Regression For Station-Level Trend Estimation
+Implemented in [src/paper_pipeline/quantile.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/quantile.py).
 
-The quantile-regression stage is implemented in `src/paper_pipeline/quantile.py`.
+For each station and index, the pipeline:
 
-For each index and each station:
+- fits a full quantile profile over `quantile_regression.full_quantiles`
+- keeps summary outputs for `quantile_regression.focus_quantiles`
+- estimates an OLS benchmark slope
+- scales time according to `quantile_regression.time_scale_years`
 
-1. A full quantile-regression slope profile is estimated over the configured quantile grid.
-2. Focus slopes are retained for the key quantiles used in interpretation and reporting.
-3. A mean-trend benchmark is also estimated using ordinary least squares (OLS).
+Important behavior:
 
-The model uses year as the independent variable and rescales time to decades:
+- if a station has fewer than `min_years_required_to_run`, the row is retained but slopes become `NaN`
+- short records can still be flagged for publication caution via `min_years_recommended_for_publication`
+- fitting uses a small-sample exact fallback for short series and `statsmodels.QuantReg` for longer series
 
-- `x = (year - min(year)) / 10`
-
-This means all reported slopes are interpreted as change in annual index counts per decade.
-
-The implementation includes two fitting strategies:
-
-- for short samples, an exact small-sample quantile slope search is used
-- for longer samples, `statsmodels.QuantReg` is used with retry logic when iteration limits are reached
-
-This combination makes the workflow more stable across both short and long station records.
-
-If a station-index series does not satisfy the configured minimum record length, the workflow keeps the row in output tables but stores `NaN` slopes instead of forcing a regression fit.
-
-Primary outputs from this stage:
+Primary outputs:
 
 - `outputs/tables/qr_all_quantiles_long.csv`
 - `outputs/tables/qr_focus_slopes_and_bootstrap_summary.csv`
 
-The first file stores the full station-index-quantile slope grid. The second stores summary slopes and later receives bootstrap-derived uncertainty statistics.
+### 4. Configured Delta Metrics
 
-### 6. Bootstrap Uncertainty Analysis
+Also handled through [src/paper_pipeline/quantile.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/quantile.py) and [src/paper_pipeline/config_utils.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/config_utils.py).
 
-Bootstrap uncertainty estimation is also handled in `src/paper_pipeline/quantile.py`, with supporting resampling utilities in `src/paper_pipeline/math_utils.py`.
+Delta metrics are no longer fixed assumptions. They are defined in:
 
-The codebase supports several resampling strategies:
+- `feature_engineering.delta_definitions`
+- `feature_engineering.primary_delta`
 
-- maximum entropy bootstrap (`meboot`)
-- residual bootstrap
-- moving block bootstrap
-- iid bootstrap
+Example:
 
-In the current configuration, the active method is moving block bootstrap, and the block length is chosen automatically from the annual-series length using a bounded cube-root rule.
+```yaml
+feature_engineering:
+  primary_delta: Delta1
+  delta_definitions:
+    Delta1:
+      - slope_0.95
+      - slope_0.05
+```
 
-For each station and index:
-
-1. Bootstrap replicates of the annual series are generated.
-2. Quantile-regression slopes are re-estimated for the focus quantiles.
-3. Derived contrast metrics are computed for every replicate.
-4. Replicate distributions are summarized into mean, standard deviation, median, and confidence intervals.
-
-For annual climate series, this default is intentional: the moving block bootstrap preserves short-range temporal dependence more directly than an iid resample. The repository still supports `meboot` as a sensitivity method because it can behave well for short and non-Gaussian series, but manuscript-facing uncertainty summaries now treat moving-block resampling as the primary baseline and use `meboot` as a comparison.
-
-The main derived asymmetry measures are:
+Meaning:
 
 - `Delta1 = slope_0.95 - slope_0.05`
-- `Delta2 = slope_0.95 - slope_0.50`
-- `Delta3 = slope_0.50 - slope_0.05`
 
-These metrics quantify whether upper-tail trends are changing faster or slower than lower-tail trends.
+Any configured delta is computed automatically after focus slopes are available. The primary delta is used in several default outputs such as:
 
-For publication-oriented sensitivity assessment, the workflow also compares:
+- delta uncertainty plots
+- main delta map
+- report summaries
+- some regional / driver analyses
 
-- analytic quantile-regression significance based on model confidence intervals
-- bootstrap significance based on bootstrap confidence intervals
+### 5. Bootstrap Uncertainty
 
-This comparison is currently emphasized for `tau = 0.05` and `tau = 0.95`.
+Implemented mainly in [src/paper_pipeline/quantile.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/quantile.py), with a deeper sensitivity rerun in [src/paper_pipeline/bootstrap_depth_sensitivity.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/bootstrap_depth_sensitivity.py).
 
-Primary outputs from this stage:
+Supported methods:
 
-- `outputs/tables/bootstrap_distributions_long.csv`
-- bootstrap summary columns appended to `outputs/tables/qr_focus_slopes_and_bootstrap_summary.csv`
+- `moving_block`
+- `meboot`
+- `residual`
+- `iid`
 
-### 7. Feature Engineering For Pattern Discovery
+Configured through:
 
-Feature engineering is implemented in `src/paper_pipeline/clustering.py`.
+- `bootstrap.enabled`
+- `bootstrap.method`
+- `bootstrap.n_reps`
+- `bootstrap.block_length`
+- `bootstrap.block_length_rule`
+- `bootstrap.min_block_length`
+- `bootstrap.max_block_length`
+- `bootstrap.alpha`
 
-After quantile slopes are estimated, a station-level feature table is assembled. It includes:
+For each station/index, bootstrap resampling produces:
 
-- focus quantile slopes
-- Delta metrics
 - bootstrap means
 - bootstrap standard deviations
-- bootstrap confidence interval summaries
+- bootstrap medians
+- bootstrap confidence intervals
+- derived bootstrap summaries for configured deltas
 
-This creates a compact representation of each station’s trend shape and uncertainty behavior for each climate index. Before clustering, the configured candidate features are screened for near-collinearity using an absolute-correlation threshold so that almost-duplicate summaries are not allowed to dominate the partition.
+Optional long output:
 
-Primary output from this stage:
+- `outputs/tables/bootstrap_distributions_long.csv`
+
+### 6. Sensitivity Flags
+
+Implemented in [src/paper_pipeline/quantile.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/quantile.py).
+
+The pipeline compares:
+
+- analytic CI significance
+- bootstrap CI significance
+
+for the quantiles listed under:
+
+- `quantile_regression.sensitivity_check_quantiles`
+
+These generate fields like:
+
+- `analytic_sig_<tau>`
+- `bootstrap_sig_<tau>`
+- `sig_agree_<tau>`
+- `sensitivity_status_<tau>`
+
+### 7. Feature Table And Clustering
+
+Implemented in:
+
+- [src/paper_pipeline/clustering.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/clustering.py)
+- [src/paper_pipeline/clustering_sensitivity.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/clustering_sensitivity.py)
+
+The feature table is built from:
+
+- focus quantile slopes
+- configured delta metrics
+- bootstrap summaries
+- sensitivity columns
+
+Clustering behavior is controlled by:
+
+- `clustering.algorithm`
+- `clustering.linkage`
+- `clustering.metric`
+- `clustering.n_clusters`
+- `clustering.standardize`
+- `clustering.feature_mode`
+- `clustering.simple_features`
+- `clustering.uncertainty_features`
+- `clustering.collinearity_screen.*`
+
+Supported algorithms:
+
+- `hierarchical`
+- `kmeans`
+
+Primary outputs:
 
 - `outputs/tables/clustering_feature_table.csv`
-
-### 8. Station Clustering
-
-Clustering is also implemented in `src/paper_pipeline/clustering.py`.
-
-The current repository configuration uses:
-
-- hierarchical clustering
-- average linkage
-- Euclidean distance
-- four clusters
-- standardized features
-- parsimonious slope-only baseline feature mode
-
-The clustering is performed separately for each index. Missing feature values are imputed column-wise using the median before clustering. Configured candidate features are then screened for near-collinearity in their listed order; highly redundant features are dropped before the final clustering matrix is standardized and passed to the algorithm. When enabled, features are standardized using `StandardScaler` to prevent high-variance metrics from dominating the classification.
-
-If the requested number of clusters exceeds the number of available stations for an index, the implementation automatically reduces the cluster count to the maximum admissible value so the run remains stable.
-
-Two algorithmic paths are supported:
-
-- hierarchical clustering via SciPy linkage and flat cluster extraction
-- k-means clustering via scikit-learn
-
-Primary outputs from this stage:
-
 - `outputs/tables/cluster_assignments.csv`
-- cluster labels merged back into `outputs/tables/clustering_feature_table.csv`
-
-When the robustness check is enabled, the pipeline also exports:
-
+- `outputs/tables/clustering_feature_screening_summary.csv`
 - `outputs/tables/cluster_assignments_reduced_features.csv`
 - `outputs/tables/cluster_robustness_summary.csv`
-- `outputs/tables/clustering_feature_screening_summary.csv`
-
-### 9. Summary Table Generation
-
-The pipeline generates a publication-oriented summary subset after modeling and clustering are complete. This table condenses the most interpretable fields for downstream inspection and manuscript use.
-
-Primary output:
-
-- `outputs/tables/publication_summary_table.csv`
-
-This summary typically includes:
-
-- station identifiers
-- sample length
-- focus quantile slopes
-- Delta metrics
-- bootstrap means and standard deviations
-- bootstrap confidence intervals
-- analytic-versus-bootstrap sensitivity flags for publication quantiles
-- assigned cluster labels
-- reduced-feature cluster labels, when robustness checking is enabled
-
-### 10. Figure Production
-
-Figure generation is implemented in `src/paper_pipeline/plotting.py`. The plotting backend is configured for non-interactive file export, so all figures are written directly to disk.
-
-The repository produces several figure families.
-
-#### 10.1 Data Coverage Figure
-
-This figure shows the number of annual records available for each station.
-
-Output:
-
-- `outputs/figures/data_coverage_by_station.png`
-
-#### 10.2 Regional Quantile-Slope Profiles
-
-For each index, annual values are averaged across stations by year and quantile-regression slopes are estimated over the full quantile grid.
-
-These figures are descriptive pooled summaries only. Because the annual station mean smooths over spatial heterogeneity, primary interpretation in the manuscript should remain anchored in station-level quantile regression and cross-station summary tables.
-
-Outputs:
-
-- `outputs/figures/region_quantile_slopes_warm_days.png`
-- `outputs/figures/region_quantile_slopes_warm_nights.png`
-- `outputs/figures/region_quantile_slopes_cool_days.png`
-- `outputs/figures/region_quantile_slopes_cool_nights.png`
-
-#### 10.3 Station Heatmaps
-
-For each index, a heatmap is created using station-level values of:
-
-- `slope_0.05`
-- `slope_0.50`
-- `slope_0.95`
-- `Delta1`
-
-Outputs:
-
-- `outputs/figures/station_focus_heatmap_*.png`
-
-#### 10.4 Delta-Uncertainty Figures
-
-For each index, stations are plotted using bootstrap mean `Delta1` and its 95% confidence interval.
-
-Outputs:
-
-- `outputs/figures/delta_uncertainty_*.png`
-
-#### 10.5 Cluster Dendrograms
-
-When hierarchical clustering is active, dendrograms are exported for each index.
-
-Outputs:
-
-- `outputs/figures/dendrogram_*.png`
-
-#### 10.6 Spatial Station Maps
-
-Station-based thematic maps are created by joining modeled results to station coordinates. The workflow can also use the Iran boundary geometry from the path specified in `config.yaml` under `spatial_visualization.iran_boundary_geojson`.
-
-For each index, the repository exports maps of:
-
-- `slope_0.05`
-- `slope_0.50`
-- `slope_0.95`
-- `Delta1`
-- cluster labels, when clustering is available
-
-Outputs:
-
-- `outputs/figures/map_<index>_slope_0.05.png`
-- `outputs/figures/map_<index>_slope_0.50.png`
-- `outputs/figures/map_<index>_slope_0.95.png`
-- `outputs/figures/map_<index>_Delta1.png`
-- `outputs/figures/map_<index>_cluster.png`
-
-#### 10.7 Paper 2, Figure 1: Station-Level Time-Series Panels
-
-For each station, a four-panel figure is created to show the annual series for all indices, together with:
-
-- quantile-regression lines for `tau = 0.10`, `0.50`, and `0.90`
-- OLS mean trend
-- slope annotations
-
-Outputs:
-
-- `outputs/figures/paper2_station_figures/figure1_timeseries/*.png`
-
-#### 10.8 Paper 2, Figure 2: Station-Level Quantile-Coefficient Panels
-
-For each station, a second four-panel figure is created showing the full quantile-regression slope profile and, where available, confidence intervals.
-
-Outputs:
-
-- `outputs/figures/paper2_station_figures/figure2_quantile_coefficients/*.png`
-
-#### 10.9 Paper 2, Figure 3: Quantile-Slope Maps
-
-For selected quantiles, spatial maps are generated from station-specific slopes. The workflow:
-
-1. fits a station-level quantile trend for each index
-2. interpolates the station field using radial basis functions or gridded interpolation
-3. masks the surface to the country boundary when a boundary file is available
-4. overlays the observed station points colored by their estimated slope values
-
-These interpolated surfaces are intended primarily for visualization of broad spatial structure. With a sparse station network, direct station estimates should remain the primary basis for scientific interpretation, and the background surface should not be read as a standalone inferential field between stations.
-
-Outputs:
-
-- `outputs/figures/paper2_figure3_quantile_maps/figure3_tau_0.05.png`
-- `outputs/figures/paper2_figure3_quantile_maps/figure3_tau_0.10.png`
-- `outputs/figures/paper2_figure3_quantile_maps/figure3_tau_0.50.png`
-- `outputs/figures/paper2_figure3_quantile_maps/figure3_tau_0.90.png`
-- `outputs/figures/paper2_figure3_quantile_maps/figure3_tau_0.95.png`
-
-#### 10.10 Paper 1, Figure 4: Bootstrap Slope Distributions
-
-For each station, bootstrap distributions of the quantile slopes are plotted for:
-
-- `tau = 0.05`
-- `tau = 0.50`
-- `tau = 0.95`
-
-These figures compare punctual estimates, bootstrap means, density shapes, and 95% intervals.
-
-Outputs:
-
-- `outputs/figures/paper1_station_figures/figure4_bootstrap_distributions/*.png`
-
-#### 10.11 Paper 1, Figures 5 To 7: Quantile-Specific Dendrograms
-
-Separate sets of average-linkage dendrograms are generated for station slopes at:
-
-- `tau = 0.05`
-- `tau = 0.50`
-- `tau = 0.95`
-
-Outputs:
-
-- `outputs/figures/paper1_quantile_dendrograms/figure_5_tau_0.05.png`
-- `outputs/figures/paper1_quantile_dendrograms/figure_6_tau_0.50.png`
-- `outputs/figures/paper1_quantile_dendrograms/figure_7_tau_0.95.png`
-
-### 11. Report And Metadata Export
-
-The pipeline concludes by exporting run metadata and a compact Markdown report through `src/paper_pipeline/reporting.py`.
-
-Generated files include:
+- `outputs/tables/alternative_clustering_sensitivity_summary.csv`
+
+### 8. Plot Generation
+
+Implemented in [src/paper_pipeline/plotting.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/plotting.py).
+
+Plotting is now partly controlled by:
+
+- `plots.dpi`
+- `plots.default_figure_dpi`
+- `plots.save_format`
+- `plots.heatmap_station_order`
+- `plots.quantile_selections.*`
+- `spatial_visualization.*`
+
+Major figure families include:
+
+- data coverage
+- regional quantile profiles
+- station heatmaps
+- delta uncertainty plots
+- clustering dendrograms
+- station maps
+- primary delta maps
+- split-period comparisons
+- representative-station panels
+- station paper-style figures
+- quantile-specific slope maps
+- bootstrap distribution figures
+- quantile-specific dendrogram figures
+- robustness synthesis figures
+
+Representative outputs:
+
+- `outputs/figures/data_coverage_by_station.<save_format>`
+- `outputs/figures/region_quantile_slopes_<index>.<save_format>`
+- `outputs/figures/station_focus_heatmap_<index>.<save_format>`
+- `outputs/figures/delta_uncertainty_<index>.<save_format>`
+- `outputs/figures/map_<index>_<metric>.<save_format>`
+- `outputs/figures/ijoc_main_<primary_delta>_maps.<save_format>`
+- `outputs/figures/paper2_station_figures/...`
+- `outputs/figures/paper2_figure3_quantile_maps/...`
+- `outputs/figures/paper1_station_figures/...`
+- `outputs/figures/paper1_quantile_dendrograms/...`
+
+### 9. Advanced Analyses
+
+Implemented in [src/paper_pipeline/advanced_analysis.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/advanced_analysis.py).
+
+Modules include:
+
+- spatial inference
+- reference-period sensitivity
+- bootstrap-method sensitivity
+- interpolation sensitivity
+- driver analysis
+- regionalization summaries
+- spatial validation of clusters
+
+Controlled by:
+
+- `advanced_analyses.spatial_inference`
+- `advanced_analyses.method_sensitivity`
+- `advanced_analyses.driver_analysis`
+- `advanced_analyses.regionalization`
+- `advanced_analyses.bootstrap_depth_sensitivity`
+- `advanced_analyses.alternative_clustering_methods`
+
+### 10. Reporting And Metadata
+
+Implemented in:
+
+- [src/paper_pipeline/reporting.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/reporting.py)
+- [src/paper_pipeline/pipeline.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/pipeline.py)
+
+Generated outputs:
 
 - `outputs/run_metadata.json`
-- `outputs/REPORT.md`
 - `outputs/run_status.txt`
+- `outputs/REPORT.md`
 
-`run_metadata.json` stores high-level reproducibility information such as year range, number of stations, number of years, bootstrap repetitions, and focus quantiles.
+`run_metadata.json` records:
+
+- project name
+- analysis year range
+- number of years
+- number of stations
+- bootstrap repetitions
+- focus quantiles
 
 `REPORT.md` summarizes:
 
-- data coverage
-- the number of station-index series below the QR minimum record length
-- the number of station-index series below the publication-recommended record length
-- highest-Delta1 stations by index
-- cluster sizes when clustering is enabled
+- data audit information
+- short-record warnings
+- top stations by primary delta
+- sensitivity status counts
+- clustering results
+- advanced analysis highlights
 
-`run_status.txt` logs stage-by-stage execution progress so long runs can be monitored.
+## Current Repository Structure
 
-## Step-By-Step Workflow Summary
+Core files:
 
-In practical terms, the repository performs the following sequence:
+- [run_analysis.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/run_analysis.py): CLI entry point
+- [config.yaml](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/config.yaml): single source of analysis configuration
+- [README.md](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/README.md): project guide
 
-1. Load daily station observations and station metadata.
-2. Parse dates and remove leap-day records.
-3. Build moving-window daily percentile thresholds for each station.
-4. Convert daily threshold exceedances into annual warm/cool extreme indices.
-5. Save the annual index table.
-6. Estimate station-level quantile-regression slopes over the full quantile grid.
-7. Estimate focus slopes and OLS benchmark slopes.
-8. Generate bootstrap replicate distributions and uncertainty summaries.
-9. Compute Delta metrics describing trend asymmetry.
-10. Build a station-level feature matrix.
-11. Cluster stations separately for each index.
-12. Export modeling tables and publication summary tables.
-13. Produce coverage figures, heatmaps, dendrograms, spatial maps, and paper-style panels.
-14. Export report, metadata, and run-status logs.
+Pipeline modules:
 
-## Repository Structure
+- [src/paper_pipeline/pipeline.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/pipeline.py): orchestration of the full workflow
+- [src/paper_pipeline/config_utils.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/config_utils.py): config accessors and validation rules
+- [src/paper_pipeline/indices.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/indices.py): annual extreme-index construction
+- [src/paper_pipeline/quantile.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/quantile.py): quantile regression, OLS, bootstrap, and delta computation
+- [src/paper_pipeline/clustering.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/clustering.py): feature engineering and clustering
+- [src/paper_pipeline/plotting.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/plotting.py): figure generation
+- [src/paper_pipeline/reporting.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/reporting.py): Markdown report generation
+- [src/paper_pipeline/data_quality.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/data_quality.py): QC and homogeneity diagnostics
+- [src/paper_pipeline/advanced_analysis.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/advanced_analysis.py): advanced publication analyses
+- [src/paper_pipeline/bootstrap_depth_sensitivity.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/bootstrap_depth_sensitivity.py): deeper bootstrap reruns
+- [src/paper_pipeline/clustering_sensitivity.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/clustering_sensitivity.py): alternative clustering comparisons
+- [src/paper_pipeline/homogeneity_sensitivity.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/homogeneity_sensitivity.py): exclusion sensitivity after QC flags
+- [src/paper_pipeline/year_config.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/year_config.py): year-range helpers and period logic
+- [src/paper_pipeline/math_utils.py](/d:/Pooya/w/GitHub/HydroCodeIR/PaperBarbosaFanLiJun/src/paper_pipeline/math_utils.py): helper utilities
 
-- `run_analysis.py`: CLI entry point
-- `config.yaml`: analysis configuration
-- `src/paper_pipeline/pipeline.py`: full orchestration of the workflow
-- `src/paper_pipeline/indices.py`: threshold calculation and annual index construction
-- `src/paper_pipeline/quantile.py`: quantile regression, OLS, bootstrap, and uncertainty summaries
-- `src/paper_pipeline/math_utils.py`: helper functions for quantile grids, leap-day handling, and resampling
-- `src/paper_pipeline/clustering.py`: feature engineering and station clustering
-- `src/paper_pipeline/plotting.py`: all figure-generation routines
-- `src/paper_pipeline/reporting.py`: Markdown report export
+## Main Output Layout
 
-## Main Output Directories
+After a successful run, the output directory contains at least:
 
-- `outputs/tables/`: analytical tables
-- `outputs/figures/`: exported figures
-- `outputs/REPORT.md`: narrative run summary
-- `outputs/run_metadata.json`: reproducibility metadata
-- `outputs/run_status.txt`: execution progress log
+- `outputs/tables/`
+- `outputs/figures/`
+- `outputs/REPORT.md`
+- `outputs/run_metadata.json`
+- `outputs/run_status.txt`
 
-## Notes
+The exact set of files depends on:
 
-- All trend slopes are expressed per decade.
-- The workflow is designed for batch export rather than interactive display.
-- Because full quantile regression and bootstrap are computationally heavy, complete runs may take noticeable time before all figures appear.
-- When `reference_years` is left as `null`, percentile thresholds are estimated from all available years; for strict climatological comparability, a fixed baseline period may be preferable.
-- Quantile-regression map figures are now framed around station-level slope estimates, with interpolation used only as a visual background. Bootstrap-based sensitivity checks remain recommended for publication use, especially at extreme quantiles, with moving-block resampling preferred as the main time-series sensitivity baseline.
-- Clustering is exploratory and should not be read as a fully inferential regional taxonomy. The main workflow now uses a parsimonious slope-only baseline, screens candidate features for near-collinearity, and treats richer uncertainty-aware clustering as a sensitivity analysis rather than as the default partition.
+- whether bootstrap is enabled
+- whether clustering is enabled
+- which advanced analyses are enabled
+- which quantile selections are configured
+
+## Notes On Dynamic Configuration
+
+The most important change in the current repository version is that several concepts are now configuration-owned:
+
+- quantile selections are explicit
+- sensitivity quantiles are explicit
+- delta definitions are explicit
+- primary delta is explicit
+- time scaling is explicit
+- QC alpha and permutation counts are explicit
+- plot DPI is explicit
+
+In practical terms, if you want to change the scientific setup, you should first change `config.yaml`.
+
+Typical examples:
+
+1. Change focus quantiles:
+   update `quantile_regression.focus_quantiles`
+
+2. Change the meaning of the primary asymmetry metric:
+   update `feature_engineering.primary_delta` and `feature_engineering.delta_definitions`
+
+3. Change slope units from per decade to per year:
+   set `quantile_regression.time_scale_years: 1` and `time_unit_label: year`
+
+4. Change which quantiles appear in figures:
+   update `plots.quantile_selections.*`
+
+5. Change bootstrap method:
+   update `bootstrap.method`
+
+## Important Caveats
+
+- Quantile regression and bootstrap can be computationally expensive, especially with dense quantile grids and many stations.
+- Interpolated map surfaces are visual aids, not substitutes for observed station values.
+- Clustering is exploratory and sensitive to feature selection, distance metric, and standardization choices.
+- If you introduce new delta definitions, make sure their operands refer to focus-quantile slope columns that actually exist.
+- If you narrow `focus_quantiles`, update plot quantile selections and advanced analysis metric lists so they remain consistent.
+
+## Recommended Editing Workflow
+
+When adapting this repository for a new study:
+
+1. Update paths and column mappings in `config.yaml`.
+2. Confirm the analysis year range.
+3. Confirm index definitions and reference-period logic.
+4. Explicitly set focus quantiles and delta definitions.
+5. Adjust bootstrap, clustering, and advanced-analysis settings.
+6. Run:
+
+```bash
+python run_analysis.py --config config.yaml
+```
+
+7. Review:
+
+- `outputs/run_status.txt`
+- `outputs/run_metadata.json`
+- `outputs/REPORT.md`
+- key tables and figures
+
+## Versioning Recommendation
+
+Because the pipeline is now highly configuration-driven, it is a good idea to archive:
+
+- the exact `config.yaml`
+- the generated `run_metadata.json`
+- the git commit hash of the repository
+
+for every manuscript-facing run.
