@@ -57,9 +57,15 @@ from .reporting import generate_report
 from .year_config import filter_to_analysis_years, format_year_range_label, get_effective_year_range
 
 
-def run_pipeline(config_path: str = "config.yaml") -> Path:
+def _read_cached_csv(path: Path) -> pd.DataFrame:
+    return pd.read_csv(path) if path.exists() else pd.DataFrame()
+
+
+def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path:
     cfg = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
     validate_analysis_config(cfg)
+    if start_phase not in {1, 8, 9, 10}:
+        raise ValueError("start_phase must be one of: 1, 8, 9, 10")
     outdir = Path(cfg["paths"]["output_dir"])
     tables_dir = outdir / "tables"
     figs_dir = outdir / "figures"
@@ -122,6 +128,76 @@ def run_pipeline(config_path: str = "config.yaml") -> Path:
         f"Loaded input tables: data_rows={len(data)}, stations={stations.shape[0]}, "
         f"analysis_years={format_year_range_label(analysis_year_range)}"
     )
+
+    if start_phase > 1:
+        log_summary(f"Resume mode enabled: starting from phase {start_phase}. Loading cached intermediate tables.")
+
+        annual = _read_cached_csv(tables_dir / "annual_extreme_indices.csv")
+        if annual.empty:
+            raise FileNotFoundError(f"Required cached file not found or empty: {tables_dir / 'annual_extreme_indices.csv'}")
+
+        qr_summary = _read_cached_csv(tables_dir / "qr_focus_slopes_and_bootstrap_summary.csv")
+        feature_table = _read_cached_csv(tables_dir / "clustering_feature_table.csv")
+        cluster_df = _read_cached_csv(tables_dir / "cluster_assignments.csv")
+        cluster_robustness_df = _read_cached_csv(tables_dir / "cluster_robustness_summary.csv")
+        boot_long = _read_cached_csv(tables_dir / "bootstrap_distributions_long.csv")
+
+        if start_phase <= 9 and qr_summary.empty:
+            raise FileNotFoundError(f"Required cached file not found or empty: {tables_dir / 'qr_focus_slopes_and_bootstrap_summary.csv'}")
+        if start_phase <= 10 and feature_table.empty:
+            raise FileNotFoundError(f"Required cached file not found or empty: {tables_dir / 'clustering_feature_table.csv'}")
+
+        artifacts = {}
+        if start_phase == 8 and not feature_table.empty:
+            _, artifacts = run_clustering(feature_table, cfg)
+
+        advanced_results = {}
+
+        if start_phase == 8:
+            log_phase_start(8)
+            log_summary("Rendering figures...")
+            plot_data_coverage(annual, figs_dir, cfg)
+            plot_region_quantile_slopes(annual, figs_dir, cfg)
+            plot_ijoc_regional_quantile_panels(annual, figs_dir, cfg)
+            plot_ijoc_study_area(stations, figs_dir, cfg)
+            plot_station_heatmap(feature_table, figs_dir, cfg)
+            plot_delta_uncertainty(feature_table, figs_dir, cfg)
+            plot_dendrograms(feature_table, artifacts, figs_dir, cfg)
+            plot_maps(feature_table, stations, cluster_df, figs_dir, cfg)
+            plot_ijoc_main_delta_maps(feature_table, stations, figs_dir, cfg)
+            plot_ijoc_split_period_comparison(annual, figs_dir, cfg)
+            plot_ijoc_station_comparisons(annual, feature_table, figs_dir, cfg)
+            plot_station_paper2_figures(annual, figs_dir, cfg)
+            plot_paper2_figure3_maps(annual, stations, figs_dir, cfg)
+            plot_station_paper1_figure4(boot_long, qr_summary, figs_dir, cfg)
+            plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
+            log_summary("Finished rendering figures.")
+
+        if start_phase <= 9:
+            log_phase_start(9)
+            log_summary("Running advanced publication analyses...")
+            advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir, progress_callback=log_detail))
+            advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
+            advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
+            advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
+            log_summary("Finished advanced publication analyses.")
+
+            log_summary("Rendering robustness synthesis figure from completed sensitivity outputs...")
+            plot_ijoc_robustness_synthesis(figs_dir, cfg)
+            log_summary("Saved robustness synthesis figure.")
+
+        log_phase_start(10)
+        generate_report(
+            annual,
+            feature_table,
+            cluster_df,
+            cfg,
+            outdir,
+            cluster_robustness_df=cluster_robustness_df,
+            advanced_results=advanced_results,
+        )
+        log_summary("Generated final report.")
+        return outdir
 
     log_phase_start(2)
     log_summary("Running data-quality and homogeneity diagnostics...")

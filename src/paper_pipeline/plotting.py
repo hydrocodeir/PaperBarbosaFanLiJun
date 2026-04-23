@@ -33,6 +33,7 @@ from .config_utils import (
     tau_label,
 )
 from .quantile import fit_ols_line, fit_quantile_line
+from .quantile import bootstrap_qr, build_station_seed, summarize_bootstrap
 from .year_config import build_split_periods, format_year_range_label, get_effective_year_range
 
 
@@ -81,6 +82,17 @@ def _format_metric_title(metric: str) -> str:
 
 def _resolve_quantile_axis_limits(quantiles: list[float]) -> tuple[float, float]:
     return (max(0.01, min(quantiles) - 0.01), min(0.99, max(quantiles) + 0.01))
+
+
+def _quantile_axis_ticks(quantiles: list[float], step: float = 0.05) -> list[float]:
+    if not quantiles:
+        return []
+    qmin = min(quantiles)
+    qmax = max(quantiles)
+    start = np.ceil(qmin / step) * step
+    stop = np.floor(qmax / step) * step
+    ticks = np.arange(start, stop + step * 0.5, step, dtype=float)
+    return [round(float(t), 2) for t in ticks]
 
 
 def _time_unit_ylabel(idx_cfg: dict, cfg: dict) -> str:
@@ -253,7 +265,7 @@ def _style_coeff_axis(ax, idx_cfg: dict, panel_idx: int, cfg: dict, quantiles: l
     ax.set_xlabel("Quantile, τ")
     ax.set_ylabel(_time_unit_ylabel(idx_cfg, cfg))
     ax.set_xlim(*_resolve_quantile_axis_limits(quantiles))
-    ax.set_xticks(quantiles)
+    ax.set_xticks(_quantile_axis_ticks(quantiles))
     ax.axhline(0, color="#3a3a3a", linewidth=0.8, linestyle="--", alpha=0.85, zorder=1)
     ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
     ax.grid(False, axis="x")
@@ -300,7 +312,7 @@ def _draw_quantile_coefficient_panel(
         ax.set_xlabel("Quantile, τ")
         ax.set_ylabel(_time_unit_ylabel(idx_cfg, cfg))
         ax.set_xlim(*_resolve_quantile_axis_limits(quantiles))
-        ax.set_xticks(quantiles)
+        ax.set_xticks(_quantile_axis_ticks(quantiles))
         ax.axhline(0, color="#3a3a3a", linewidth=0.8, linestyle="--", alpha=0.85, zorder=1)
         ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
         ax.grid(False, axis="x")
@@ -334,6 +346,48 @@ def _annotate_textbox_bottom_left(ax, text: str) -> None:
         fontsize=8.8,
         bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#c9c9c9", "alpha": 0.95},
     )
+
+
+def _build_quantile_profile_df(
+    years: np.ndarray,
+    values: np.ndarray,
+    quantiles: list[float],
+    cfg: dict,
+    *,
+    series_key: str,
+) -> pd.DataFrame:
+    max_iter = int(cfg["quantile_regression"]["max_iter"])
+    time_scale_years = get_time_scale_years(cfg)
+    coeff_rows = []
+    missing_ci = []
+
+    for tau in quantiles:
+        qr_fit = fit_quantile_line(years, values, tau=float(tau), time_scale_years=time_scale_years, max_iter=max_iter)
+        row = {
+            "tau": float(tau),
+            "slope": float(qr_fit["slope"]),
+            "ci_low": float(qr_fit["ci_low"]),
+            "ci_high": float(qr_fit["ci_high"]),
+        }
+        coeff_rows.append(row)
+        if np.isfinite(row["slope"]) and not (np.isfinite(row["ci_low"]) and np.isfinite(row["ci_high"])):
+            missing_ci.append(float(tau))
+
+    if missing_ci and cfg.get("bootstrap", {}).get("enabled", False):
+        rng = np.random.default_rng(build_station_seed(int(cfg["project"]["random_seed"]), series_key, "profile_ci"))
+        boot = bootstrap_qr(years, values, missing_ci, cfg, rng)
+        if not boot.empty:
+            boot_summary = summarize_bootstrap(boot, float(cfg["bootstrap"]["alpha"]))
+            for row in coeff_rows:
+                tau_suffix = f"{float(row['tau']):0.2f}"
+                if float(row["tau"]) in missing_ci:
+                    boot_low = boot_summary.get(f"boot_ci_low_{tau_suffix}", np.nan)
+                    boot_high = boot_summary.get(f"boot_ci_high_{tau_suffix}", np.nan)
+                    if np.isfinite(boot_low) and np.isfinite(boot_high):
+                        row["ci_low"] = float(boot_low)
+                        row["ci_high"] = float(boot_high)
+
+    return pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
 
 
 def plot_station_paper2_figures(annual: pd.DataFrame, outdir: Path, cfg: dict):
@@ -402,16 +456,13 @@ def plot_station_paper2_figures(annual: pd.DataFrame, outdir: Path, cfg: dict):
             if i == 0:
                 ax1.legend(loc="upper right", ncol=2)
 
-            coeff_rows = []
-            for tau in qgrid:
-                qr_fit = fit_quantile_line(years, values, tau=float(tau), time_scale_years=time_scale_years, max_iter=max_iter)
-                coeff_rows.append({
-                    "tau": float(tau),
-                    "slope": float(qr_fit["slope"]),
-                    "ci_low": float(qr_fit["ci_low"]),
-                    "ci_high": float(qr_fit["ci_high"]),
-                })
-            coeff_df = pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
+            coeff_df = _build_quantile_profile_df(
+                years,
+                values,
+                qgrid,
+                cfg,
+                series_key=f"station:{station_id}:{station_name}:{idx_name}",
+            )
 
             if not coeff_df.empty:
                 _draw_quantile_coefficient_panel(ax2, coeff_df, ols_fit, idx_cfg, cfg, qgrid, panel_idx=i)
@@ -610,7 +661,7 @@ def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFr
 
         ax.axhline(0, color="#444444", linewidth=0.8, linestyle="--", alpha=0.9)
         ax.set_xlim(0.01, 0.99)
-        ax.set_xticks(qgrid)
+        ax.set_xticks(_quantile_axis_ticks(qgrid))
         ax.set_xlabel("Quantile, τ")
         ax.set_ylabel(_time_unit_ylabel(idx_cfg, cfg))
         ax.set_title(f"Representative station comparison - {idx_cfg['title']}")
@@ -696,7 +747,7 @@ def plot_ijoc_station_comparisons(annual: pd.DataFrame, feature_table: pd.DataFr
         ax.set_title(f"{_panel_label(panel_idx)} {idx_cfg['title']}", loc="left")
         ax.axhline(0, color="#5b5b5b", linewidth=0.85, linestyle=(0, (3, 2)), alpha=0.95, zorder=1)
         ax.set_xlim(0.01, 0.99)
-        ax.set_xticks(qgrid)
+        ax.set_xticks(_quantile_axis_ticks(qgrid))
         ax.grid(True, axis="y", alpha=0.18, linewidth=0.6)
         ax.grid(False, axis="x")
         ax.spines["top"].set_visible(False)
@@ -1107,16 +1158,13 @@ def plot_region_quantile_slopes(annual: pd.DataFrame, outdir: Path, cfg: dict):
         idx_name = idx_cfg["name"]
         vals = mean_df[idx_name].to_numpy(dtype=float)
 
-        coeff_rows = []
-        for tau in qgrid:
-            qr_fit = fit_quantile_line(years, vals, tau=float(tau), time_scale_years=time_scale_years, max_iter=max_iter)
-            coeff_rows.append({
-                "tau": float(tau),
-                "slope": float(qr_fit["slope"]),
-                "ci_low": float(qr_fit["ci_low"]),
-                "ci_high": float(qr_fit["ci_high"]),
-            })
-        coeff_df = pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
+        coeff_df = _build_quantile_profile_df(
+            years,
+            vals,
+            qgrid,
+            cfg,
+            series_key=f"regional_mean:{idx_name}",
+        )
         ols_fit = fit_ols_line(years, vals, time_scale_years=time_scale_years)
 
         fig, ax = plt.subplots(figsize=(8, 5))
@@ -1146,16 +1194,13 @@ def plot_ijoc_regional_quantile_panels(annual: pd.DataFrame, outdir: Path, cfg: 
     for i, idx_cfg in enumerate(cfg["indices"]):
         idx_name = idx_cfg["name"]
         vals = mean_df[idx_name].to_numpy(dtype=float)
-        coeff_rows = []
-        for tau in qgrid:
-            qr_fit = fit_quantile_line(years, vals, tau=float(tau), time_scale_years=time_scale_years, max_iter=max_iter)
-            coeff_rows.append({
-                "tau": float(tau),
-                "slope": float(qr_fit["slope"]),
-                "ci_low": float(qr_fit["ci_low"]),
-                "ci_high": float(qr_fit["ci_high"]),
-            })
-        coeff_df = pd.DataFrame(coeff_rows).dropna(subset=["tau", "slope"])
+        coeff_df = _build_quantile_profile_df(
+            years,
+            vals,
+            qgrid,
+            cfg,
+            series_key=f"ijoc_regional_mean:{idx_name}",
+        )
         ols_fit = fit_ols_line(years, vals, time_scale_years=time_scale_years)
         ax = axes.flat[i]
         _draw_quantile_coefficient_panel(ax, coeff_df, ols_fit, idx_cfg, cfg, qgrid, panel_idx=i)
@@ -1448,6 +1493,8 @@ def plot_ijoc_split_period_comparison(annual: pd.DataFrame, outdir: Path, cfg: d
     periods = build_split_periods(_get_plot_year_range(cfg, annual))
     if len(periods) < 2:
         return
+    time_scale_years = get_time_scale_years(cfg)
+    split_quantiles = get_focus_quantiles(cfg)
     fig, axes = plt.subplots(2, 2, figsize=(12.8, 9.6), constrained_layout=True)
     for i, idx_cfg in enumerate(cfg["indices"]):
         ax = axes.flat[i]

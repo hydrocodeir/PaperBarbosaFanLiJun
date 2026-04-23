@@ -1,4 +1,6 @@
-# An integrated quantile-based climatological synthesis of thermal extremes across Iran during 1961-2024
+# Quantile-Dependent Changes in Thermal Extremes Across Iran: A Robust Station-Based Assessment of Distributional Shifts, Uncertainty, and Regionalization
+### or
+# Beyond Mean Warming: Quantile-Dependent Thermal-Extreme Change, Uncertainty, and Regionalization Across Iran
 
 **Running title:** Quantile-based thermal extremes across Iran
 
