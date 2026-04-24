@@ -1,0 +1,279 @@
+{
+  "issues": [
+    {
+      "doi": "10.1016/j.asieco.2006.09.003",
+      "score": 0.3063063063063063,
+      "ref_title": "Maximum entropy ensembles for time series inference in economics",
+      "resolved_title": "Two-step on-the-job search—Evidence from Taiwan",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.asieco.2006.09.003/transform"
+    }
+  ],
+  "rows": [
+    {
+      "doi": "10.1029/2005JD006290",
+      "score": 1.0,
+      "ref_title": "Global observed changes in daily climate extremes of temperature and precipitation",
+      "resolved_title": "Global observed changes in daily climate extremes of temperature and precipitation",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2005JD006290/transform"
+    },
+    {
+      "doi": "10.5194/nhess-11-3227-2011",
+      "score": 1.0,
+      "ref_title": "Summarising changes in air temperature over Central Europe by quantile regression and clustering",
+      "resolved_title": "Summarising changes in air temperature over Central Europe by quantile regression and clustering",
+      "resolved_url": "https://api.crossref.org/v1/works/10.5194%2Fnhess-11-3227-2011/transform"
+    },
+    {
+      "doi": "10.1002/jgrd.50150",
+      "score": 1.0,
+      "ref_title": "Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: the HadEX2 dataset",
+      "resolved_title": "Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1002%2Fjgrd.50150/transform"
+    },
+    {
+      "doi": "10.1126/science.289.5487.2068",
+      "score": 1.0,
+      "ref_title": "Climate extremes: observations, modeling, and impacts",
+      "resolved_title": "Climate Extremes: Observations, Modeling, and Impacts",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1126%2Fscience.289.5487.2068/transform"
+    },
+    {
+      "doi": "10.3354/cr019193",
+      "score": 1.0,
+      "ref_title": "Observed coherent changes in climatic extremes during the second half of the twentieth century",
+      "resolved_title": "Observed coherent changes in climatic extremes during the second half of the twentieth century",
+      "resolved_url": "https://api.crossref.org/v1/works/10.3354%2Fcr019193/transform"
+    },
+    {
+      "doi": "10.1093/biomet/82.3.561",
+      "score": 1.0,
+      "ref_title": "On blocking rules for the bootstrap with dependent data",
+      "resolved_title": "On blocking rules for the bootstrap with dependent data",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1093%2Fbiomet%2F82.3.561/transform"
+    },
+    {
+      "doi": "10.1007/BF01908075",
+      "score": 1.0,
+      "ref_title": "Comparing partitions",
+      "resolved_title": "Comparing partitions",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1007%2FBF01908075/transform"
+    },
+    {
+      "doi": "10.1007/BF00139728",
+      "score": 1.0,
+      "ref_title": "Extreme events in a changing climate: variability is more important than averages",
+      "resolved_title": "Extreme events in a changing climate: Variability is more important than averages",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1007%2FBF00139728/transform"
+    },
+    {
+      "doi": "10.1016/S0309-1708(02)00056-8",
+      "score": 1.0,
+      "ref_title": "Statistics of extremes in hydrology",
+      "resolved_title": "Statistics of extremes in hydrology",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1016%2FS0309-1708%2802%2900056-8/transform"
+    },
+    {
+      "doi": "10.1214/aos/1176347265",
+      "score": 1.0,
+      "ref_title": "The jackknife and the bootstrap for general stationary observations",
+      "resolved_title": "The Jackknife and the Bootstrap for General Stationary Observations",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1214%2Faos%2F1176347265/transform"
+    },
+    {
+      "doi": "10.2307/1913643",
+      "score": 1.0,
+      "ref_title": "Regression quantiles",
+      "resolved_title": "Regression Quantiles",
+      "resolved_url": "https://api.crossref.org/v1/works/10.2307%2F1913643/transform"
+    },
+    {
+      "doi": "10.1007/s00703-005-0122-2",
+      "score": 1.0,
+      "ref_title": "Assessment of climate extremes in the eastern Mediterranean",
+      "resolved_title": "Assessment of climate extremes in the Eastern Mediterranean",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1007%2Fs00703-005-0122-2/transform"
+    },
+    {
+      "doi": "10.1002/joc.1163",
+      "score": 1.0,
+      "ref_title": "Trends in indices for extremes in daily temperature and precipitation in central and western Europe, 1901-99",
+      "resolved_title": "Trends in indices for extremes in daily temperature and precipitation in central and western Europe, 1901-99",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1002%2Fjoc.1163/transform"
+    },
+    {
+      "doi": "10.1093/biomet/37.1-2.17",
+      "score": 1.0,
+      "ref_title": "Notes on continuous stochastic phenomena",
+      "resolved_title": "NOTES ON CONTINUOUS STOCHASTIC PHENOMENA",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1093%2Fbiomet%2F37.1-2.17/transform"
+    },
+    {
+      "doi": "10.3390/ijerph120100227",
+      "score": 1.0,
+      "ref_title": "The excess heat factor: a metric for heatwave intensity and its use in classifying heatwave severity",
+      "resolved_title": "The Excess Heat Factor: A Metric for Heatwave Intensity and Its Use in Classifying Heatwave Severity",
+      "resolved_url": "https://api.crossref.org/v1/works/10.3390%2Fijerph120100227/transform"
+    },
+    {
+      "doi": "10.1038/nclimate2833",
+      "score": 1.0,
+      "ref_title": "Future temperature in southwest Asia projected to exceed a threshold for human adaptability",
+      "resolved_title": "Future temperature in southwest Asia projected to exceed a threshold for human adaptability",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fnclimate2833/transform"
+    },
+    {
+      "doi": "10.1016/j.atmosres.2015.05.014",
+      "score": 0.9879518072289156,
+      "ref_title": "A review on the scientific understanding of heatwaves: their measurement, driving mechanisms, and changes at the global scale",
+      "resolved_title": "A review on the scientific understanding of heatwaves—Their measurement, driving mechanisms, and changes at the global scale",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.atmosres.2015.05.014/transform"
+    },
+    {
+      "doi": "10.1038/s41467-020-16970-7",
+      "score": 1.0,
+      "ref_title": "Increasing trends in regional heatwaves",
+      "resolved_title": "Increasing trends in regional heatwaves",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41467-020-16970-7/transform"
+    },
+    {
+      "doi": "10.1038/sdata.2018.206",
+      "score": 1.0,
+      "ref_title": "GHWR, a multi-method global heatwave and warm-spell record and toolbox",
+      "resolved_title": "GHWR, a multi-method global heatwave and warm-spell record and toolbox",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fsdata.2018.206/transform"
+    },
+    {
+      "doi": "10.1126/sciadv.aaw1838",
+      "score": 1.0,
+      "ref_title": "The emergence of heat and humidity too severe for human tolerance",
+      "resolved_title": "The emergence of heat and humidity too severe for human tolerance",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1126%2Fsciadv.aaw1838/transform"
+    },
+    {
+      "doi": "10.1038/s43247-024-01763-3",
+      "score": 1.0,
+      "ref_title": "Evening humid-heat maxima near the southern Persian/Arabian Gulf",
+      "resolved_title": "Evening humid-heat maxima near the southern Persian/Arabian Gulf",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs43247-024-01763-3/transform"
+    },
+    {
+      "doi": "10.1111/j.1467-9876.2011.01025.x",
+      "score": 1.0,
+      "ref_title": "Spatiotemporal quantile regression for detecting distributional changes in environmental processes",
+      "resolved_title": "Spatiotemporal Quantile Regression for Detecting Distributional Changes in Environmental Processes",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1111%2Fj.1467-9876.2011.01025.x/transform"
+    },
+    {
+      "doi": "10.1029/2010JD014727",
+      "score": 1.0,
+      "ref_title": "Global changes in indices describing moderate temperature extremes from the daily output of a climate model",
+      "resolved_title": "Global changes in indices describing moderate temperature extremes from the daily output of a climate model",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2010JD014727/transform"
+    },
+    {
+      "doi": "10.1038/srep41475",
+      "score": 1.0,
+      "ref_title": "Fewer clouds in the Mediterranean: consistency of observations and climate simulations",
+      "resolved_title": "Fewer clouds in the Mediterranean: consistency of observations and climate simulations",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fsrep41475/transform"
+    },
+    {
+      "doi": "10.1016/j.earscirev.2010.02.004",
+      "score": 0.9875,
+      "ref_title": "Investigating soil moisture-climate interactions in a changing climate: a review",
+      "resolved_title": "Investigating soil moisture–climate interactions in a changing climate: A review",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.earscirev.2010.02.004/transform"
+    },
+    {
+      "doi": "10.1007/s00704-015-1609-5",
+      "score": 1.0,
+      "ref_title": "Assessment of climate variations in temperature and precipitation extreme events over Iran",
+      "resolved_title": "Assessment of climate variations in temperature and precipitation extreme events over Iran",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1007%2Fs00704-015-1609-5/transform"
+    },
+    {
+      "doi": "10.1038/s41598-018-38071-8",
+      "score": 1.0,
+      "ref_title": "The future of extreme climate in Iran",
+      "resolved_title": "The future of extreme climate in Iran",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41598-018-38071-8/transform"
+    },
+    {
+      "doi": "10.1016/j.asieco.2006.09.003",
+      "score": 0.3063063063063063,
+      "ref_title": "Maximum entropy ensembles for time series inference in economics",
+      "resolved_title": "Two-step on-the-job search—Evidence from Taiwan",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.asieco.2006.09.003/transform"
+    },
+    {
+      "doi": "10.1016/j.envint.2018.05.014",
+      "score": 1.0,
+      "ref_title": "Escalating heat-stress mortality risk due to global warming in the Middle East and North Africa (MENA)",
+      "resolved_title": "Escalating heat-stress mortality risk due to global warming in the Middle East and North Africa (MENA)",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.envint.2018.05.014/transform"
+    },
+    {
+      "doi": "10.1029/2019JD032263",
+      "score": 0.9863013698630136,
+      "ref_title": "Development of an updated global land in situ-based dataset of temperature and precipitation extremes: HadEX3",
+      "resolved_title": "Development of an Updated Global Land In Situ‐Based Data Set of Temperature and Precipitation Extremes: HadEX3",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2019JD032263/transform"
+    },
+    {
+      "doi": "10.1038/ngeo866",
+      "score": 1.0,
+      "ref_title": "Consistent geographical patterns of changes in high-impact European heatwaves",
+      "resolved_title": "Consistent geographical patterns of changes in high-impact European heatwaves",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fngeo866/transform"
+    },
+    {
+      "doi": "10.3878/j.issn.1674-2834.13.0102",
+      "score": 1.0,
+      "ref_title": "Quantile trends in temperature extremes in China",
+      "resolved_title": "Quantile Trends in Temperature Extremes in China",
+      "resolved_url": "http://122.115.55.36:8000/doi/10.3878%2Fj.issn.1674-2834.13.0102"
+    },
+    {
+      "doi": "10.1038/s41598-024-60976-w",
+      "score": 1.0,
+      "ref_title": "Recent and projected changes in climate patterns in the Middle East and North Africa (MENA) region",
+      "resolved_title": "Recent and projected changes in climate patterns in the Middle East and North Africa (MENA) region",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41598-024-60976-w/transform"
+    },
+    {
+      "doi": "10.1029/2005JD006181",
+      "score": 1.0,
+      "ref_title": "Trends in Middle East climate extreme indices from 1950 to 2003",
+      "resolved_title": "Trends in Middle East climate extreme indices from 1950 to 2003",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2005JD006181/transform"
+    },
+    {
+      "doi": "10.1175/JCLI3366.1",
+      "score": 1.0,
+      "ref_title": "Avoiding inhomogeneity in percentile-based indices of temperature extremes",
+      "resolved_title": "Avoiding Inhomogeneity in Percentile-Based Indices of Temperature Extremes",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1175%2FJCLI3366.1/transform"
+    },
+    {
+      "doi": "10.1002/wcc.147",
+      "score": 1.0,
+      "ref_title": "Indices for monitoring changes in extremes based on daily temperature and precipitation data",
+      "resolved_title": "Indices for monitoring changes in extremes based on daily temperature and precipitation data",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1002%2Fwcc.147/transform"
+    },
+    {
+      "doi": "10.1007/s10584-016-1665-6",
+      "score": 1.0,
+      "ref_title": "Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century",
+      "resolved_title": "Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1007%2Fs10584-016-1665-6/transform"
+    },
+    {
+      "doi": "10.1038/s41612-021-00178-7",
+      "score": 1.0,
+      "ref_title": "Business-as-usual will lead to super and ultra-extreme heatwaves in the Middle East and North Africa",
+      "resolved_title": "Business-as-usual will lead to super and ultra-extreme heatwaves in the Middle East and North Africa",
+      "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41612-021-00178-7/transform"
+    }
+  ]
+}

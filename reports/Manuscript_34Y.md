@@ -12,7 +12,7 @@ Mean change alone is often insufficient for understanding thermal extremes becau
 
 Changes in climate extremes are among the most consequential manifestations of contemporary climate change because their impacts propagate through agriculture, water resources, ecosystems, infrastructure, and human health (Easterling et al., 2000; IPCC, 2021). Heat-related risk is especially sensitive to shifts in the tails of the thermal distribution, not only to changes in the mean (Katz and Brown, 1992; Katz et al., 2002; Perkins, 2015). A region can therefore experience moderate mean change while simultaneously undergoing pronounced upper-tail intensification or accelerated loss of historically cool conditions. Distribution-aware methods are therefore essential for diagnosing the structure of thermal-extreme change (Koenker and Bassett, 1978; Koenker, 2005; Barbosa et al., 2011; Fan, 2014; Reich, 2012).
 
-This issue is especially important for annual warm-day, warm-night, cool-day, and cool-night indices. These indices are widely used in climatology because they convert daily temperature variability into interpretable annual counts of unusually warm or cool conditions (Frich et al., 2002; Alexander et al., 2006; Zhang et al., 2011; Dunn et al., 2020). Yet many studies still emphasize mean or median behavior, even though the rates of change at lower, central, and upper quantiles may differ substantially. Such differences matter because they distinguish broad distribution-wide shifts from more selective amplification in the most extreme years (Moberg and Jones, 2005; Kostopoulou and Jones, 2005; Fischer and Schär, 2010; Russo and Sterl, 2011).
+This issue is especially important for annual warm-day, warm-night, cool-day, and cool-night indices. These indices are widely used in climatology because they convert daily temperature variability into interpretable annual counts of unusually warm or cool conditions (Frich et al., 2002; Alexander et al., 2006; Zhang et al., 2011; Dunn et al., 2020). Yet many studies still emphasize mean or median behavior, even though the rates of change at lower, central, and upper quantiles may differ substantially. Such differences matter because they distinguish broad distribution-wide shifts from more selective amplification in the most extreme years (Moberg and Jones, 2005; Kostopoulou and Jones, 2005; Fischer and SchÃ¤r, 2010; Russo and Sterl, 2011).
 
 Iran provides a compelling setting for this question. The country spans humid Caspian lowlands, the Zagros and Alborz mountain systems, central desert basins, and hot southern coasts influenced by the Persian Gulf and Gulf of Oman. These gradients in elevation, continentality, aridity, and marine influence favor spatially heterogeneous responses rather than a single national thermal signal. Previous studies have documented intensifying temperature extremes across Iran and the broader Middle East and North Africa (Zhang et al., 2005a; Soltani et al., 2016; Vaghefi et al., 2019; Zittis et al., 2016; Francis and Fonseca, 2024), while regional work has further emphasized the growing relevance of heat stress and compound thermal hazards in southwest Asia (Pal and Eltahir, 2016; Raymond et al., 2020; Zittis et al., 2021; Raymond et al., 2024). Even so, relatively few station-based studies for Iran have combined distributional trend analysis, uncertainty quantification, field significance, and quantitative regionalization within a single workflow.
 
@@ -277,88 +277,88 @@ The Supplementary Material includes the following items cited in the manuscript:
 
 ## References
 
-Alexander LV, Zhang X, Peterson TC, Caesar J, Gleason B, Klein Tank AMG, Haylock M, Collins D, Trewin B, Rahimzadeh F, Tagipour A, Kumar KR, Revadekar J, Griffiths G, Vincent L, Stephenson DB, Burn J, Aguilar E, Brunet M, Taylor M, New M, Zhai P, Rusticucci M, Vazquez-Aguirre JL (2006) Global observed changes in daily climate extremes of temperature and precipitation. *Journal of Geophysical Research: Atmospheres* 111:D05109. https://doi.org/10.1029/2005JD006290
+Ahmadalipour A, Moradkhani H (2018). Escalating heat-stress mortality risk due to global warming in the Middle East and North Africa (MENA). Environment International 117:215-225. https://doi.org/10.1016/j.envint.2018.05.014
 
-Barbosa SM, Scotto MG, Alonso AM (2011) Summarising changes in air temperature over Central Europe by quantile regression and clustering. *Natural Hazards and Earth System Sciences* 11:3227-3233. https://doi.org/10.5194/nhess-11-3227-2011
+Alexander LV, Zhang X, Peterson TC, Caesar J, Gleason B, Klein Tank AMG, Haylock M, Collins D, Trewin B, Rahimzadeh F, Tagipour A, Kumar KR, Revadekar J, Griffiths G, Vincent L, Stephenson DB, Burn J, Aguilar E, Brunet M, Taylor M, New M, Zhai P, Rusticucci M, Vazquez-Aguirre JL (2006). Global observed changes in daily climate extremes of temperature and precipitation. Journal of Geophysical Research: Atmospheres 111:D05109. https://doi.org/10.1029/2005JD006290
 
-Benjamini Y, Hochberg Y (1995) Controlling the false discovery rate: a practical and powerful approach to multiple testing. *Journal of the Royal Statistical Society: Series B* 57(1):289-300.
+Barbosa SM, Scotto MG, Alonso AM (2011). Summarising changes in air temperature over Central Europe by quantile regression and clustering. Natural Hazards and Earth System Sciences 11:3227-3233. https://doi.org/10.5194/nhess-11-3227-2011
 
-Donat MG, Alexander LV, Yang H, Durre I, Vose R, Caesar J, Gleason BE, Klein Tank AMG, Manton MJ, Molanus C, Peterson TC, Renom M, Brunet M, Caesar J, Zhang X, Kitching S, Haylock M (2013) Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: the HadEX2 dataset. *Journal of Geophysical Research: Atmospheres* 118(5):2098-2118. https://doi.org/10.1002/jgrd.50150
+Benjamini Y, Hochberg Y (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B 57(1):289-300. https://doi.org/10.1111/j.2517-6161.1995.tb02031.x
 
-Easterling DR, Meehl GA, Parmesan C, Changnon SA, Karl TR, Mearns LO (2000) Climate extremes: observations, modeling, and impacts. *Science* 289(5487):2068-2074. https://doi.org/10.1126/science.289.5487.2068
+Donat MG, Alexander LV, Yang H, Durre I, Vose R, Dunn RJH, Willett KM, Aguilar E, Brunet M, Caesar J, Hewitson B, Jack C, Klein Tank AMG, Kruger AC, Marengo J, Peterson TC, Renom M, Oria Rojas C, Rusticucci M, Salinger J, Elrayah AS, Sekele SS, Srivastava AK, Trewin B, Villarroel C, Vincent LA, Zhai P, Zhang X, Kitching S (2013). Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset. Journal of Geophysical Research: Atmospheres 118(5):2098-2118. https://doi.org/10.1002/jgrd.50150
 
-Efron B, Tibshirani RJ (1993) *An Introduction to the Bootstrap*. Chapman & Hall, New York.
+Dunn RJH, Alexander LV, Donat MG, Zhang X, Bador M, Herold N, Lippmann T, Allan R, Aguilar E, Brunet M, Caesar J, Chagnaud G, Cheng V, Cinco T, Durre I, Htay MM, Hoang L, Hung NQ, Johnson F, Kruger A, Lau K, Leng TW, Loikith PC, Marengo J, Mbatha S, McGree S, Menne M, Skansi M, Trewin B, Villarroel C, Vincent LA, Vose RS, Yeo R, Zhang P (2020). Development of an updated global land in situ-based dataset of temperature and precipitation extremes: HadEX3. Journal of Geophysical Research: Atmospheres 125:e2019JD032263. https://doi.org/10.1029/2019JD032263
 
-Frich P, Alexander LV, Della-Marta P, Gleason B, Haylock M, Klein Tank AMG, Peterson T (2002) Observed coherent changes in climatic extremes during the second half of the twentieth century. *Climate Research* 19:193-212. https://doi.org/10.3354/cr019193
+Easterling DR, Meehl GA, Parmesan C, Changnon SA, Karl TR, Mearns LO (2000). Climate extremes: observations, modeling, and impacts. Science 289(5487):2068-2074. https://doi.org/10.1126/science.289.5487.2068
 
-Hall P, Horowitz JL, Jing B-Y (1995) On blocking rules for the bootstrap with dependent data. *Biometrika* 82(3):561-574. https://doi.org/10.1093/biomet/82.3.561
+Efron B, Tibshirani RJ (1993). An Introduction to the Bootstrap. Chapman & Hall, New York.
 
-Hubert L, Arabie P (1985) Comparing partitions. *Journal of Classification* 2:193-218. https://doi.org/10.1007/BF01908075
+Fan LJ (2014). Quantile trends in temperature extremes in China. Atmospheric and Oceanic Science Letters 7(4):304-308. https://doi.org/10.3878/j.issn.1674-2834.13.0102
 
-IPCC (2021) Weather and climate extreme events in a changing climate. In: Masson-Delmotte V, Zhai P, Pirani A, Connors SL, Péan C, Berger S, Caud N, Chen Y, Goldfarb L, Gomis MI, Huang M, Leitzell K, Lonnoy E, Matthews JBR, Maycock TK, Waterfield T, Yelekçi O, Yu R, Zhou B (eds) *Climate Change 2021: The Physical Science Basis*. Cambridge University Press, Cambridge, Chapter 11. https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-11/
+Fischer EM, Schär C (2010). Consistent geographical patterns of changes in high-impact European heatwaves. Nature Geoscience 3:398-403. https://doi.org/10.1038/ngeo866
 
-Katz RW, Brown BG (1992) Extreme events in a changing climate: variability is more important than averages. *Climatic Change* 21(3):289-302. https://doi.org/10.1007/BF00139728
+Francis D, Fonseca R (2024). Recent and projected changes in climate patterns in the Middle East and North Africa (MENA) region. Scientific Reports 14:10279. https://doi.org/10.1038/s41598-024-60976-w
 
-Katz RW, Parlange MB, Naveau P (2002) Statistics of extremes in hydrology. *Advances in Water Resources* 25(8-12):1287-1304. https://doi.org/10.1016/S0309-1708(02)00056-8
+Frich P, Alexander LV, Della-Marta P, Gleason B, Haylock M, Klein Tank AMG, Peterson T (2002). Observed coherent changes in climatic extremes during the second half of the twentieth century. Climate Research 19:193-212. https://doi.org/10.3354/cr019193
 
-Kunsch HR (1989) The jackknife and the bootstrap for general stationary observations. *The Annals of Statistics* 17(3):1217-1241. https://doi.org/10.1214/aos/1176347265
+Hall P, Horowitz JL, Jing B-Y (1995). On blocking rules for the bootstrap with dependent data. Biometrika 82(3):561-574. https://doi.org/10.1093/biomet/82.3.561
 
-Koenker R (2005) *Quantile Regression*. Cambridge University Press, Cambridge.
+Hubert L, Arabie P (1985). Comparing partitions. Journal of Classification 2:193-218. https://doi.org/10.1007/BF01908075
 
-Koenker R, Bassett G Jr (1978) Regression quantiles. *Econometrica* 46(1):33-50. https://doi.org/10.2307/1913643
+IPCC (2021). Weather and climate extreme events in a changing climate. In: Masson-Delmotte V, Zhai P, Pirani A, Connors SL, Péan C, Berger S, Caud N, Chen Y, Goldfarb L, Gomis MI, Huang M, Leitzell K, Lonnoy E, Matthews JBR, Maycock TK, Waterfield T, Yelekçi O, Yu R, Zhou B (eds) Climate Change 2021: The Physical Science Basis. Cambridge University Press, Cambridge, Chapter 11. https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-11/
 
-Kostopoulou E, Jones PD (2005) Assessment of climate extremes in the eastern Mediterranean. *Meteorology and Atmospheric Physics* 89:69-85. https://doi.org/10.1007/s00703-005-0122-2
+Katz RW, Brown BG (1992). Extreme events in a changing climate: variability is more important than averages. Climatic Change 21(3):289-302. https://doi.org/10.1007/BF00139728
 
-Moberg A, Jones PD (2005) Trends in indices for extremes in daily temperature and precipitation in central and western Europe, 1901-99. *International Journal of Climatology* 25(9):1149-1171. https://doi.org/10.1002/joc.1163
+Katz RW, Parlange MB, Naveau P (2002). Statistics of extremes in hydrology. Advances in Water Resources 25(8-12):1287-1304. https://doi.org/10.1016/S0309-1708(02)00056-8
 
-Moran PAP (1950) Notes on continuous stochastic phenomena. *Biometrika* 37(1-2):17-23. https://doi.org/10.1093/biomet/37.1-2.17
+Koenker R (2005). Quantile Regression. Cambridge University Press, Cambridge. https://doi.org/10.1017/CBO9780511754098
 
-Lahiri SN (2003) *Resampling Methods for Dependent Data*. Springer, New York.
+Koenker R, Bassett G Jr (1978). Regression quantiles. Econometrica 46(1):33-50. https://doi.org/10.2307/1913643
 
-Nairn JR, Fawcett RJB (2015) The excess heat factor: a metric for heatwave intensity and its use in classifying heatwave severity. *International Journal of Environmental Research and Public Health* 12(1):227-253. https://doi.org/10.3390/ijerph120100227
+Kostopoulou E, Jones PD (2005). Assessment of climate extremes in the eastern Mediterranean. Meteorology and Atmospheric Physics 89:69-85. https://doi.org/10.1007/s00703-005-0122-2
 
-Pal JS, Eltahir EAB (2016) Future temperature in southwest Asia projected to exceed a threshold for human adaptability. *Nature Climate Change* 6:197-200. https://doi.org/10.1038/nclimate2833
+Kunsch HR (1989). The jackknife and the bootstrap for general stationary observations. The Annals of Statistics 17(3):1217-1241. https://doi.org/10.1214/aos/1176347265
 
-Perkins SE (2015) A review on the scientific understanding of heatwaves: their measurement, driving mechanisms, and changes at the global scale. *Atmospheric Research* 164-165:242-267. https://doi.org/10.1016/j.atmosres.2015.05.014
+Lahiri SN (2003). Resampling Methods for Dependent Data. Springer, New York. https://doi.org/10.1007/978-1-4757-3803-2
 
-Perkins-Kirkpatrick SE, Lewis SC (2020) Increasing trends in regional heatwaves. *Nature Communications* 11:3357. https://doi.org/10.1038/s41467-020-16970-7
+Moberg A, Jones PD (2005). Trends in indices for extremes in daily temperature and precipitation in central and western Europe, 1901-99. International Journal of Climatology 25(9):1149-1171. https://doi.org/10.1002/joc.1163
 
-Raei E, Nikoo MR, AghaKouchak A, Mazdiyasni O, Sadegh M (2018) GHWR, a multi-method global heatwave and warm-spell record and toolbox. *Scientific Data* 5:180206. https://doi.org/10.1038/sdata.2018.206
+Moran PAP (1950). Notes on continuous stochastic phenomena. Biometrika 37(1-2):17-23. https://doi.org/10.1093/biomet/37.1-2.17
 
-Raymond C, Matthews T, Horton RM (2020) The emergence of heat and humidity too severe for human tolerance. *Science Advances* 6(19):eaaw1838. https://doi.org/10.1126/sciadv.aaw1838
+Nairn JR, Fawcett RJB (2015). The excess heat factor: a metric for heatwave intensity and its use in classifying heatwave severity. International Journal of Environmental Research and Public Health 12(1):227-253. https://doi.org/10.3390/ijerph120100227
 
-Raymond C, Matthews T, Tuholske C (2024) Evening humid-heat maxima near the southern Persian/Arabian Gulf. *Communications Earth & Environment* 5:591. https://doi.org/10.1038/s43247-024-01763-3
+Pal JS, Eltahir EAB (2016). Future temperature in southwest Asia projected to exceed a threshold for human adaptability. Nature Climate Change 6:197-200. https://doi.org/10.1038/nclimate2833
 
-Reich BJ (2012) Spatiotemporal quantile regression for detecting distributional changes in environmental processes. *Journal of the Royal Statistical Society: Series C (Applied Statistics)* 61(4):535-553. https://doi.org/10.1111/j.1467-9876.2011.01025.x
+Perkins SE (2015). A review on the scientific understanding of heatwaves: their measurement, driving mechanisms, and changes at the global scale. Atmospheric Research 164-165:242-267. https://doi.org/10.1016/j.atmosres.2015.05.014
 
-Russo S, Sterl A (2011) Global changes in indices describing moderate temperature extremes from the daily output of a climate model. *Journal of Geophysical Research: Atmospheres* 116:D03104. https://doi.org/10.1029/2010JD014727
+Perkins-Kirkpatrick SE, Lewis SC (2020). Increasing trends in regional heatwaves. Nature Communications 11:3357. https://doi.org/10.1038/s41467-020-16970-7
 
-Sanchez-Lorenzo A, Enriquez-Alonso A, Calbó J, González JA, Wild M, Folini D, Norris JR, Vicente-Serrano SM (2017) Fewer clouds in the Mediterranean: consistency of observations and climate simulations. *Scientific Reports* 7:41475. https://doi.org/10.1038/srep41475
+Raei E, Nikoo MR, AghaKouchak A, Mazdiyasni O, Sadegh M (2018). GHWR, a multi-method global heatwave and warm-spell record and toolbox. Scientific Data 5:180206. https://doi.org/10.1038/sdata.2018.206
 
-Seneviratne SI, Corti T, Davin EL, Hirschi M, Jaeger EB, Lehner I, Orlowsky B, Teuling AJ (2010) Investigating soil moisture-climate interactions in a changing climate: a review. *Earth-Science Reviews* 99(3-4):125-161. https://doi.org/10.1016/j.earscirev.2010.02.004
+Raymond C, Matthews T, Horton RM (2020). The emergence of heat and humidity too severe for human tolerance. Science Advances 6(19):eaaw1838. https://doi.org/10.1126/sciadv.aaw1838
 
-Soltani M, Laux P, Kunstmann H, Stan K, Sohrabi MM, Molanejad M, Sabziparvar AA, Ranjbar SaadatAbadi A, Ranjbar F, Rousta I, Zawar-Reza P, Khoshakhlagh F, Soltanzadeh I, Babu CA, Azizi GH, Martin MV (2016) Assessment of climate variations in temperature and precipitation extreme events over Iran. *Theoretical and Applied Climatology* 126:775-795. https://doi.org/10.1007/s00704-015-1609-5
+Raymond C, Matthews T, Tuholske C (2024). Evening humid-heat maxima near the southern Persian/Arabian Gulf. Communications Earth & Environment 5:591. https://doi.org/10.1038/s43247-024-01763-3
 
-Vaghefi SA, Keykhai M, Jahanbakhshi F, Sheikholeslami J, Ahmadi A, Yang H, Abbaspour KC (2019) The future of extreme climate in Iran. *Scientific Reports* 9:1464. https://doi.org/10.1038/s41598-018-38071-8
+Reich BJ (2012). Spatiotemporal quantile regression for detecting distributional changes in environmental processes. Journal of the Royal Statistical Society: Series C (Applied Statistics) 61(4):535-553. https://doi.org/10.1111/j.1467-9876.2011.01025.x
 
-Vinod HD (2006) Maximum entropy ensembles for time series inference in economics. *Journal of Asian Economics* 17(6):955-978. https://doi.org/10.1016/j.asieco.2006.09.003
+Russo S, Sterl A (2011). Global changes in indices describing moderate temperature extremes from the daily output of a climate model. Journal of Geophysical Research: Atmospheres 116:D03104. https://doi.org/10.1029/2010JD014727
 
-Ahmadalipour A, Moradkhani H (2018) Escalating heat-stress mortality risk due to global warming in the Middle East and North Africa (MENA). *Environment International* 117:215-225. https://doi.org/10.1016/j.envint.2018.05.014
+Sanchez-Lorenzo A, Enriquez-Alonso A, Calbó J, González JA, Wild M, Folini D, Norris JR, Vicente-Serrano SM (2017). Fewer clouds in the Mediterranean: consistency of observations and climate simulations. Scientific Reports 7:41475. https://doi.org/10.1038/srep41475
 
-Dunn RJH, Alexander LV, Donat MG, Zhang X, Bador M, Herold N, Lippmann T, Allan R, Aguilar E, Brunet M, Caesar J, Chagnaud G, Cheng V, Cinco T, Durre I, Htay MM, Hoang L, Hung NQ, Johnson F, Kruger A, Lau K, Leng TW, Loikith PC, Marengo J, Mbatha S, McGree S, Menne M, Skansi M, Trewin B, Villarroel C, Vincent LA, Vose RS, Yeo R, Zhang P (2020) Development of an updated global land in situ-based dataset of temperature and precipitation extremes: HadEX3. *Journal of Geophysical Research: Atmospheres* 125:e2019JD032263. https://doi.org/10.1029/2019JD032263
+Seneviratne SI, Corti T, Davin EL, Hirschi M, Jaeger EB, Lehner I, Orlowsky B, Teuling AJ (2010). Investigating soil moisture-climate interactions in a changing climate: a review. Earth-Science Reviews 99(3-4):125-161. https://doi.org/10.1016/j.earscirev.2010.02.004
 
-Fischer EM, Schär C (2010) Consistent geographical patterns of changes in high-impact European heatwaves. *Nature Geoscience* 3:398-403. https://doi.org/10.1038/ngeo866
+Soltani M, Laux P, Kunstmann H, Stan K, Sohrabi MM, Molanejad M, Sabziparvar AA, Ranjbar SaadatAbadi A, Ranjbar F, Rousta I, Zawar-Reza P, Khoshakhlagh F, Soltanzadeh I, Babu CA, Azizi GH, Martin MV (2016). Assessment of climate variations in temperature and precipitation extreme events over Iran. Theoretical and Applied Climatology 126:775-795. https://doi.org/10.1007/s00704-015-1609-5
 
-Fan LJ (2014) Quantile trends in temperature extremes in China. *Atmospheric and Oceanic Science Letters* 7(4):304-308. https://doi.org/10.3878/j.issn.1674-2834.13.0102
+Vaghefi SA, Keykhai M, Jahanbakhshi F, Sheikholeslami J, Ahmadi A, Yang H, Abbaspour KC (2019). The future of extreme climate in Iran. Scientific Reports 9:1464. https://doi.org/10.1038/s41598-018-38071-8
 
-Francis D, Fonseca R (2024) Recent and projected changes in climate patterns in the Middle East and North Africa (MENA) region. *Scientific Reports* 14:10279. https://doi.org/10.1038/s41598-024-60976-w
+Vinod HD (2006). Maximum entropy ensembles for time series inference in economics. Journal of Asian Economics 17(6):955-978. https://doi.org/10.1016/j.asieco.2006.09.001
 
-Zhang X, Aguilar E, Sensoy S, Melkonyan H, Tagiyeva U, Ahmed N, Kutaladze N, Rahimzadeh F, Taghipour A, Hantosh TH, Albert P, Semawi M, Karam Ali M, Al-Shabibi MHS, Al-Oulan Z, Zatari T, Al Dean Khelet I, Hamoud S, Sagir R, Demircan M, Eken M, Adiguzel M, Alexander LV, Peterson TC, Wallis T (2005a) Trends in Middle East climate extreme indices from 1950 to 2003. *Journal of Geophysical Research: Atmospheres* 110:D22104. https://doi.org/10.1029/2005JD006181
+Zhang X, Aguilar E, Sensoy S, Melkonyan H, Tagiyeva U, Ahmed N, Kutaladze N, Rahimzadeh F, Taghipour A, Hantosh TH, Albert P, Semawi M, Karam Ali M, Al-Shabibi MHS, Al-Oulan Z, Zatari T, Al Dean Khelet I, Hamoud S, Sagir R, Demircan M, Eken M, Adiguzel M, Alexander LV, Peterson TC, Wallis T (2005a). Trends in Middle East climate extreme indices from 1950 to 2003. Journal of Geophysical Research: Atmospheres 110:D22104. https://doi.org/10.1029/2005JD006181
 
-Zhang X, Hegerl G, Zwiers FW, Kenyon J (2005b) Avoiding inhomogeneity in percentile-based indices of temperature extremes. *Journal of Climate* 18(11):1641-1651. https://doi.org/10.1175/JCLI3366.1
+Zhang X, Hegerl G, Zwiers FW, Kenyon J (2005b). Avoiding inhomogeneity in percentile-based indices of temperature extremes. Journal of Climate 18(11):1641-1651. https://doi.org/10.1175/JCLI3366.1
 
-Zhang X, Alexander L, Hegerl GC, Jones P, Klein Tank AMG, Peterson TC, Trewin B, Zwiers FW (2011) Indices for monitoring changes in extremes based on daily temperature and precipitation data. *WIREs Climate Change* 2(6):851-870. https://doi.org/10.1002/wcc.147
+Zhang X, Alexander L, Hegerl GC, Jones P, Klein Tank AMG, Peterson TC, Trewin B, Zwiers FW (2011). Indices for monitoring changes in extremes based on daily temperature and precipitation data. WIREs Climate Change 2(6):851-870. https://doi.org/10.1002/wcc.147
 
-Zittis G, Hadjinicolaou P, Lelieveld J (2016) Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century. *Climatic Change* 137:245-260. https://doi.org/10.1007/s10584-016-1665-6
+Zittis G, Hadjinicolaou P, Lelieveld J (2016). Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century. Climatic Change 137:245-260. https://doi.org/10.1007/s10584-016-1665-6
 
-Zittis G, Almazroui M, Alpert P, Ciais P, Cramer W, Dahdal Y, Fnais M, Francis D, Hadjinicolaou P, Howari FM, Kucera P, Kvalevåg MM, Lin L, Liu Z, Mihalopoulos N, Mostamandi S, Niang I, Noone K, Odoulami RC, Panitz HJ, Ratti C, Said F, Saleh K, Sielecki LE, Stenchikov G, Tsiros IX, Zittis C, Lelieveld J (2021) Business-as-usual will lead to super and ultra-extreme heatwaves in the Middle East and North Africa. *npj Climate and Atmospheric Science* 4:20. https://doi.org/10.1038/s41612-021-00178-7
+Zittis G, Almazroui M, Alpert P, Ciais P, Cramer W, Dahdal Y, Fnais M, Francis D, Hadjinicolaou P, Howari FM, Kucera P, Kvalevåg MM, Lin L, Liu Z, Mihalopoulos N, Mostamandi S, Niang I, Noone K, Odoulami RC, Panitz HJ, Ratti C, Said F, Saleh K, Sielecki LE, Stenchikov G, Tsiros IX, Zittis C, Lelieveld J (2021). Business-as-usual will lead to super and ultra-extreme heatwaves in the Middle East and North Africa. npj Climate and Atmospheric Science 4:20. https://doi.org/10.1038/s41612-021-00178-7

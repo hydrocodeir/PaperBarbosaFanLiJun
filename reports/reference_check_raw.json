@@ -1,0 +1,407 @@
+[
+  {
+    "ref": "Alexander LV, Zhang X, Peterson TC, Caesar J, Gleason B, Klein Tank AMG, Haylock M, Collins D, Trewin B, Rahimzadeh F, Tagipour A, Kumar KR, Revadekar J, Griffiths G, Vincent L, Stephenson DB, Burn J, Aguilar E, Brunet M, Taylor M, New M, Zhai P, Rusticucci M, Vazquez-Aguirre JL (2006) Global observed changes in daily climate extremes of temperature and precipitation. *Journal of Geophysical Research: Atmospheres* 111:D05109. https://doi.org/10.1029/2005JD006290",
+    "type": "doi",
+    "doi": "10.1029/2005JD006290",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2005JD006290/transform",
+    "title": "Global observed changes in daily climate extremes of temperature and precipitation",
+    "publisher": "American Geophysical Union (AGU)"
+  },
+  {
+    "ref": "Barbosa SM, Scotto MG, Alonso AM (2011) Summarising changes in air temperature over Central Europe by quantile regression and clustering. *Natural Hazards and Earth System Sciences* 11:3227-3233. https://doi.org/10.5194/nhess-11-3227-2011",
+    "type": "doi",
+    "doi": "10.5194/nhess-11-3227-2011",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.5194%2Fnhess-11-3227-2011/transform",
+    "title": "Summarising changes in air temperature over Central Europe by quantile regression and clustering",
+    "publisher": "Copernicus GmbH"
+  },
+  {
+    "ref": "Benjamini Y, Hochberg Y (1995) Controlling the false discovery rate: a practical and powerful approach to multiple testing. *Journal of the Royal Statistical Society: Series B* 57(1):289-300.",
+    "type": "manual",
+    "doi": null
+  },
+  {
+    "ref": "Donat MG, Alexander LV, Yang H, Durre I, Vose R, Caesar J, Gleason BE, Klein Tank AMG, Manton MJ, Molanus C, Peterson TC, Renom M, Brunet M, Caesar J, Zhang X, Kitching S, Haylock M (2013) Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: the HadEX2 dataset. *Journal of Geophysical Research: Atmospheres* 118(5):2098-2118. https://doi.org/10.1002/jgrd.50150",
+    "type": "doi",
+    "doi": "10.1002/jgrd.50150",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1002%2Fjgrd.50150/transform",
+    "title": "Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset",
+    "publisher": "American Geophysical Union (AGU)"
+  },
+  {
+    "ref": "Easterling DR, Meehl GA, Parmesan C, Changnon SA, Karl TR, Mearns LO (2000) Climate extremes: observations, modeling, and impacts. *Science* 289(5487):2068-2074. https://doi.org/10.1126/science.289.5487.2068",
+    "type": "doi",
+    "doi": "10.1126/science.289.5487.2068",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1126%2Fscience.289.5487.2068/transform",
+    "title": "Climate Extremes: Observations, Modeling, and Impacts",
+    "publisher": "American Association for the Advancement of Science (AAAS)"
+  },
+  {
+    "ref": "Efron B, Tibshirani RJ (1993) *An Introduction to the Bootstrap*. Chapman & Hall, New York.",
+    "type": "manual",
+    "doi": null
+  },
+  {
+    "ref": "Frich P, Alexander LV, Della-Marta P, Gleason B, Haylock M, Klein Tank AMG, Peterson T (2002) Observed coherent changes in climatic extremes during the second half of the twentieth century. *Climate Research* 19:193-212. https://doi.org/10.3354/cr019193",
+    "type": "doi",
+    "doi": "10.3354/cr019193",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.3354%2Fcr019193/transform",
+    "title": "Observed coherent changes in climatic extremes during the second half of the twentieth century",
+    "publisher": "Inter-Research Science Center"
+  },
+  {
+    "ref": "Hall P, Horowitz JL, Jing B-Y (1995) On blocking rules for the bootstrap with dependent data. *Biometrika* 82(3):561-574. https://doi.org/10.1093/biomet/82.3.561",
+    "type": "doi",
+    "doi": "10.1093/biomet/82.3.561",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1093%2Fbiomet%2F82.3.561/transform",
+    "title": "On blocking rules for the bootstrap with dependent data",
+    "publisher": "Oxford University Press (OUP)"
+  },
+  {
+    "ref": "Hubert L, Arabie P (1985) Comparing partitions. *Journal of Classification* 2:193-218. https://doi.org/10.1007/BF01908075",
+    "type": "doi",
+    "doi": "10.1007/BF01908075",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1007%2FBF01908075/transform",
+    "title": "Comparing partitions",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "IPCC (2021) Weather and climate extreme events in a changing climate. In: Masson-Delmotte V, Zhai P, Pirani A, Connors SL, Péan C, Berger S, Caud N, Chen Y, Goldfarb L, Gomis MI, Huang M, Leitzell K, Lonnoy E, Matthews JBR, Maycock TK, Waterfield T, Yelekçi O, Yu R, Zhou B (eds) *Climate Change 2021: The Physical Science Basis*. Cambridge University Press, Cambridge, Chapter 11. https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-11/",
+    "type": "manual",
+    "doi": null
+  },
+  {
+    "ref": "Katz RW, Brown BG (1992) Extreme events in a changing climate: variability is more important than averages. *Climatic Change* 21(3):289-302. https://doi.org/10.1007/BF00139728",
+    "type": "doi",
+    "doi": "10.1007/BF00139728",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1007%2FBF00139728/transform",
+    "title": "Extreme events in a changing climate: Variability is more important than averages",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Katz RW, Parlange MB, Naveau P (2002) Statistics of extremes in hydrology. *Advances in Water Resources* 25(8-12):1287-1304. https://doi.org/10.1016/S0309-1708(02)00056-8",
+    "type": "doi",
+    "doi": "10.1016/S0309-1708(02)00056-8",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1016%2FS0309-1708%2802%2900056-8/transform",
+    "title": "Statistics of extremes in hydrology",
+    "publisher": "Elsevier BV"
+  },
+  {
+    "ref": "Kunsch HR (1989) The jackknife and the bootstrap for general stationary observations. *The Annals of Statistics* 17(3):1217-1241. https://doi.org/10.1214/aos/1176347265",
+    "type": "doi",
+    "doi": "10.1214/aos/1176347265",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1214%2Faos%2F1176347265/transform",
+    "title": "The Jackknife and the Bootstrap for General Stationary Observations",
+    "publisher": "Institute of Mathematical Statistics"
+  },
+  {
+    "ref": "Koenker R (2005) *Quantile Regression*. Cambridge University Press, Cambridge.",
+    "type": "manual",
+    "doi": null
+  },
+  {
+    "ref": "Koenker R, Bassett G Jr (1978) Regression quantiles. *Econometrica* 46(1):33-50. https://doi.org/10.2307/1913643",
+    "type": "doi",
+    "doi": "10.2307/1913643",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.2307%2F1913643/transform",
+    "title": "Regression Quantiles",
+    "publisher": "JSTOR"
+  },
+  {
+    "ref": "Kostopoulou E, Jones PD (2005) Assessment of climate extremes in the eastern Mediterranean. *Meteorology and Atmospheric Physics* 89:69-85. https://doi.org/10.1007/s00703-005-0122-2",
+    "type": "doi",
+    "doi": "10.1007/s00703-005-0122-2",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1007%2Fs00703-005-0122-2/transform",
+    "title": "Assessment of climate extremes in the Eastern Mediterranean",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Moberg A, Jones PD (2005) Trends in indices for extremes in daily temperature and precipitation in central and western Europe, 1901-99. *International Journal of Climatology* 25(9):1149-1171. https://doi.org/10.1002/joc.1163",
+    "type": "doi",
+    "doi": "10.1002/joc.1163",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1002%2Fjoc.1163/transform",
+    "title": "Trends in indices for extremes in daily temperature and precipitation in central and western Europe, 1901-99",
+    "publisher": "Wiley"
+  },
+  {
+    "ref": "Moran PAP (1950) Notes on continuous stochastic phenomena. *Biometrika* 37(1-2):17-23. https://doi.org/10.1093/biomet/37.1-2.17",
+    "type": "doi",
+    "doi": "10.1093/biomet/37.1-2.17",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1093%2Fbiomet%2F37.1-2.17/transform",
+    "title": "NOTES ON CONTINUOUS STOCHASTIC PHENOMENA",
+    "publisher": "Oxford University Press (OUP)"
+  },
+  {
+    "ref": "Lahiri SN (2003) *Resampling Methods for Dependent Data*. Springer, New York.",
+    "type": "manual",
+    "doi": null
+  },
+  {
+    "ref": "Nairn JR, Fawcett RJB (2015) The excess heat factor: a metric for heatwave intensity and its use in classifying heatwave severity. *International Journal of Environmental Research and Public Health* 12(1):227-253. https://doi.org/10.3390/ijerph120100227",
+    "type": "doi",
+    "doi": "10.3390/ijerph120100227",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.3390%2Fijerph120100227/transform",
+    "title": "The Excess Heat Factor: A Metric for Heatwave Intensity and Its Use in Classifying Heatwave Severity",
+    "publisher": "MDPI AG"
+  },
+  {
+    "ref": "Pal JS, Eltahir EAB (2016) Future temperature in southwest Asia projected to exceed a threshold for human adaptability. *Nature Climate Change* 6:197-200. https://doi.org/10.1038/nclimate2833",
+    "type": "doi",
+    "doi": "10.1038/nclimate2833",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fnclimate2833/transform",
+    "title": "Future temperature in southwest Asia projected to exceed a threshold for human adaptability",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Perkins SE (2015) A review on the scientific understanding of heatwaves: their measurement, driving mechanisms, and changes at the global scale. *Atmospheric Research* 164-165:242-267. https://doi.org/10.1016/j.atmosres.2015.05.014",
+    "type": "doi",
+    "doi": "10.1016/j.atmosres.2015.05.014",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.atmosres.2015.05.014/transform",
+    "title": "A review on the scientific understanding of heatwaves—Their measurement, driving mechanisms, and changes at the global scale",
+    "publisher": "Elsevier BV"
+  },
+  {
+    "ref": "Perkins-Kirkpatrick SE, Lewis SC (2020) Increasing trends in regional heatwaves. *Nature Communications* 11:3357. https://doi.org/10.1038/s41467-020-16970-7",
+    "type": "doi",
+    "doi": "10.1038/s41467-020-16970-7",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41467-020-16970-7/transform",
+    "title": "Increasing trends in regional heatwaves",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Raei E, Nikoo MR, AghaKouchak A, Mazdiyasni O, Sadegh M (2018) GHWR, a multi-method global heatwave and warm-spell record and toolbox. *Scientific Data* 5:180206. https://doi.org/10.1038/sdata.2018.206",
+    "type": "doi",
+    "doi": "10.1038/sdata.2018.206",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fsdata.2018.206/transform",
+    "title": "GHWR, a multi-method global heatwave and warm-spell record and toolbox",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Raymond C, Matthews T, Horton RM (2020) The emergence of heat and humidity too severe for human tolerance. *Science Advances* 6(19):eaaw1838. https://doi.org/10.1126/sciadv.aaw1838",
+    "type": "doi",
+    "doi": "10.1126/sciadv.aaw1838",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1126%2Fsciadv.aaw1838/transform",
+    "title": "The emergence of heat and humidity too severe for human tolerance",
+    "publisher": "American Association for the Advancement of Science (AAAS)"
+  },
+  {
+    "ref": "Raymond C, Matthews T, Tuholske C (2024) Evening humid-heat maxima near the southern Persian/Arabian Gulf. *Communications Earth & Environment* 5:591. https://doi.org/10.1038/s43247-024-01763-3",
+    "type": "doi",
+    "doi": "10.1038/s43247-024-01763-3",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs43247-024-01763-3/transform",
+    "title": "Evening humid-heat maxima near the southern Persian/Arabian Gulf",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Reich BJ (2012) Spatiotemporal quantile regression for detecting distributional changes in environmental processes. *Journal of the Royal Statistical Society: Series C (Applied Statistics)* 61(4):535-553. https://doi.org/10.1111/j.1467-9876.2011.01025.x",
+    "type": "doi",
+    "doi": "10.1111/j.1467-9876.2011.01025.x",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1111%2Fj.1467-9876.2011.01025.x/transform",
+    "title": "Spatiotemporal Quantile Regression for Detecting Distributional Changes in Environmental Processes",
+    "publisher": "Oxford University Press (OUP)"
+  },
+  {
+    "ref": "Russo S, Sterl A (2011) Global changes in indices describing moderate temperature extremes from the daily output of a climate model. *Journal of Geophysical Research: Atmospheres* 116:D03104. https://doi.org/10.1029/2010JD014727",
+    "type": "doi",
+    "doi": "10.1029/2010JD014727",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2010JD014727/transform",
+    "title": "Global changes in indices describing moderate temperature extremes from the daily output of a climate model",
+    "publisher": "American Geophysical Union (AGU)"
+  },
+  {
+    "ref": "Sanchez-Lorenzo A, Enriquez-Alonso A, Calbó J, González JA, Wild M, Folini D, Norris JR, Vicente-Serrano SM (2017) Fewer clouds in the Mediterranean: consistency of observations and climate simulations. *Scientific Reports* 7:41475. https://doi.org/10.1038/srep41475",
+    "type": "doi",
+    "doi": "10.1038/srep41475",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fsrep41475/transform",
+    "title": "Fewer clouds in the Mediterranean: consistency of observations and climate simulations",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Seneviratne SI, Corti T, Davin EL, Hirschi M, Jaeger EB, Lehner I, Orlowsky B, Teuling AJ (2010) Investigating soil moisture-climate interactions in a changing climate: a review. *Earth-Science Reviews* 99(3-4):125-161. https://doi.org/10.1016/j.earscirev.2010.02.004",
+    "type": "doi",
+    "doi": "10.1016/j.earscirev.2010.02.004",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.earscirev.2010.02.004/transform",
+    "title": "Investigating soil moisture–climate interactions in a changing climate: A review",
+    "publisher": "Elsevier BV"
+  },
+  {
+    "ref": "Soltani M, Laux P, Kunstmann H, Stan K, Sohrabi MM, Molanejad M, Sabziparvar AA, Ranjbar SaadatAbadi A, Ranjbar F, Rousta I, Zawar-Reza P, Khoshakhlagh F, Soltanzadeh I, Babu CA, Azizi GH, Martin MV (2016) Assessment of climate variations in temperature and precipitation extreme events over Iran. *Theoretical and Applied Climatology* 126:775-795. https://doi.org/10.1007/s00704-015-1609-5",
+    "type": "doi",
+    "doi": "10.1007/s00704-015-1609-5",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1007%2Fs00704-015-1609-5/transform",
+    "title": "Assessment of climate variations in temperature and precipitation extreme events over Iran",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Vaghefi SA, Keykhai M, Jahanbakhshi F, Sheikholeslami J, Ahmadi A, Yang H, Abbaspour KC (2019) The future of extreme climate in Iran. *Scientific Reports* 9:1464. https://doi.org/10.1038/s41598-018-38071-8",
+    "type": "doi",
+    "doi": "10.1038/s41598-018-38071-8",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41598-018-38071-8/transform",
+    "title": "The future of extreme climate in Iran",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Vinod HD (2006) Maximum entropy ensembles for time series inference in economics. *Journal of Asian Economics* 17(6):955-978. https://doi.org/10.1016/j.asieco.2006.09.003",
+    "type": "doi",
+    "doi": "10.1016/j.asieco.2006.09.003",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.asieco.2006.09.003/transform",
+    "title": "Two-step on-the-job search—Evidence from Taiwan",
+    "publisher": "Elsevier BV"
+  },
+  {
+    "ref": "Ahmadalipour A, Moradkhani H (2018) Escalating heat-stress mortality risk due to global warming in the Middle East and North Africa (MENA). *Environment International* 117:215-225. https://doi.org/10.1016/j.envint.2018.05.014",
+    "type": "doi",
+    "doi": "10.1016/j.envint.2018.05.014",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1016%2Fj.envint.2018.05.014/transform",
+    "title": "Escalating heat-stress mortality risk due to global warming in the Middle East and North Africa (MENA)",
+    "publisher": "Elsevier BV"
+  },
+  {
+    "ref": "Dunn RJH, Alexander LV, Donat MG, Zhang X, Bador M, Herold N, Lippmann T, Allan R, Aguilar E, Brunet M, Caesar J, Chagnaud G, Cheng V, Cinco T, Durre I, Htay MM, Hoang L, Hung NQ, Johnson F, Kruger A, Lau K, Leng TW, Loikith PC, Marengo J, Mbatha S, McGree S, Menne M, Skansi M, Trewin B, Villarroel C, Vincent LA, Vose RS, Yeo R, Zhang P (2020) Development of an updated global land in situ-based dataset of temperature and precipitation extremes: HadEX3. *Journal of Geophysical Research: Atmospheres* 125:e2019JD032263. https://doi.org/10.1029/2019JD032263",
+    "type": "doi",
+    "doi": "10.1029/2019JD032263",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2019JD032263/transform",
+    "title": "Development of an Updated Global Land In Situ‐Based Data Set of Temperature and Precipitation Extremes: HadEX3",
+    "publisher": "American Geophysical Union (AGU)"
+  },
+  {
+    "ref": "Fischer EM, Schär C (2010) Consistent geographical patterns of changes in high-impact European heatwaves. *Nature Geoscience* 3:398-403. https://doi.org/10.1038/ngeo866",
+    "type": "doi",
+    "doi": "10.1038/ngeo866",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fngeo866/transform",
+    "title": "Consistent geographical patterns of changes in high-impact European heatwaves",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Fan LJ (2014) Quantile trends in temperature extremes in China. *Atmospheric and Oceanic Science Letters* 7(4):304-308. https://doi.org/10.3878/j.issn.1674-2834.13.0102",
+    "type": "doi",
+    "doi": "10.3878/j.issn.1674-2834.13.0102",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "http://122.115.55.36:8000/doi/10.3878%2Fj.issn.1674-2834.13.0102",
+    "title": "Quantile Trends in Temperature Extremes in China",
+    "publisher": null
+  },
+  {
+    "ref": "Francis D, Fonseca R (2024) Recent and projected changes in climate patterns in the Middle East and North Africa (MENA) region. *Scientific Reports* 14:10279. https://doi.org/10.1038/s41598-024-60976-w",
+    "type": "doi",
+    "doi": "10.1038/s41598-024-60976-w",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41598-024-60976-w/transform",
+    "title": "Recent and projected changes in climate patterns in the Middle East and North Africa (MENA) region",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Zhang X, Aguilar E, Sensoy S, Melkonyan H, Tagiyeva U, Ahmed N, Kutaladze N, Rahimzadeh F, Taghipour A, Hantosh TH, Albert P, Semawi M, Karam Ali M, Al-Shabibi MHS, Al-Oulan Z, Zatari T, Al Dean Khelet I, Hamoud S, Sagir R, Demircan M, Eken M, Adiguzel M, Alexander LV, Peterson TC, Wallis T (2005a) Trends in Middle East climate extreme indices from 1950 to 2003. *Journal of Geophysical Research: Atmospheres* 110:D22104. https://doi.org/10.1029/2005JD006181",
+    "type": "doi",
+    "doi": "10.1029/2005JD006181",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1029%2F2005JD006181/transform",
+    "title": "Trends in Middle East climate extreme indices from 1950 to 2003",
+    "publisher": "American Geophysical Union (AGU)"
+  },
+  {
+    "ref": "Zhang X, Hegerl G, Zwiers FW, Kenyon J (2005b) Avoiding inhomogeneity in percentile-based indices of temperature extremes. *Journal of Climate* 18(11):1641-1651. https://doi.org/10.1175/JCLI3366.1",
+    "type": "doi",
+    "doi": "10.1175/JCLI3366.1",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1175%2FJCLI3366.1/transform",
+    "title": "Avoiding Inhomogeneity in Percentile-Based Indices of Temperature Extremes",
+    "publisher": "American Meteorological Society"
+  },
+  {
+    "ref": "Zhang X, Alexander L, Hegerl GC, Jones P, Klein Tank AMG, Peterson TC, Trewin B, Zwiers FW (2011) Indices for monitoring changes in extremes based on daily temperature and precipitation data. *WIREs Climate Change* 2(6):851-870. https://doi.org/10.1002/wcc.147",
+    "type": "doi",
+    "doi": "10.1002/wcc.147",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1002%2Fwcc.147/transform",
+    "title": "Indices for monitoring changes in extremes based on daily temperature and precipitation data",
+    "publisher": "Wiley"
+  },
+  {
+    "ref": "Zittis G, Hadjinicolaou P, Lelieveld J (2016) Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century. *Climatic Change* 137:245-260. https://doi.org/10.1007/s10584-016-1665-6",
+    "type": "doi",
+    "doi": "10.1007/s10584-016-1665-6",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1007%2Fs10584-016-1665-6/transform",
+    "title": "Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century",
+    "publisher": "Springer Science and Business Media LLC"
+  },
+  {
+    "ref": "Zittis G, Almazroui M, Alpert P, Ciais P, Cramer W, Dahdal Y, Fnais M, Francis D, Hadjinicolaou P, Howari FM, Kucera P, Kvalevåg MM, Lin L, Liu Z, Mihalopoulos N, Mostamandi S, Niang I, Noone K, Odoulami RC, Panitz HJ, Ratti C, Said F, Saleh K, Sielecki LE, Stenchikov G, Tsiros IX, Zittis C, Lelieveld J (2021) Business-as-usual will lead to super and ultra-extreme heatwaves in the Middle East and North Africa. *npj Climate and Atmospheric Science* 4:20. https://doi.org/10.1038/s41612-021-00178-7",
+    "type": "doi",
+    "doi": "10.1038/s41612-021-00178-7",
+    "status_code": 200,
+    "ok": true,
+    "resolved_url": "https://api.crossref.org/v1/works/10.1038%2Fs41612-021-00178-7/transform",
+    "title": "Business-as-usual will lead to super and ultra-extreme heatwaves in the Middle East and North Africa",
+    "publisher": "Springer Science and Business Media LLC"
+  }
+]
