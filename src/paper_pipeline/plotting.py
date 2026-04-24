@@ -1418,12 +1418,33 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
             columns=[tau_label(tau) for tau in sensitivity_quantiles],
         )
 
-    fig, axes = plt.subplots(2, 2, figsize=(13.2, 9.6), constrained_layout=True)
+    show_ref_panel = not ref_mat.empty
+    if show_ref_panel:
+        fig, axes = plt.subplots(2, 2, figsize=(13.2, 9.6), constrained_layout=True)
+        ax_ref = axes[0, 0]
+        ax_boot = axes[0, 1]
+        ax_interp = axes[1, 0]
+        ax_cluster = axes[1, 1]
+        panel_prefix = {
+            "ref": "(a)",
+            "boot": "(b)",
+            "interp": "(c)",
+            "cluster": "(d)",
+        }
+    else:
+        fig, axes = plt.subplots(1, 3, figsize=(14.6, 4.8), constrained_layout=True)
+        ax_ref = None
+        ax_boot, ax_interp, ax_cluster = axes
+        panel_prefix = {
+            "boot": "(a)",
+            "interp": "(b)",
+            "cluster": "(c)",
+        }
 
-    def draw_heatmap(ax, data, title, cmap, vmin=None, vmax=None, fmt="{:.2f}"):
+    def draw_heatmap(ax, data, title, cmap, vmin=None, vmax=None, fmt="{:.2f}", empty_message="Not available"):
         if data.empty:
             ax.axis("off")
-            ax.text(0.5, 0.5, "Not available", ha="center", va="center", fontsize=10)
+            ax.text(0.5, 0.5, empty_message, ha="center", va="center", fontsize=10)
             ax.set_title(title, loc="left")
             return None
         im = ax.imshow(data.to_numpy(dtype=float), aspect="auto", cmap=cmap, vmin=vmin, vmax=vmax)
@@ -1439,7 +1460,14 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
                     ax.text(c, r, fmt.format(float(value)), ha="center", va="center", fontsize=8.5)
         return im
 
-    im0 = draw_heatmap(axes[0, 0], ref_mat, "(a) Reference-period sensitivity\nMean absolute difference", "YlOrBr")
+    im0 = None
+    if show_ref_panel and ax_ref is not None:
+        im0 = draw_heatmap(
+            ax_ref,
+            ref_mat,
+            f"{panel_prefix['ref']} Reference-period sensitivity\nMean absolute difference",
+            "YlOrBr",
+        )
     bootstrap_panel_title = "(b) Bootstrap-method sensitivity\nMean absolute difference"
     current_method = str(cfg.get("bootstrap", {}).get("method", "")).lower()
     configured_methods = [
@@ -1448,15 +1476,24 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
     ]
     candidate_methods = [m for m in configured_methods if m != current_method]
     if candidate_methods:
-        bootstrap_panel_title = f"(b) Bootstrap-method sensitivity\n{current_method} vs {candidate_methods[0]}"
-    im1 = draw_heatmap(axes[0, 1], boot_mat, bootstrap_panel_title, "YlOrRd")
-    im2 = draw_heatmap(axes[1, 0], interp_mat, "(c) Interpolation agreement\nSurface correlation", "GnBu", vmin=0.5, vmax=1.0)
+        bootstrap_panel_title = f"{panel_prefix['boot']} Bootstrap-method sensitivity\n{current_method} vs {candidate_methods[0]}"
+    else:
+        bootstrap_panel_title = f"{panel_prefix['boot']} Bootstrap-method sensitivity\nMean absolute difference"
+    im1 = draw_heatmap(ax_boot, boot_mat, bootstrap_panel_title, "YlOrRd")
+    im2 = draw_heatmap(
+        ax_interp,
+        interp_mat,
+        f"{panel_prefix['interp']} Interpolation agreement\nSurface correlation",
+        "GnBu",
+        vmin=0.5,
+        vmax=1.0,
+    )
 
-    ax = axes[1, 1]
+    ax = ax_cluster
     if cluster.empty or "adjusted_rand_index" not in cluster.columns:
         ax.axis("off")
         ax.text(0.5, 0.5, "Not available", ha="center", va="center", fontsize=10)
-        ax.set_title("(d) Clustering robustness", loc="left")
+        ax.set_title(f"{panel_prefix['cluster']} Clustering robustness", loc="left")
     else:
         cluster = cluster.set_index("index_name").reindex(["warm_days", "warm_nights", "cool_days", "cool_nights"])
         bars = ax.bar(
@@ -1470,7 +1507,7 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
         ax.set_xticklabels([x.replace("_", " ").title() for x in cluster.index.tolist()], rotation=15, ha="right")
         ax.set_ylim(0, 1.05)
         ax.set_ylabel("Adjusted Rand index")
-        ax.set_title("(d) Clustering robustness", loc="left")
+        ax.set_title(f"{panel_prefix['cluster']} Clustering robustness", loc="left")
         ax.grid(True, axis="y", alpha=0.25, linewidth=0.6)
         ax.grid(False, axis="x")
         ax.spines["top"].set_visible(False)
@@ -1478,10 +1515,16 @@ def plot_ijoc_robustness_synthesis(outdir: Path, cfg: dict):
         for bar, value in zip(bars, cluster["adjusted_rand_index"]):
             ax.text(bar.get_x() + bar.get_width()/2, value + 0.03, f"{value:.2f}", ha="center", va="bottom", fontsize=8.5)
 
-    for ax_, im in zip([axes[0, 0], axes[0, 1], axes[1, 0]], [im0, im1, im2]):
-        if im is None:
-            continue
-        cbar = fig.colorbar(im, ax=ax_, shrink=0.82)
+    heatmap_items = []
+    if show_ref_panel and im0 is not None and ax_ref is not None:
+        heatmap_items.append((ax_ref, im0))
+    if im1 is not None:
+        heatmap_items.append((ax_boot, im1))
+    if im2 is not None:
+        heatmap_items.append((ax_interp, im2))
+    for ax_, im in heatmap_items:
+        shrink = 0.82 if show_ref_panel else 0.9
+        cbar = fig.colorbar(im, ax=ax_, shrink=shrink)
         cbar.ax.tick_params(labelsize=8)
 
     fig.savefig(outdir / f"ijoc_robustness_synthesis.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))

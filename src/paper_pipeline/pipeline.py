@@ -176,6 +176,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
         if start_phase <= 9:
             log_phase_start(9)
             log_summary("Running advanced publication analyses...")
+            plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
             advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
