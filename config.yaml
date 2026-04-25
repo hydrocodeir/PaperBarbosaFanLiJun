@@ -721,6 +721,35 @@ advanced_analyses:
     spatial_validation_permutations: 499
 
   # ---------------------------------------------------------------
+  # climate_change_signal:
+  # Adds a climate-change signal layer beyond trend description:
+  # fixed-baseline extreme shifts, response per degree of observed
+  # regional warming, signal emergence, and a quantile fingerprint
+  # permutation test.
+  # ---------------------------------------------------------------
+  climate_change_signal:
+    enabled: true
+
+    # Early-period baseline used to compute fixed percentile thresholds.
+    # This creates indices that are independent of the late-period values.
+    fixed_baseline_years:
+      - 1991
+      - 2007
+
+    # Late period compared with the fixed baseline.
+    comparison_years:
+      - 2008
+      - 2024
+
+    # Station-level signal is considered emerged when
+    # |bootstrap mean / bootstrap SD| is at least this threshold and the
+    # direction matches the expected warming fingerprint.
+    emergence_snr_threshold: 2.0
+
+    # Circular-shift permutations used for the network fingerprint null.
+    fingerprint_permutations: 499
+
+  # ---------------------------------------------------------------
   # bootstrap_depth_sensitivity:
   # Compare baseline bootstrap depth against a larger number of reps.
   # ---------------------------------------------------------------

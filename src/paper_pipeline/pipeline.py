@@ -28,6 +28,7 @@ from .config_utils import (
     validate_analysis_config,
 )
 from .bootstrap_depth_sensitivity import run_bootstrap_depth_sensitivity
+from .climate_change_signal import run_climate_change_signal_analysis
 from .clustering import build_feature_table, compare_clusterings, run_clustering, screen_clustering_features
 from .clustering_sensitivity import run_alternative_clustering_sensitivity
 from .data_quality import run_data_quality_assessment
@@ -59,6 +60,30 @@ from .year_config import filter_to_analysis_years, format_year_range_label, get_
 
 def _read_cached_csv(path: Path) -> pd.DataFrame:
     return pd.read_csv(path) if path.exists() else pd.DataFrame()
+
+
+def _read_cached_advanced_results(tables_dir: Path) -> dict[str, pd.DataFrame]:
+    table_map = {
+        "station_significance_fdr": "station_significance_fdr.csv",
+        "spatial_autocorrelation_moran": "spatial_autocorrelation_moran.csv",
+        "reference_period_sensitivity_summary": "reference_period_sensitivity_summary.csv",
+        "bootstrap_method_sensitivity_summary": "bootstrap_method_sensitivity_summary.csv",
+        "interpolation_method_sensitivity_summary": "interpolation_method_sensitivity_summary.csv",
+        "driver_analysis_summary": "driver_analysis_summary.csv",
+        "regional_cluster_composites": "regional_cluster_composites.csv",
+        "fixed_baseline_period_change_summary": "fixed_baseline_period_change_summary.csv",
+        "warming_link_network_quantile_response": "warming_link_network_quantile_response.csv",
+        "regional_temperature_anomaly_summary": "regional_temperature_anomaly_summary.csv",
+        "climate_signal_emergence_summary": "climate_signal_emergence_summary.csv",
+        "climate_fingerprint_component_scores": "climate_fingerprint_component_scores.csv",
+        "climate_fingerprint_network_components": "climate_fingerprint_network_components.csv",
+    }
+    results: dict[str, pd.DataFrame] = {}
+    for key, filename in table_map.items():
+        df = _read_cached_csv(tables_dir / filename)
+        if not df.empty:
+            results[key] = df
+    return results
 
 
 def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path:
@@ -151,7 +176,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
         if start_phase == 8 and not feature_table.empty:
             _, artifacts = run_clustering(feature_table, cfg)
 
-        advanced_results = {}
+        advanced_results = _read_cached_advanced_results(tables_dir)
 
         if start_phase == 8:
             log_phase_start(8)
@@ -178,6 +203,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
             log_summary("Running advanced publication analyses...")
             plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
             advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir, progress_callback=log_detail))
+            advanced_results.update(run_climate_change_signal_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
@@ -350,6 +376,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
     log_summary("Running advanced publication analyses...")
     advanced_results = {}
     advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir, progress_callback=log_detail))
+    advanced_results.update(run_climate_change_signal_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))

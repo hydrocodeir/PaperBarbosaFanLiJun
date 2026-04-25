@@ -52,11 +52,18 @@ def build_context(cfg: dict) -> dict:
     n_years = end_year - start_year + 1
     first_end = start_year + (n_years // 2) - 1
     second_start = first_end + 1
+    climate_cfg = cfg.get("advanced_analyses", {}).get("climate_change_signal", {})
+    climate_baseline = climate_cfg.get("fixed_baseline_years", [start_year, first_end])
+    climate_comparison = climate_cfg.get("comparison_years", [second_start, end_year])
     sample_paper2_fig1 = sorted((FIGURES / "paper2_station_figures" / "figure1_timeseries").glob("*.png"))
     sample_paper2_fig2 = sorted((FIGURES / "paper2_station_figures" / "figure2_quantile_coefficients").glob("*.png"))
     sample_paper1_fig4 = sorted((FIGURES / "paper1_station_figures" / "figure4_bootstrap_distributions").glob("*.png"))
     return {
         "analysis_years": f"{start_year}-{end_year}",
+        "climate_baseline": f"{climate_baseline[0]}-{climate_baseline[1]}",
+        "climate_comparison": f"{climate_comparison[0]}-{climate_comparison[1]}",
+        "climate_snr_threshold": climate_cfg.get("emergence_snr_threshold", 2.0),
+        "climate_permutations": climate_cfg.get("fingerprint_permutations", 499),
         "focus_quantiles": [float(x) for x in cfg["quantile_regression"]["focus_quantiles"]],
         "focus_quantiles_text": ", ".join(tau_label(x) for x in cfg["quantile_regression"]["focus_quantiles"]),
         "full_quantile_start": tau_label(cfg["quantile_regression"]["full_quantiles"]["start"]),
@@ -241,6 +248,58 @@ def describe_table(table_path: Path, ctx: dict) -> dict[str, str]:
         "spatial_autocorrelation_moran.csv": {
             "fa": "این جدول نتایج خودهمبستگی فضایی را در قالب `Moran's I` برای میدان‌های شیب ایستگاهی ثبت می‌کند. برای هر شاخص و هر صدک، مقدار `Moran's I`، تعداد ایستگاه‌ها، و `p-value` مبتنی بر جایگشت ذخیره شده است تا ساختار فضایی روندها به‌طور رسمی مستند شود.",
             "en": "This table records the spatial-autocorrelation results in terms of `Moran's I` for the station-slope fields. For each index and quantile, it stores the `Moran's I` value, the number of stations, and the permutation-based `p-value`, thereby formally documenting the spatial structure of the trends.",
+        },
+        "regional_temperature_anomaly.csv": {
+            "fa": f"این جدول سری سالانه‌ی ناهنجاری دمای منطقه‌ای را ثبت می‌کند. برای هر ایستگاه، دمای سالانه نسبت به میانگین دوره‌ی ثابت `{ctx['climate_baseline']}` بیان شده و سپس میانگین شبکه‌ای سالانه ساخته شده است. این فایل متغیر گرمایش مشاهده‌ای مورد استفاده در تحلیل QCF-EA را فراهم می‌کند.",
+            "en": f"This table stores the annual regional temperature-anomaly series. For each station, annual temperature is expressed relative to its fixed `{ctx['climate_baseline']}` mean, after which a network-mean annual anomaly is computed. The file provides the observed warming covariate used in the QCF-EA layer.",
+        },
+        "regional_temperature_anomaly_summary.csv": {
+            "fa": f"این جدول خلاصه‌ی روند ناهنجاری دمای منطقه‌ای را ارائه می‌کند و شیب، بازه‌ی اطمینان و تغییر ابتدا تا انتهای دوره‌ی `{ctx['analysis_years']}` را نگه می‌دارد. نقش آن مستندسازی عددی مقیاس گرمایش مشاهده‌ای است که نتایج حدهای دمایی نسبت به آن تفسیر شده‌اند.",
+            "en": f"This table summarizes the regional temperature-anomaly trend, including the slope, confidence interval, and first-to-last change over `{ctx['analysis_years']}`. Its role is to document the observed warming scale against which the thermal-extreme results are interpreted.",
+        },
+        "fixed_baseline_annual_extreme_indices.csv": {
+            "fa": f"این جدول شاخص‌های سالانه‌ی حدی را با آستانه‌های ثابت برگرفته از دوره‌ی `{ctx['climate_baseline']}` ذخیره می‌کند. برخلاف شاخص‌های اصلی که از توزیع کل دوره ساخته شده‌اند، این خروجی امکان مقایسه‌ی فراوانی رخدادهای گرم و سرد را نسبت به یک خط پایه‌ی ثابت فراهم می‌سازد.",
+            "en": f"This table stores the annual extreme indices recomputed with fixed percentile thresholds derived from `{ctx['climate_baseline']}`. Unlike the main indices based on the full-period distribution, this output supports comparison of warm and cool event frequencies relative to a fixed baseline.",
+        },
+        "fixed_baseline_qr_summary.csv": {
+            "fa": "این جدول خلاصه‌ی رگرسیون چندکی را برای شاخص‌های ساخته‌شده با آستانه‌ی ثابت نگه می‌دارد. هدف آن بررسی این است که آیا ساختار روندهای چندکی پس از ثابت نگه داشتن تعریف آستانه نیز با الگوی گرمایش‌محور سازگار باقی می‌ماند یا نه.",
+            "en": "This table stores the quantile-regression summary for the fixed-baseline indices. Its purpose is to assess whether the quantile-trend structure remains consistent with a warming-related pattern after the threshold definition is held fixed.",
+        },
+        "fixed_baseline_period_change_station_level.csv": {
+            "fa": f"این جدول تغییر دوره‌ی `{ctx['climate_comparison']}` نسبت به خط پایه‌ی `{ctx['climate_baseline']}` را در سطح هر ایستگاه و شاخص گزارش می‌کند. فایل حاضر برای سنجش سازگاری مکانی تغییرات گرم و سرد تحت آستانه‌ی ثابت استفاده می‌شود.",
+            "en": f"This table reports the `{ctx['climate_comparison']}` minus `{ctx['climate_baseline']}` period change for each station and index. It is used to assess the spatial consistency of warm and cool changes under fixed-threshold definitions.",
+        },
+        "fixed_baseline_period_change_summary.csv": {
+            "fa": f"این جدول خلاصه‌ی شبکه‌ای تغییرات دوره‌ای آستانه‌ی ثابت را ارائه می‌کند. برای هر شاخص، میانگین تغییر دوره‌ی `{ctx['climate_comparison']}` نسبت به `{ctx['climate_baseline']}` و تعداد ایستگاه‌های دارای علامت سازگار با گرمایش گزارش شده است.",
+            "en": f"This table provides the network summary of fixed-baseline period changes. For each index, it reports the mean `{ctx['climate_comparison']}` minus `{ctx['climate_baseline']}` shift and the number of stations with the warming-consistent sign.",
+        },
+        "warming_link_station_quantile_response.csv": {
+            "fa": "این جدول پاسخ چندکی ایستگاهی شاخص‌های حدی را نسبت به ناهنجاری دمای منطقه‌ای ذخیره می‌کند. ضرایب به‌صورت روز در سال به‌ازای هر درجه‌ی سلسیوس بیان شده‌اند و به‌عنوان ارتباط مشاهده‌ای گرمایش با فراوانی حدها تفسیر می‌شوند.",
+            "en": "This table stores station-level quantile responses of the extreme indices to the regional temperature anomaly. Coefficients are expressed as days per year per degree Celsius and are interpreted as observed associations between warming and extreme-frequency change.",
+        },
+        "warming_link_network_quantile_response.csv": {
+            "fa": "این جدول پاسخ چندکی شبکه‌ای شاخص‌های حدی را نسبت به ناهنجاری دمای منطقه‌ای خلاصه می‌کند. این خروجی برای بیان مقاله‌ای این پرسش به‌کار می‌رود که هر یک درجه گرمایش مشاهده‌ای با چه تغییری در رخدادهای گرم و سرد همراه است.",
+            "en": "This table summarizes network-level quantile responses of the extreme indices to the regional temperature anomaly. It supports manuscript-level reporting of how many warm or cool events are associated with one degree of observed regional warming.",
+        },
+        "climate_signal_emergence_station_level.csv": {
+            "fa": f"این جدول ظهور سیگنال را در سطح ایستگاه ثبت می‌کند. برای هر شاخص و معیار، نسبت سیگنال به نویز بوت‌استرپی محاسبه شده و ایستگاه زمانی دارای سیگنال emerging شناخته شده که علامت آن با گرمایش سازگار باشد و آستانه‌ی `SNR >= {ctx['climate_snr_threshold']}` را پشت سر بگذارد.",
+            "en": f"This table records signal emergence at the station level. For each index and metric, a bootstrap signal-to-noise ratio is computed, and a station is marked as emerged when the sign is warming-consistent and the `SNR >= {ctx['climate_snr_threshold']}` threshold is exceeded.",
+        },
+        "climate_signal_emergence_summary.csv": {
+            "fa": f"این جدول شمار ایستگاه‌های دارای ظهور سیگنال را برای شاخص‌ها و معیارهای مختلف خلاصه می‌کند. هدف آن نشان دادن گستره‌ی شبکه‌ای سیگنال‌های گرمایش‌سازگار پس از لحاظ کردن آستانه‌ی `SNR >= {ctx['climate_snr_threshold']}` است.",
+            "en": f"This table summarizes the number of stations with signal emergence for different indices and metrics. It is intended to show the network extent of warming-consistent signals after applying the `SNR >= {ctx['climate_snr_threshold']}` rule.",
+        },
+        "climate_fingerprint_component_scores.csv": {
+            "fa": "این جدول امتیازهای مؤلفه‌ای اثرانگشت اقلیمی را ثبت می‌کند. مؤلفه‌ها شامل جهت روند میانه، جهت عدم‌تقارن دمی، تغییرات آستانه‌ی ثابت، پاسخ به گرمایش، ظهور سیگنال، معنی‌داری میدانی و پایداری در تحلیل‌های حساسیت هستند.",
+            "en": "This table records the component scores of the climate fingerprint. Components include median-trend direction, tail-asymmetry direction, fixed-baseline changes, warming-linked responses, signal emergence, field significance, and robustness under sensitivity analyses.",
+        },
+        "climate_fingerprint_network_components.csv": {
+            "fa": "این جدول مؤلفه‌های اثرانگشت چندکی شبکه را نگه می‌دارد و علامت‌های مشاهده‌شده را در چندک‌های کانونی و معیار `Delta1` با علامت‌های مورد انتظار تحت گرمایش مقایسه می‌کند. این فایل منبع مستقیم امتیاز شبکه‌ای و مقدار `p` جایگشتی است.",
+            "en": "This table stores the network quantile-fingerprint components by comparing observed signs at the focal quantiles and `Delta1` with their warming-expected signs. It is the direct source for the network fingerprint score and permutation `p-value`.",
+        },
+        "climate_fingerprint_permutation_null.csv": {
+            "fa": f"این جدول توزیع null آزمون `circular-shift` را برای اثرانگشت چندکی شبکه ذخیره می‌کند. در اجرای فعلی، `{ctx['climate_permutations']}` جایگشت برای سنجش این‌که انسجام مشاهده‌شده تا چه حد در برابر جابه‌جایی زمانی غیرمعمول است استفاده شده است.",
+            "en": f"This table stores the `circular-shift` null distribution for the network quantile fingerprint. In the current run, `{ctx['climate_permutations']}` permutations are used to evaluate how unusual the observed coherence is under temporal shifting.",
         },
         "station_significance_fdr.csv": {
             "fa": "این جدول نتایج معنی‌داری ایستگاهی را پس از کنترل چندآزمونی نگه می‌دارد. برای هر ایستگاه، شاخص و صدک، شیب، بازه‌های اطمینان، `p-value` تحلیلی، مقدار `q` و وضعیت ردشدن در روش `FDR` گزارش شده است.",
@@ -478,6 +537,35 @@ def describe_nested_figure(figure_path: Path, ctx: dict) -> dict[str, str] | Non
                 "kind_en": "Moran's I heatmap",
                 "fa": "این شکل مقادیر `Moran's I` را برای میدان‌های شیب ایستگاهی در شاخص‌ها و صدک‌های مختلف نمایش می‌دهد. نقش آن ارائه‌ی یک جمع‌بندی بصری از شدت و جهت خودهمبستگی فضایی در نتایج روند است.",
                 "en": "This figure displays the `Moran's I` values for the station-slope fields across indices and quantiles. Its role is to provide a visual summary of the strength and direction of spatial autocorrelation in the trend results.",
+            }
+    if parts[0] == "advanced_climate_change_signal":
+        if name == "climate_fingerprint_score.png":
+            return {
+                "kind_fa": "شکل امتیاز اثرانگشت اقلیمی",
+                "kind_en": "Climate-fingerprint score figure",
+                "fa": f"این شکل امتیازهای مؤلفه‌ای اثرانگشت اقلیمی و توزیع null آزمون `circular-shift` را نشان می‌دهد. هدف آن مستندسازی این است که الگوی چندکی شبکه تا چه حد با انتظار گرمایش سازگار است و آیا انسجام مشاهده‌شده نسبت به `{ctx['climate_permutations']}` جایگشت زمانی غیرمعمول محسوب می‌شود یا نه.",
+                "en": f"This figure shows the climate-fingerprint component scores and the `circular-shift` null distribution. Its purpose is to document how strongly the network quantile pattern matches warming expectations and whether the observed coherence is unusual relative to `{ctx['climate_permutations']}` temporal-shift permutations.",
+            }
+        if name == "fixed_baseline_period_change_summary.png":
+            return {
+                "kind_fa": "شکل تغییرات دوره‌ای با آستانه ثابت",
+                "kind_en": "Fixed-baseline period-change figure",
+                "fa": f"این شکل تغییر میانگین دوره‌ی `{ctx['climate_comparison']}` نسبت به خط پایه‌ی `{ctx['climate_baseline']}` را برای شاخص‌های گرم و سرد نمایش می‌دهد. آستانه‌ها از دوره‌ی پایه ثابت نگه داشته شده‌اند تا تغییر فراوانی رخدادها نسبت به یک تعریف ثابت سنجیده شود.",
+                "en": f"This figure displays the mean `{ctx['climate_comparison']}` minus `{ctx['climate_baseline']}` change for warm and cool indices. Thresholds are held fixed from the baseline period so that frequency changes are evaluated relative to a constant event definition.",
+            }
+        if name == "warming_link_network_quantile_response.png":
+            return {
+                "kind_fa": "شکل پاسخ چندکی به گرمایش منطقه‌ای",
+                "kind_en": "Quantile response to regional warming figure",
+                "fa": "این شکل پاسخ چندکی شبکه‌ای شاخص‌های حدی را نسبت به ناهنجاری دمای منطقه‌ای نشان می‌دهد. ضرایب به‌صورت روز در سال به‌ازای هر درجه‌ی سلسیوس بیان شده‌اند و نقش شکل، خلاصه‌کردن ارتباط مشاهده‌ای گرمایش با فراوانی رخدادهای گرم و سرد است.",
+                "en": "This figure shows the network-level quantile responses of the extreme indices to the regional temperature anomaly. Coefficients are expressed as days per year per degree Celsius, and the figure summarizes the observed association between warming and warm/cool event frequencies.",
+            }
+        if name == "climate_signal_emergence_q50_maps.png":
+            return {
+                "kind_fa": "نقشه‌های ظهور سیگنال در چندک میانی",
+                "kind_en": "Median-quantile signal-emergence maps",
+                "fa": f"این شکل ایستگاه‌هایی را که در `q0.50` دارای سیگنال گرمایش‌سازگار و `SNR >= {ctx['climate_snr_threshold']}` هستند، برای چهار شاخص اصلی نشان می‌دهد. نقشه‌ها مستند می‌کنند که ظهور سیگنال در کدام بخش‌های شبکه گسترده‌تر یا محدودتر است.",
+                "en": f"This figure maps stations that show warming-consistent `q0.50` signal emergence with `SNR >= {ctx['climate_snr_threshold']}` for the four main indices. The maps document where signal emergence is more widespread or more limited across the station network.",
             }
     if parts[0] == "advanced_method_sensitivity":
         if name == "bootstrap_method_sensitivity.png":

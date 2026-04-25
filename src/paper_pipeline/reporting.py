@@ -43,6 +43,7 @@ def generate_report(
         ("Alternative-clustering sensitivity", tables_dir / "alternative_clustering_sensitivity_summary.csv"),
         ("Bootstrap-depth sensitivity", tables_dir / "bootstrap_depth_sensitivity_summary.csv"),
         ("Advanced publication analyses", tables_dir / "station_significance_fdr.csv"),
+        ("Climate-change signal analysis", tables_dir / "climate_fingerprint_component_scores.csv"),
     ]
     lines += ["", "## Pipeline-Integrated Robustness Modules"]
     for label, path in module_checks:
@@ -170,5 +171,46 @@ def generate_report(
                     f"median {primary_delta} = {float(row['median']):+.3f} (n={int(row['n_stations'])})"
                 )
             lines.append("")
+
+    fingerprint_df = advanced_results.get("climate_fingerprint_component_scores")
+    fixed_df = advanced_results.get("fixed_baseline_period_change_summary")
+    warming_df = advanced_results.get("warming_link_network_quantile_response")
+    temp_summary = advanced_results.get("regional_temperature_anomaly_summary")
+    emergence_df = advanced_results.get("climate_signal_emergence_summary")
+    network_fingerprint = advanced_results.get("climate_fingerprint_network_components")
+    if isinstance(fingerprint_df, pd.DataFrame) and not fingerprint_df.empty:
+        lines.append("## Climate-Change Signal Analysis")
+        overall = float(fingerprint_df["overall_fingerprint_score"].iloc[0])
+        lines.append(f"- Integrated climate-fingerprint score: **{overall:.3f}**")
+        if isinstance(network_fingerprint, pd.DataFrame) and not network_fingerprint.empty:
+            obs = float(network_fingerprint["observed_fingerprint_score"].iloc[0])
+            p_val = float(network_fingerprint["permutation_p_value"].iloc[0])
+            lines.append(f"- Network quantile-fingerprint permutation test: observed score = {obs:.3f}, p = {p_val:.3f}")
+        if isinstance(temp_summary, pd.DataFrame) and not temp_summary.empty:
+            row = temp_summary.iloc[0]
+            lines.append(
+                f"- Regional station-temperature anomaly trend: {float(row['temperature_trend_c_per_decade']):+.3f} "
+                f"deg C per decade"
+            )
+        if isinstance(fixed_df, pd.DataFrame) and not fixed_df.empty:
+            lines.append("- Fixed-baseline late-minus-early shifts:")
+            for _, row in fixed_df.iterrows():
+                lines.append(
+                    f"- {row['index_name']}: mean shift = {float(row['mean_late_minus_baseline_days']):+.2f} days/year, "
+                    f"direction-consistent stations = {int(row['direction_consistent_stations'])}/{int(row['n_stations'])}"
+                )
+        if isinstance(warming_df, pd.DataFrame) and not warming_df.empty:
+            q90 = warming_df.loc[(warming_df["model"] == "QR") & (pd.to_numeric(warming_df["tau"], errors="coerce") == 0.90)]
+            if not q90.empty:
+                lines.append("- Network q0.90 response to regional warming:")
+                for _, row in q90.iterrows():
+                    lines.append(f"- {row['index_name']}: {float(row['slope_per_c']):+.2f} days/year per deg C")
+        if isinstance(emergence_df, pd.DataFrame) and not emergence_df.empty:
+            q50 = emergence_df.loc[emergence_df["metric"] == "0.50"]
+            if not q50.empty:
+                lines.append("- q0.50 signal emergence counts:")
+                for _, row in q50.iterrows():
+                    lines.append(f"- {row['index_name']}: {int(row['emerged_stations'])}/{int(row['n_stations'])}")
+        lines.append("")
 
     (outdir / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")
