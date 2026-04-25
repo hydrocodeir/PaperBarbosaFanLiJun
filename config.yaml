@@ -750,6 +750,36 @@ advanced_analyses:
     fingerprint_permutations: 499
 
   # ---------------------------------------------------------------
+  # climate_regime_analysis:
+  # Stratifies station results by present-day Köppen-Geiger climate
+  # regimes and summarizes quantile trends, fixed-baseline shifts,
+  # warming-linked responses, signal emergence, and fingerprint scores
+  # inside each regime.
+  # ---------------------------------------------------------------
+  climate_regime_analysis:
+    enabled: true
+
+    # Beck et al. (2018) present-day Köppen-Geiger raster.
+    # The pipeline samples station coordinates from this WGS84 GeoTIFF.
+    koppen_raster: data/external/koppen_geiger/Beck_KG_V1_present_0p0083.tif
+
+    # Optional confidence raster from the same dataset.
+    koppen_confidence_raster: data/external/koppen_geiger/Beck_KG_V1_present_conf_0p0083.tif
+
+    # Legend linking raster codes to Köppen-Geiger classes.
+    legend_path: data/external/koppen_geiger/legend.txt
+
+    # Small classes are merged into broader analysis regimes where needed.
+    min_regime_stations: 8
+
+    # Radius used when a coastal station falls on a water/no-data raster cell.
+    nearest_valid_radius_pixels: 10
+
+    # Permutations used to test whether between-regime contrasts are larger
+    # than expected under random station-to-regime assignment.
+    permutation_tests: 999
+
+  # ---------------------------------------------------------------
   # bootstrap_depth_sensitivity:
   # Compare baseline bootstrap depth against a larger number of reps.
   # ---------------------------------------------------------------

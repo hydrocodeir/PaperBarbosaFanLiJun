@@ -29,6 +29,7 @@ from .config_utils import (
 )
 from .bootstrap_depth_sensitivity import run_bootstrap_depth_sensitivity
 from .climate_change_signal import run_climate_change_signal_analysis
+from .climate_regime_analysis import run_climate_regime_analysis
 from .clustering import build_feature_table, compare_clusterings, run_clustering, screen_clustering_features
 from .clustering_sensitivity import run_alternative_clustering_sensitivity
 from .data_quality import run_data_quality_assessment
@@ -77,6 +78,14 @@ def _read_cached_advanced_results(tables_dir: Path) -> dict[str, pd.DataFrame]:
         "climate_signal_emergence_summary": "climate_signal_emergence_summary.csv",
         "climate_fingerprint_component_scores": "climate_fingerprint_component_scores.csv",
         "climate_fingerprint_network_components": "climate_fingerprint_network_components.csv",
+        "koppen_geiger_station_assignments": "koppen_geiger_station_assignments.csv",
+        "koppen_geiger_regime_summary": "koppen_geiger_regime_summary.csv",
+        "climate_regime_quantile_summary": "climate_regime_quantile_summary.csv",
+        "climate_regime_fixed_baseline_summary": "climate_regime_fixed_baseline_summary.csv",
+        "climate_regime_warming_response_summary": "climate_regime_warming_response_summary.csv",
+        "climate_regime_emergence_summary": "climate_regime_emergence_summary.csv",
+        "climate_regime_fingerprint_summary": "climate_regime_fingerprint_summary.csv",
+        "climate_regime_difference_tests": "climate_regime_difference_tests.csv",
     }
     results: dict[str, pd.DataFrame] = {}
     for key, filename in table_map.items():
@@ -204,6 +213,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
             plot_paper1_quantile_dendrograms(qr_summary, figs_dir, cfg)
             advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_climate_change_signal_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
+            advanced_results.update(run_climate_regime_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
@@ -377,6 +387,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
     advanced_results = {}
     advanced_results.update(run_spatial_inference(qr_summary, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_climate_change_signal_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
+    advanced_results.update(run_climate_regime_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))

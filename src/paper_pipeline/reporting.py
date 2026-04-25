@@ -44,6 +44,7 @@ def generate_report(
         ("Bootstrap-depth sensitivity", tables_dir / "bootstrap_depth_sensitivity_summary.csv"),
         ("Advanced publication analyses", tables_dir / "station_significance_fdr.csv"),
         ("Climate-change signal analysis", tables_dir / "climate_fingerprint_component_scores.csv"),
+        ("Köppen-Geiger climate-regime analysis", tables_dir / "climate_regime_fingerprint_summary.csv"),
     ]
     lines += ["", "## Pipeline-Integrated Robustness Modules"]
     for label, path in module_checks:
@@ -211,6 +212,48 @@ def generate_report(
                 lines.append("- q0.50 signal emergence counts:")
                 for _, row in q50.iterrows():
                     lines.append(f"- {row['index_name']}: {int(row['emerged_stations'])}/{int(row['n_stations'])}")
+        lines.append("")
+
+    regime_summary = advanced_results.get("koppen_geiger_regime_summary")
+    regime_quantile = advanced_results.get("climate_regime_quantile_summary")
+    regime_fingerprint = advanced_results.get("climate_regime_fingerprint_summary")
+    regime_tests = advanced_results.get("climate_regime_difference_tests")
+    if isinstance(regime_summary, pd.DataFrame) and not regime_summary.empty:
+        lines.append("## Köppen-Geiger Climate-Regime Analysis")
+        lines.append("- Station counts by present-day Köppen-Geiger analysis regime:")
+        for _, row in regime_summary.iterrows():
+            lines.append(
+                f"- {row['climate_regime_label']}: n = {int(row['n_stations'])}, "
+                f"mean elevation = {float(row['mean_elevation_m']):.0f} m, "
+                f"mean confidence = {float(row['mean_kg_confidence_pct']):.1f}%"
+            )
+        if isinstance(regime_fingerprint, pd.DataFrame) and not regime_fingerprint.empty:
+            lines.append("- Overall climate-regime fingerprint scores:")
+            reg = (
+                regime_fingerprint[["climate_regime_label", "overall_regime_fingerprint_score"]]
+                .drop_duplicates()
+                .sort_values("overall_regime_fingerprint_score", ascending=False)
+            )
+            for _, row in reg.iterrows():
+                lines.append(f"- {row['climate_regime_label']}: {float(row['overall_regime_fingerprint_score']):.3f}")
+        if isinstance(regime_quantile, pd.DataFrame) and not regime_quantile.empty:
+            warm = regime_quantile.loc[regime_quantile["index_name"] == "warm_days"].copy()
+            cool = regime_quantile.loc[regime_quantile["index_name"] == "cool_days"].copy()
+            if not warm.empty:
+                top = warm.sort_values("mean_slope_0.90", ascending=False).iloc[0]
+                lines.append(
+                    f"- Strongest warm-day q0.90 mean trend: {top['climate_regime_label']} "
+                    f"({float(top['mean_slope_0.90']):+.2f} days/year per decade)"
+                )
+            if not cool.empty:
+                low = cool.sort_values("mean_slope_0.90").iloc[0]
+                lines.append(
+                    f"- Strongest cool-day q0.90 contraction: {low['climate_regime_label']} "
+                    f"({float(low['mean_slope_0.90']):+.2f} days/year per decade)"
+                )
+        if isinstance(regime_tests, pd.DataFrame) and not regime_tests.empty:
+            sig = regime_tests.loc[pd.to_numeric(regime_tests["fdr_q_value"], errors="coerce") < 0.05]
+            lines.append(f"- FDR-retained between-regime permutation contrasts: {len(sig)}/{len(regime_tests)}")
         lines.append("")
 
     (outdir / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")

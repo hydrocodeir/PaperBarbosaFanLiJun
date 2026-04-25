@@ -301,6 +301,42 @@ def describe_table(table_path: Path, ctx: dict) -> dict[str, str]:
             "fa": f"این جدول توزیع null آزمون `circular-shift` را برای اثرانگشت چندکی شبکه ذخیره می‌کند. در اجرای فعلی، `{ctx['climate_permutations']}` جایگشت برای سنجش این‌که انسجام مشاهده‌شده تا چه حد در برابر جابه‌جایی زمانی غیرمعمول است استفاده شده است.",
             "en": f"This table stores the `circular-shift` null distribution for the network quantile fingerprint. In the current run, `{ctx['climate_permutations']}` permutations are used to evaluate how unusual the observed coherence is under temporal shifting.",
         },
+        "koppen_geiger_station_assignments.csv": {
+            "fa": "این جدول برچسب اقلیمی Köppen-Geiger هر ایستگاه را ذخیره می‌کند. مختصات ایستگاه‌ها از نقشه‌ی present-day Beck et al. (2018) نمونه‌برداری شده‌اند و برای هر ایستگاه کد عددی، کلاس اقلیمی، توضیح کلاس، اطمینان طبقه‌بندی، و رژیم اقلیمی مورد استفاده در تحلیل گزارش شده است.",
+            "en": "This table stores the Köppen-Geiger climate label assigned to each station. Station coordinates are sampled from the present-day Beck et al. (2018) map, and the numeric code, climate class, class description, classification confidence, and analysis regime are reported for each station.",
+        },
+        "koppen_geiger_regime_summary.csv": {
+            "fa": "این جدول خلاصه‌ی رژیم‌های اقلیمی ایستگاه‌ها را ارائه می‌کند و برای هر رژیم تعداد ایستگاه‌ها، ترکیب کلاس‌های Köppen-Geiger، میانگین مختصات، ارتفاع، اطمینان طبقه‌بندی و تعداد انتساب‌های نزدیک‌ترین پیکسل معتبر را ثبت می‌نماید.",
+            "en": "This table summarizes the station climate regimes, reporting the number of stations, the composition of Köppen-Geiger classes, mean coordinates, elevation, classification confidence, and nearest-valid-pixel assignments for each regime.",
+        },
+        "climate_regime_quantile_summary.csv": {
+            "fa": "این جدول خلاصه‌ی رگرسیون چندکی را به تفکیک رژیم اقلیمی ارائه می‌کند. برای هر رژیم و شاخص، میانگین و میانه‌ی شیب‌های `q0.10`، `q0.50`، `q0.90`، مقدار `Delta1`، سهم جهت‌های سازگار با گرمایش و تعداد نتایج FDR در `q0.50` گزارش شده است.",
+            "en": "This table provides climate-regime-stratified quantile-regression summaries. For each regime and index, it reports mean and median `q0.10`, `q0.50`, and `q0.90` slopes, `Delta1`, warming-consistent direction fractions, and the number of FDR-retained `q0.50` results.",
+        },
+        "climate_regime_fixed_baseline_summary.csv": {
+            "fa": f"این جدول تغییرات آستانه‌ی ثابت را به تفکیک رژیم اقلیمی خلاصه می‌کند. برای هر رژیم و شاخص، تغییر میانگین دوره‌ی `{ctx['climate_comparison']}` نسبت به `{ctx['climate_baseline']}` و سهم ایستگاه‌های دارای علامت سازگار با گرمایش ذخیره شده است.",
+            "en": f"This table summarizes fixed-baseline changes by climate regime. For each regime and index, it stores the mean `{ctx['climate_comparison']}` minus `{ctx['climate_baseline']}` shift and the fraction of stations with the warming-consistent sign.",
+        },
+        "climate_regime_warming_response_summary.csv": {
+            "fa": "این جدول پاسخ چندکی شاخص‌های حدی به ناهنجاری دمای منطقه‌ای را به تفکیک رژیم اقلیمی خلاصه می‌کند. ضرایب به‌صورت روز در سال به‌ازای هر درجه‌ی سلسیوس گزارش شده‌اند و برای مقایسه‌ی حساسیت رژیم‌های اقلیمی نسبت به گرمایش مشاهده‌ای به‌کار می‌روند.",
+            "en": "This table summarizes quantile responses of the extreme indices to regional temperature anomaly by climate regime. Coefficients are reported as days per year per degree Celsius and support comparison of climate-regime sensitivity to observed warming.",
+        },
+        "climate_regime_emergence_summary.csv": {
+            "fa": f"این جدول ظهور سیگنال را به تفکیک رژیم اقلیمی خلاصه می‌کند. برای هر رژیم، شاخص و معیار، تعداد ایستگاه‌های دارای علامت مورد انتظار، تعداد ایستگاه‌های دارای `SNR >= {ctx['climate_snr_threshold']}`، سهم ظهور و میانه‌ی نسبت سیگنال به نویز گزارش می‌شود.",
+            "en": f"This table summarizes signal emergence by climate regime. For each regime, index, and metric, it reports the number of stations with the expected sign, the number exceeding `SNR >= {ctx['climate_snr_threshold']}`, the emergence fraction, and the median signal-to-noise ratio.",
+        },
+        "climate_regime_fingerprint_components.csv": {
+            "fa": "این جدول مؤلفه‌های امتیاز اثرانگشت اقلیمی را به تفکیک رژیم اقلیمی و شاخص ثبت می‌کند. مؤلفه‌ها شامل جهت روند میانه، عدم‌تقارن دمی، تغییر آستانه‌ی ثابت، پاسخ به گرمایش، ظهور سیگنال و معنی‌داری FDR هستند.",
+            "en": "This table records climate-fingerprint component scores by climate regime and index. Components include median-trend direction, tail asymmetry, fixed-baseline change, warming response, signal emergence, and FDR significance.",
+        },
+        "climate_regime_fingerprint_summary.csv": {
+            "fa": "این جدول امتیاز نهایی اثرانگشت را برای هر رژیم اقلیمی و هر شاخص خلاصه می‌کند و در کنار آن امتیاز کلی هر رژیم را نیز گزارش می‌دهد. این خروجی برای مقایسه‌ی شدت و انسجام اثرانگشت گرمایش بین اقلیم‌های مختلف استفاده می‌شود.",
+            "en": "This table summarizes final fingerprint scores for each climate regime and index, together with the overall score for each regime. It is used to compare the strength and coherence of the warming fingerprint among climate regimes.",
+        },
+        "climate_regime_difference_tests.csv": {
+            "fa": "این جدول آزمون‌های جایگشتی اختلاف بین رژیم‌های اقلیمی را گزارش می‌کند. برای هر شاخص و معیار، دامنه‌ی مشاهده‌شده‌ی میانگین‌های رژیمی با توزیع حاصل از جابه‌جایی تصادفی برچسب‌های رژیم مقایسه شده و مقدار `p` و `q` اصلاح‌شده با FDR ذخیره شده است.",
+            "en": "This table reports permutation tests for differences among climate regimes. For each index and metric, the observed range of regime means is compared with the distribution obtained by random reassignment of regime labels, and both the permutation `p-value` and FDR-adjusted `q-value` are stored.",
+        },
         "station_significance_fdr.csv": {
             "fa": "این جدول نتایج معنی‌داری ایستگاهی را پس از کنترل چندآزمونی نگه می‌دارد. برای هر ایستگاه، شاخص و صدک، شیب، بازه‌های اطمینان، `p-value` تحلیلی، مقدار `q` و وضعیت ردشدن در روش `FDR` گزارش شده است.",
             "en": "This table stores the station-level significance results after multiple-testing control. For each station, index, and quantile, it reports the slope, confidence intervals, analytic `p-value`, `q` value, and the rejection status under the `FDR` procedure.",
@@ -566,6 +602,35 @@ def describe_nested_figure(figure_path: Path, ctx: dict) -> dict[str, str] | Non
                 "kind_en": "Median-quantile signal-emergence maps",
                 "fa": f"این شکل ایستگاه‌هایی را که در `q0.50` دارای سیگنال گرمایش‌سازگار و `SNR >= {ctx['climate_snr_threshold']}` هستند، برای چهار شاخص اصلی نشان می‌دهد. نقشه‌ها مستند می‌کنند که ظهور سیگنال در کدام بخش‌های شبکه گسترده‌تر یا محدودتر است.",
                 "en": f"This figure maps stations that show warming-consistent `q0.50` signal emergence with `SNR >= {ctx['climate_snr_threshold']}` for the four main indices. The maps document where signal emergence is more widespread or more limited across the station network.",
+            }
+    if parts[0] == "advanced_climate_regimes":
+        if name == "koppen_geiger_station_regimes.png":
+            return {
+                "kind_fa": "نقشه‌ی رژیم‌های اقلیمی Köppen-Geiger",
+                "kind_en": "Köppen-Geiger climate-regime map",
+                "fa": "این نقشه جایگاه ایستگاه‌ها را بر اساس رژیم اقلیمی Köppen-Geiger نشان می‌دهد. رنگ هر نقطه از برچسب استخراج‌شده از نقشه‌ی present-day Beck et al. (2018) گرفته شده و برای معرفی پوشش اقلیمی شبکه‌ی ایستگاهی استفاده می‌شود.",
+                "en": "This map shows station locations by Köppen-Geiger climate regime. Each point color is based on the label sampled from the present-day Beck et al. (2018) map and is used to document the climate-regime coverage of the station network.",
+            }
+        if name == "climate_regime_quantile_profiles.png":
+            return {
+                "kind_fa": "شکل پروفایل‌های چندکی به تفکیک رژیم اقلیمی",
+                "kind_en": "Climate-regime quantile-profile figure",
+                "fa": "این شکل میانگین شیب‌های چندکی را برای هر شاخص و هر رژیم اقلیمی نمایش می‌دهد. هدف آن مقایسه‌ی هندسه‌ی چندکی تغییرات حدهای حرارتی بین اقلیم‌های مختلف ایران است.",
+                "en": "This figure displays mean quantile slopes for each index and climate regime. Its purpose is to compare the quantile geometry of thermal-extreme change across Iran's climate regimes.",
+            }
+        if name == "climate_regime_fixed_baseline_shifts.png":
+            return {
+                "kind_fa": "شکل تغییرات آستانه ثابت به تفکیک رژیم اقلیمی",
+                "kind_en": "Climate-regime fixed-baseline shift figure",
+                "fa": f"این شکل تغییرات میانگین دوره‌ی `{ctx['climate_comparison']}` نسبت به خط پایه‌ی `{ctx['climate_baseline']}` را برای هر رژیم اقلیمی و هر شاخص نشان می‌دهد. شکل برای مقایسه‌ی شدت تغییر فراوانی رخدادهای گرم و سرد تحت آستانه‌ی ثابت استفاده می‌شود.",
+                "en": f"This figure shows mean `{ctx['climate_comparison']}` minus `{ctx['climate_baseline']}` changes for each climate regime and index. It is used to compare fixed-threshold warm and cool event-frequency shifts across regimes.",
+            }
+        if name == "climate_regime_fingerprint_scores.png":
+            return {
+                "kind_fa": "هیت‌مپ امتیاز اثرانگشت اقلیمی به تفکیک رژیم",
+                "kind_en": "Climate-regime fingerprint-score heatmap",
+                "fa": "این هیت‌مپ امتیاز اثرانگشت گرمایش را برای هر رژیم اقلیمی و هر شاخص نمایش می‌دهد. رنگ‌ها میزان انسجام مؤلفه‌های مختلف اثرانگشت را نشان می‌دهند و برای مقایسه‌ی اقلیم‌ها به‌کار می‌روند.",
+                "en": "This heatmap displays warming-fingerprint scores for each climate regime and index. The colors represent the coherence of the fingerprint components and support comparison among regimes.",
             }
     if parts[0] == "advanced_method_sensitivity":
         if name == "bootstrap_method_sensitivity.png":
