@@ -387,6 +387,13 @@ def describe_root_figure(figure_path: Path, ctx: dict) -> dict[str, str]:
             "fa": "این نقشه محدوده‌ی مطالعه و شبکه‌ی ایستگاه‌های هواشناسی را بر روی مرز ایران نمایش می‌دهد. رنگ‌آمیزی نقاط بر اساس ارتفاع انجام شده است تا توزیع مکانی ایستگاه‌ها و زمینه‌ی توپوگرافی مطالعه به‌صورت مقدماتی و رسمی معرفی شود.",
             "en": "This map presents the study domain and the meteorological station network over the national boundary of Iran. Station points are colored by elevation in order to introduce both the spatial station distribution and the topographic context of the study in a formal overview.",
         }
+    if name == "ijoc_study_area_regional_context.png":
+        return {
+            "kind_fa": "نقشه‌ی منطقه‌ی مطالعه با زمینه‌ی کشورهای همسایه",
+            "kind_en": "Regional-context study-area map",
+            "fa": "این نقشه نسخه‌ی زمینه‌ای نقشه‌ی منطقه‌ی مطالعه است و شبکه‌ی ایستگاه‌های هواشناسی ایران را همراه با کشورهای همسایه، مرزهای اطراف ایران، دریای کاسپین، خلیج فارس و دریای عمان نمایش می‌دهد. مرز کشورها از `data/A.geojson` گرفته شده، نقاط ایستگاهی مانند نقشه‌ی اصلی بر اساس ارتفاع رنگ‌آمیزی شده‌اند، و شماره‌های کنار نقاط ترتیب ایستگاه‌ها را بر اساس `station_id` صعودی نشان می‌دهند.",
+            "en": "This map is the regional-context version of the study-area figure. It shows Iran's meteorological station network together with neighboring countries, regional borders, the Caspian Sea, the Persian Gulf, and the Gulf of Oman. Country boundaries are read from `data/A.geojson`, station points are colored by elevation as in the original study-area map, and point numbers follow ascending `station_id` order.",
+        }
     m = re.match(r"station_focus_heatmap_(.+)\.png", name)
     if m:
         idx_name = m.group(1)

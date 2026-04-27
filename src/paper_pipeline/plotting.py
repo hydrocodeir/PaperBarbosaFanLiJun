@@ -6,6 +6,7 @@ from typing import Dict, List
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.patheffects as pe
 from matplotlib.colors import BoundaryNorm, LinearSegmentedColormap
 import numpy as np
 import pandas as pd
@@ -1315,6 +1316,219 @@ def plot_ijoc_study_area(stations: pd.DataFrame, outdir: Path, cfg: dict):
     )
     fig.tight_layout()
     fig.savefig(outdir / f"ijoc_study_area.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
+    plt.close(fig)
+
+
+def _rect_intersection_area(a: tuple[float, float, float, float], b: tuple[float, float, float, float]) -> float:
+    dx = min(a[2], b[2]) - max(a[0], b[0])
+    dy = min(a[3], b[3]) - max(a[1], b[1])
+    return max(0.0, dx) * max(0.0, dy)
+
+
+def _point_rectangle_distance(px: float, py: float, rect: tuple[float, float, float, float]) -> float:
+    dx = max(rect[0] - px, 0.0, px - rect[2])
+    dy = max(rect[1] - py, 0.0, py - rect[3])
+    return float(np.hypot(dx, dy))
+
+
+def _label_bbox_for_offset(
+    point_xy: np.ndarray,
+    offset_pt: tuple[float, float],
+    text: str,
+    fontsize: float,
+    dpi: float,
+) -> tuple[tuple[float, float, float, float], str, str]:
+    scale = dpi / 72.0
+    dx = offset_pt[0] * scale
+    dy = offset_pt[1] * scale
+    anchor_x = float(point_xy[0] + dx)
+    anchor_y = float(point_xy[1] + dy)
+    width = max(5.0, len(text) * fontsize * scale * 0.62)
+    height = max(5.0, fontsize * scale * 1.18)
+
+    if offset_pt[0] < -0.1:
+        ha = "right"
+        x0, x1 = anchor_x - width, anchor_x
+    elif offset_pt[0] > 0.1:
+        ha = "left"
+        x0, x1 = anchor_x, anchor_x + width
+    else:
+        ha = "center"
+        x0, x1 = anchor_x - width / 2.0, anchor_x + width / 2.0
+
+    if offset_pt[1] < -0.1:
+        va = "top"
+        y0, y1 = anchor_y - height, anchor_y
+    elif offset_pt[1] > 0.1:
+        va = "bottom"
+        y0, y1 = anchor_y, anchor_y + height
+    else:
+        va = "center"
+        y0, y1 = anchor_y - height / 2.0, anchor_y + height / 2.0
+
+    pad = 1.2 * scale
+    return (x0 - pad, y0 - pad, x1 + pad, y1 + pad), ha, va
+
+
+def _add_optimized_station_number_labels(ax, fig, stations: pd.DataFrame, fontsize: float = 4.7) -> None:
+    label_stations = stations.copy().sort_values("station_id").reset_index(drop=True)
+    label_stations["station_number"] = np.arange(1, len(label_stations) + 1)
+    xy_data = label_stations[["longitude", "latitude"]].to_numpy(dtype=float)
+    xy_px = ax.transData.transform(xy_data)
+    axes_box = ax.get_window_extent()
+    scale = fig.dpi / 72.0
+    point_radius_px = np.sqrt(48.0 / np.pi) * scale + 3.0
+
+    pairwise = np.sqrt(((xy_px[:, None, :] - xy_px[None, :, :]) ** 2).sum(axis=2))
+    density = (pairwise < 34.0).sum(axis=1)
+    placement_order = np.lexsort((label_stations["station_number"].to_numpy(), -density))
+
+    # Ordered to keep labels centered just above each station unless a local collision
+    # makes a small displacement necessary.
+    candidates = [
+        (0, 4.8), (-3.6, 4.8), (3.6, 4.8), (0, 7.0),
+        (-6.0, 4.8), (6.0, 4.8), (-4.5, 7.2), (4.5, 7.2),
+        (-7.5, 2.0), (7.5, 2.0), (0, -5.8),
+        (-4.5, -5.8), (4.5, -5.8), (-8.0, -2.0), (8.0, -2.0),
+        (-10.0, 6.5), (10.0, 6.5), (-10.0, -6.5), (10.0, -6.5),
+    ]
+    chosen_boxes: list[tuple[float, float, float, float]] = []
+    chosen: dict[int, tuple[tuple[float, float], str, str]] = {}
+
+    for idx in placement_order:
+        text = str(int(label_stations.iloc[idx]["station_number"]))
+        best = None
+        best_score = float("inf")
+        for cand_no, offset in enumerate(candidates):
+            rect, ha, va = _label_bbox_for_offset(xy_px[idx], offset, text, fontsize, fig.dpi)
+            outside = (
+                max(0.0, axes_box.x0 + 2 - rect[0])
+                + max(0.0, axes_box.y0 + 2 - rect[1])
+                + max(0.0, rect[2] - axes_box.x1 + 2)
+                + max(0.0, rect[3] - axes_box.y1 + 2)
+            )
+            overlap_labels = sum(_rect_intersection_area(rect, prev) for prev in chosen_boxes)
+            point_hits = 0.0
+            for point_idx, (px, py) in enumerate(xy_px):
+                if point_idx == idx:
+                    continue
+                dist = _point_rectangle_distance(float(px), float(py), rect)
+                if dist < point_radius_px:
+                    point_hits += (point_radius_px - dist + 1.0) ** 2
+            offset_distance = float(np.hypot(offset[0], offset[1]))
+            score = outside * 900.0 + overlap_labels * 22.0 + point_hits * 7.0 + cand_no * 16.0 + offset_distance * 2.4
+            if score < best_score:
+                best_score = score
+                best = (offset, ha, va, rect)
+        if best is None:
+            continue
+        offset, ha, va, rect = best
+        chosen[int(idx)] = (offset, ha, va)
+        chosen_boxes.append(rect)
+
+    station_label_effect = [pe.withStroke(linewidth=1.6, foreground="white")]
+    for idx, row in label_stations.iterrows():
+        offset, ha, va = chosen.get(int(idx), ((0, 4.8), "center", "bottom"))
+        ax.annotate(
+            str(int(row["station_number"])),
+            xy=(float(row["longitude"]), float(row["latitude"])),
+            xytext=offset,
+            textcoords="offset points",
+            ha=ha,
+            va=va,
+            fontsize=fontsize,
+            color="#111111",
+            path_effects=station_label_effect,
+            zorder=8,
+        )
+
+
+def plot_ijoc_study_area_regional_context(stations: pd.DataFrame, outdir: Path, cfg: dict):
+    apply_publication_theme()
+    spatial_cfg = cfg.get("spatial_visualization", {})
+    context_path = Path(spatial_cfg.get("regional_context_geojson", "data/A.geojson"))
+    if not context_path.exists():
+        return
+
+    countries = gpd.read_file(context_path).to_crs(4326)
+    if countries.empty or "cca2" not in countries.columns:
+        return
+
+    countries = countries.copy()
+    countries["cca2"] = countries["cca2"].astype(str).str.lower()
+    iran = countries.loc[countries["cca2"] == "ir"].copy()
+    if iran.empty:
+        return
+
+    xmin, xmax = 43.0, 64.0
+    ymin, ymax = 23.0, 41.0
+
+    fig, ax = plt.subplots(figsize=(8.9, 7.0))
+    ax.set_facecolor("#dceff6")
+    countries.plot(ax=ax, color="#e8e2d6", edgecolor="#7a7a7a", linewidth=0.55, zorder=1)
+    iran.plot(ax=ax, color="white", edgecolor="#202020", linewidth=1.15, zorder=2)
+
+    scatter = ax.scatter(
+        stations["longitude"],
+        stations["latitude"],
+        c=stations["elevation"],
+        s=48,
+        cmap="terrain",
+        edgecolor="black",
+        linewidth=0.32,
+        zorder=5,
+    )
+
+    label_effect = [pe.withStroke(linewidth=2.7, foreground="white")]
+    country_labels = {
+        "Turkey": (43.05, 39.25, 8.0),
+        "Armenia": (45.15, 40.45, 7.2),
+        "Azerbaijan": (48.15, 40.15, 7.5),
+        "Turkmenistan": (58.2, 38.55, 8.2),
+        "Afghanistan": (62.15, 33.75, 8.4),
+        "Pakistan": (62.45, 28.35, 8.2),
+        "Iraq": (45.1, 33.55, 8.5),
+        "Kuwait": (47.55, 29.42, 6.8),
+        "Saudi Arabia": (47.85, 24.25, 7.7),
+        "Bahrain": (50.55, 26.15, 6.2),
+        "Qatar": (51.15, 25.25, 6.6),
+        "United Arab Emirates": (54.2, 23.55, 6.8),
+        "Oman": (58.35, 23.45, 7.2),
+        "Iran": (53.25, 32.25, 10.5),
+    }
+    for name, (x, y, size) in country_labels.items():
+        weight = "semibold" if name == "Iran" else "regular"
+        ax.text(x, y, name, ha="center", va="center", fontsize=size, color="#242424",
+                fontweight=weight, path_effects=label_effect, zorder=6)
+
+    sea_effect = [pe.withStroke(linewidth=2.4, foreground="#dceff6")]
+    sea_labels = {
+        "Caspian Sea": (51.5, 38.1, 8.8, 0),
+        "Persian Gulf": (51.2, 27.05, 8.6, -8),
+        "Gulf of Oman": (58.4, 24.55, 8.4, -4),
+    }
+    for name, (x, y, size, rotation) in sea_labels.items():
+        ax.text(x, y, name, ha="center", va="center", fontsize=size, color="#276f91",
+                fontstyle="italic", rotation=rotation, path_effects=sea_effect, zorder=4)
+
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+    ax.set_aspect("equal", adjustable="box")
+    xticks = np.arange(43.0, 64.1, 3.0)
+    yticks = np.arange(23.0, 41.1, 2.0)
+    ax.set_xticks(xticks)
+    ax.set_yticks(yticks)
+    ax.set_xticklabels([f"{x:.1f}°E" for x in xticks], fontsize=8)
+    ax.set_yticklabels([f"{y:.0f}°N" for y in yticks], fontsize=8)
+    ax.grid(False)
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    cbar = fig.colorbar(scatter, ax=ax, shrink=0.82)
+    cbar.set_label("Elevation (m)")
+    fig.tight_layout()
+    fig.canvas.draw()
+    _add_optimized_station_number_labels(ax, fig, stations)
+    fig.savefig(outdir / f"ijoc_study_area_regional_context.{cfg['plots']['save_format']}", dpi=int(cfg["plots"]["dpi"]))
     plt.close(fig)
 
 

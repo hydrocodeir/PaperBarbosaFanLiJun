@@ -598,6 +598,10 @@ spatial_visualization:
   # Type: string path
   iran_boundary_geojson: data/Iran.geojson
 
+  # Regional context boundary file used for the neighboring-countries study-area map.
+  # Type: string path
+  regional_context_geojson: data/A.geojson
+
   # Interpolation method for visual map surfaces.
   # Allowed values:
   # - thin_plate_spline

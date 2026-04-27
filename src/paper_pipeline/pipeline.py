@@ -45,6 +45,7 @@ from .plotting import (
     plot_ijoc_robustness_synthesis,
     plot_ijoc_split_period_comparison,
     plot_ijoc_study_area,
+    plot_ijoc_study_area_regional_context,
     plot_maps,
     plot_paper1_quantile_dendrograms,
     plot_paper2_figure3_maps,
@@ -194,6 +195,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
             plot_region_quantile_slopes(annual, figs_dir, cfg)
             plot_ijoc_regional_quantile_panels(annual, figs_dir, cfg)
             plot_ijoc_study_area(stations, figs_dir, cfg)
+            plot_ijoc_study_area_regional_context(stations, figs_dir, cfg)
             plot_station_heatmap(feature_table, figs_dir, cfg)
             plot_delta_uncertainty(feature_table, figs_dir, cfg)
             plot_dendrograms(feature_table, artifacts, figs_dir, cfg)
@@ -369,6 +371,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
     plot_region_quantile_slopes(annual, figs_dir, cfg)
     plot_ijoc_regional_quantile_panels(annual, figs_dir, cfg)
     plot_ijoc_study_area(stations, figs_dir, cfg)
+    plot_ijoc_study_area_regional_context(stations, figs_dir, cfg)
     plot_station_heatmap(feature_table, figs_dir, cfg)
     plot_delta_uncertainty(feature_table, figs_dir, cfg)
     plot_dendrograms(feature_table, artifacts, figs_dir, cfg)
