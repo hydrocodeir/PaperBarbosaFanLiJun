@@ -212,3 +212,4 @@ data/*
 
 outputs/*
 !outputs/.gitkeep
+submit/

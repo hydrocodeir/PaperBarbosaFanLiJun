@@ -10,13 +10,13 @@ Mean temperature alone cannot fully describe thermal extremes. Many impacts aris
 
 ## 1. Introduction
 
-Climate change is often experienced most directly through extremes, not averages, because extremes are what disrupt agriculture, water resources, ecosystems, infrastructure, and human health (Easterling et al., 2000; IPCC, 2021). Recent global heat-stress studies further show that these hazards are not only intensifying, but also interacting with exposure, physiological vulnerability, and unequal adaptive capacity (Peng et al., 2026; Perkins-Kirkpatrick et al., 2026). Within the broader global environmental change literature, extreme heat is increasingly treated not only as a meteorological hazard, but also as an adaptation, inequality, and everyday-life problem (Amorim-Maia and Olazabal, 2025; Tschakert et al., 2025; Yücel and Schwanen, 2025). Heat-related risk, in particular, depends strongly on what happens in the tails of the thermal distribution, not on the mean alone (Katz and Brown, 1992; Katz et al., 2002; Perkins, 2015). A region may therefore show only modest mean change while still undergoing marked upper-tail intensification or a rapid loss of historically cool conditions. Distribution-aware methods are especially valuable when the aim is to understand how thermal extremes are changing (Koenker and Bassett, 1978; Koenker, 2005; Barbosa et al., 2011; Fan, 2014; Reich, 2012).
+Climate change is often experienced most directly through extremes, not averages, because extremes are what disrupt agriculture, water resources, ecosystems, infrastructure, and human health (Easterling et al., 2000; IPCC, 2021). Recent work shows that hot extremes have continued to increase despite internal variability, that a large share of high-temperature extremes is attributable to warming, and that record-shattering extremes become more likely as warming proceeds (Coumou and Rahmstorf, 2012; Seneviratne et al., 2014; Fischer and Knutti, 2015; Fischer et al., 2021). Heat-related risk also depends on exposure and physiological vulnerability, with deadly-heat exposure and heat-attributable mortality already detectable in multi-region assessments (Mora et al., 2017; Vicedo-Cabrera et al., 2021; Peng et al., 2026; Perkins-Kirkpatrick et al., 2026). Heat-related risk, in particular, depends strongly on what happens in the tails of the thermal distribution, not on the mean alone (Katz and Brown, 1992; Katz et al., 2002; Perkins, 2015). A region may therefore show only modest mean change while still undergoing marked upper-tail intensification or a rapid loss of historically cool conditions. Distribution-aware methods are especially valuable when the aim is to understand how thermal extremes are changing (Koenker and Bassett, 1978; Koenker, 2005; Barbosa et al., 2011; Fan, 2014; Reich, 2012).
 
-That perspective is particularly relevant for annual warm-day, warm-night, cool-day, and cool-night indices. These measures are widely used in climatology because they translate daily temperature variability into annual counts that are easy to interpret physically (Frich et al., 2002; Alexander et al., 2006; Zhang et al., 2011; Dunn et al., 2020). Even so, many studies still concentrate on mean or median behavior, despite the fact that rates of change can differ substantially between lower, central, and upper quantiles. Those differences matter because they help separate broad, distribution-wide shifts from more selective amplification in the most extreme years (Moberg and Jones, 2005; Kostopoulou and Jones, 2005; Fischer and Schär, 2010; Russo and Sterl, 2011). Recent work on heatwave dynamics and land-atmosphere feedbacks also shows that the upper tail can respond differently from the mean when circulation persistence or soil moisture-temperature coupling changes (Rousi et al., 2022; Vautard et al., 2023; Maraun et al., 2025).
+That perspective is particularly relevant for annual warm-day, warm-night, cool-day, and cool-night indices. These measures are widely used in climatology because they translate daily temperature variability into annual counts that are easy to interpret physically (Frich et al., 2002; Alexander et al., 2006; Zhang et al., 2011; Dunn et al., 2020). Even so, many studies still concentrate on mean or median behavior, despite the fact that rates of change can differ substantially between lower, central, and upper quantiles. Those differences matter because they help separate broad, distribution-wide shifts from more selective amplification in the most extreme years (Moberg and Jones, 2005; Kostopoulou and Jones, 2005; Fischer and Schär, 2010; Russo and Sterl, 2011). Recent work on heatwave dynamics and land-atmosphere feedbacks also shows that the upper tail can respond differently from the mean when circulation persistence, aridity, evapotranspiration, or soil moisture-temperature coupling changes (McKinnon et al., 2021; Rousi et al., 2022; Vautard et al., 2023; Maraun et al., 2025; García-García et al., 2023).
 
 Iran offers a particularly informative setting in which to examine this question. The country includes humid Caspian lowlands, the Zagros and Alborz mountain systems, central desert basins, and hot southern coasts influenced by the Persian Gulf and Gulf of Oman. Such strong contrasts in elevation, continentality, aridity, and marine influence are likely to produce spatially differentiated responses rather than a single national thermal signal. Previous studies have already documented intensifying temperature extremes across Iran and the broader Middle East and North Africa (Zhang et al., 2005a; Soltani et al., 2016; Vaghefi et al., 2019; Zittis et al., 2016; Francis and Fonseca, 2024; Naderi et al., 2024; Jahanshahi et al., 2024), and regional work has drawn increasing attention to heat stress and compound thermal hazards in southwest Asia (Pal and Eltahir, 2016; Raymond et al., 2020; Zittis et al., 2021; Raymond et al., 2024). Recent station-based Köppen-Geiger analysis also indicates observed warming-driven aridification and climate-type transitions across Iran (Jamali et al., 2026). What remains less common, however, is a dense station-based assessment for Iran that brings together distributional trend analysis, uncertainty quantification, field significance, and quantitative regionalization in a single study while also distinguishing clearly between distribution-relative diagnostics and fixed-baseline sensitivity checks.
 
-To address that gap, we use a denser contemporary station network than is typical of national syntheses based on long records. Using 124 meteorological stations for 1991-2024, we analyze annual warm days, warm nights, cool days, and cool nights with quantile regression, bootstrap uncertainty estimation, field-significance screening, spatial diagnostics, and cluster-based regionalization. Our goal is not simply to ask whether thermal extremes are changing, but to examine how those changes are distributed across the response surface, how they organize in space, and how stable they remain under alternative methodological choices. This kind of physically grounded evidence is also relevant to adaptation scholarship, because heat-risk planning increasingly depends on knowing which parts of the thermal distribution are changing, where those changes are emerging, and which climatic settings may require more targeted monitoring (Howarth et al., 2025; Neudörfer and Valdivieso, 2025).
+To address that gap, we use a denser contemporary station network than is typical of national syntheses based on long records. Using 124 meteorological stations for 1991-2024, we analyze annual warm days, warm nights, cool days, and cool nights with quantile regression, bootstrap uncertainty estimation, field-significance screening, spatial diagnostics, and cluster-based regionalization. Our goal is not simply to ask whether thermal extremes are changing, but to examine how those changes are distributed across the response surface, how they organize in space, and how stable they remain under alternative methodological choices. This kind of physically grounded evidence is also relevant to climate-risk assessment, because heat-risk planning increasingly depends on knowing which parts of the thermal distribution are changing, where those changes are emerging, and which climatic settings may require more targeted monitoring (Mora et al., 2017; Vicedo-Cabrera et al., 2021; Fischer et al., 2021).
 
 The analysis makes seven related contributions that move the study beyond a descriptive inventory of station trends. It resolves change across the conditional distribution instead of relying on mean behavior alone; measures asymmetry with explicit tail-contrast metrics; quantifies uncertainty through dependent bootstrap resampling and complementary significance tests; regionalizes station behavior through reproducible clustering and representative-station selection; tests the stability of the main findings through homogeneity-exclusion, bootstrap-depth, bootstrap-method, interpolation, clustering, and split-period analyses; adds a climate-fingerprint layer that is treated as observational signal detection, not formal attribution; and evaluates how those patterns differ across Köppen-Geiger climate regimes. These components provide a distribution-aware climatological synthesis of recent thermal-extreme change across Iran.
 
@@ -304,7 +304,7 @@ The regime-level fingerprint scores remain high in every climate setting, rangin
 
 The results align with the broader literature in several ways, while also sharpening the picture for Iran. The widespread increase in warm-event frequencies and decline in cool-event frequencies are consistent with prior evidence of intensifying heat extremes across Iran and the wider MENA domain (Zhang et al., 2005a; Soltani et al., 2016; Vaghefi et al., 2019; Zittis et al., 2016; Francis and Fonseca, 2024). They also complement recent Iran-focused projection studies that indicate increasing hydro-climatic and climate-extreme risks under warming (Naderi et al., 2024; Jahanshahi et al., 2024). Likewise, the strong contraction of cool days and cool nights is consistent with the global reduction of cold extremes documented in large observational syntheses (Alexander et al., 2006; Donat et al., 2013; Dunn et al., 2020).
 
-What stands out more distinctly in the present analysis is the degree of distributional asymmetry and the fact that, in this dataset, recent warming is more strongly expressed in daytime warm extremes than in nighttime ones. That pattern is physically plausible in an arid and topographically complex setting where land-surface feedbacks, cloud variability, and radiative conditions can favor strong daytime amplification (Seneviratne et al., 2010; Sanchez-Lorenzo et al., 2017; Perkins-Kirkpatrick and Lewis, 2020). More recent studies reinforce this interpretation by showing that circulation persistence, circulation-model mismatch, and event-scale soil moisture-temperature coupling can all modulate the intensity and predictability of heat extremes beyond what would be expected from mean warming alone (Rousi et al., 2022; Vautard et al., 2023; Maraun et al., 2025; Lv et al., 2026). At the same time, the concentration of strong warm-night amplification and strong cool-night contraction at low elevations is consistent with the growing importance of nocturnal and humid-heat risk in southern and coastal southwest Asia (Pal and Eltahir, 2016; Raymond et al., 2020; Raymond et al., 2024; Perkins-Kirkpatrick et al., 2026).
+What stands out more distinctly in the present analysis is the degree of distributional asymmetry and the fact that, in this dataset, recent warming is more strongly expressed in daytime warm extremes than in nighttime ones. That pattern is physically plausible in an arid and topographically complex setting where land-surface feedbacks, cloud variability, and radiative conditions can favor strong daytime amplification (Seneviratne et al., 2010; Sanchez-Lorenzo et al., 2017; Perkins-Kirkpatrick and Lewis, 2020). More recent studies reinforce this interpretation by showing that hot extremes can become drier in arid regions, that soil heat extremes may outpace near-surface air-temperature extremes, and that circulation persistence, circulation-model mismatch, and event-scale soil moisture-temperature coupling can all modulate heat extremes beyond what would be expected from mean warming alone (McKinnon et al., 2021; Rousi et al., 2022; Vautard et al., 2023; Maraun et al., 2025; García-García et al., 2023; Lv et al., 2026). At the same time, the concentration of strong warm-night amplification and strong cool-night contraction at low elevations is consistent with the growing importance of nocturnal and humid-heat risk in southern and coastal southwest Asia (Pal and Eltahir, 2016; Raymond et al., 2020; Raymond et al., 2024; Perkins-Kirkpatrick et al., 2026).
 
 The results also fit the broader quantile-regression literature. Earlier studies showed that quantile-specific temperature trends can reveal structures that OLS or mean-only analysis tends to hide (Barbosa et al., 2011; Fan, 2014). The present study extends that logic to a dense national station network in Iran and shows that the same principle matters strongly in a dryland setting: warm-day amplification, warm-night flattening, and uneven cool-extreme contraction would all be only partly visible in mean trends alone. The QCF-EA layer adds a further methodological contribution by translating the distributional trend structure into a reproducible observational fingerprint, while the Köppen-Geiger stratification links that fingerprint to internationally recognizable climate regimes (Beck et al., 2018). In that sense, the study adds regional specificity to the wider literature by showing that recent thermal-extreme change across Iran is not just warming in sign, but also differentiated in shape and supported by multiple signal-detection checks.
 
@@ -328,7 +328,7 @@ The Köppen-Geiger stratification adds a second conclusion: the fingerprint appe
 
 These findings matter for more than descriptive trend reporting. Scientifically, they show that recent thermal change across Iran cannot be reduced to a single smooth national field or a single representative mean trend. The strongest changes emerge in the relative behavior of lower, central, and upper quantiles. In practical terms, this means that heat-risk assessment, agricultural planning, water-resource management, and climate adaptation strategies should pay particular attention to the rising frequency of exceptionally warm-day years and the simultaneous erosion of cool-day and cool-night conditions. This relevance extends beyond meteorological monitoring because recent heat-stress research shows that climate hazards translate into societal risk through exposure, physiological limits, and unequal adaptive capacity (Peng et al., 2026; Perkins-Kirkpatrick et al., 2026). The results also suggest that low-elevation and several coastal or interior-hot stations are especially exposed to strong distributional shifts, making quantile-aware monitoring relevant for regional early warning and climate-risk prioritization.
 
-This implication aligns with recent work in *Global Environmental Change* that frames adaptation as a socially embedded and institutionally conditioned process, not a simple response to a physical hazard. Studies of heat adaptation emphasize that exposure is mediated by daily activity patterns, intersecting inequalities, social networks, policy capacity, and health-cost pathways (Barnes et al., 2025; Tschakert et al., 2025; Yücel and Schwanen, 2025; Zhu et al., 2025). In that context, the present station-based analysis provides the physical-risk layer needed to support more socially differentiated adaptation questions: which regions are experiencing the most asymmetric thermal restructuring, which climate regimes show the strongest signal emergence, and where should future vulnerability and governance assessments be focused.
+This implication aligns with recent heat-risk research showing that risk relevance is not defined by physical hazard intensity alone. Deadly-heat thresholds, heat-attributable mortality, and record-breaking extremes depend on the interaction between meteorological change, exposure, and adaptive limits (Mora et al., 2017; Vicedo-Cabrera et al., 2021; Fischer et al., 2021). In that context, the present station-based analysis provides the physical-risk layer needed to support more differentiated adaptation questions: which regions are experiencing the most asymmetric thermal restructuring, which climate regimes show the strongest signal emergence, and where should future vulnerability and governance assessments be focused.
 
 More broadly, the study underscores a methodological point with wider relevance for climatology. In arid, topographically complex, and spatially heterogeneous environments, mean-only analyses can obscure the most consequential parts of the thermal signal. A quantile-aware, station-based framework is better suited to reveal whether change is distribution-wide, upper-tail dominated, or regionally uneven. The present framework therefore offers a transferable template for other dryland and mountainous regions where national climate-change assessments might otherwise smooth over exactly the contrasts that matter most for extremes.
 
@@ -336,7 +336,27 @@ The conclusions should also be read in light of the limits of the current datase
 
 ## Acknowledgements
 
-Funding, acknowledgements, conflict-of-interest, author-contribution, and data-availability statements should be added here in the journal's required format before submission.
+Funding and acknowledgements should be completed by the authors before submission. `[[Insert funder names, grant numbers, institutional support, and any non-author contributions here.]]`
+
+## Author contributions
+
+`[[Insert Nature Climate Change author-contribution statement here, using author initials and concise role descriptions.]]`
+
+## Competing interests
+
+`[[Insert final competing-interests declaration here, for example: "The authors declare no competing interests."]]`
+
+## Data availability
+
+The analysis uses daily station-temperature observations for Iran over 1991-2024. `[[Insert the formal source, access conditions, and repository or request route for the raw station data.]]` Derived tables, figure outputs, and workflow summaries used to support the manuscript are organized in the project `outputs/` and `reports/` directories.
+
+## Code availability
+
+The analysis workflow is implemented in the project scripts under `src/paper_pipeline/`, with the main execution entry point in `run_analysis.py` and configuration details in `config.yaml`. `[[Insert final public repository, archive DOI, or access statement before submission.]]`
+
+## AI tool use statement
+
+`[[If applicable, describe any AI-assisted language editing, formatting, or manuscript-preparation support in line with Nature Portfolio policy. Large language models should not be listed as authors.]]`
 
 ## Supplementary material
 
@@ -369,15 +389,13 @@ Ahmadalipour A, Moradkhani H (2018). Escalating heat-stress mortality risk due t
 
 Alexander LV, Zhang X, Peterson TC, Caesar J, Gleason B, Klein Tank AMG, Haylock M, Collins D, Trewin B, Rahimzadeh F, Tagipour A, Kumar KR, Revadekar J, Griffiths G, Vincent L, Stephenson DB, Burn J, Aguilar E, Brunet M, Taylor M, New M, Zhai P, Rusticucci M, Vazquez-Aguirre JL (2006). Global observed changes in daily climate extremes of temperature and precipitation. Journal of Geophysical Research: Atmospheres 111:D05109. https://doi.org/10.1029/2005JD006290
 
-Amorim-Maia AT, Olazabal M (2025). Beyond adjustment: A new paradigm for climate change adaptation in a complex world. Global Environmental Change 93:103027. https://doi.org/10.1016/j.gloenvcha.2025.103027
-
 Barbosa SM, Scotto MG, Alonso AM (2011). Summarising changes in air temperature over Central Europe by quantile regression and clustering. Natural Hazards and Earth System Sciences 11:3227-3233. https://doi.org/10.5194/nhess-11-3227-2011
-
-Barnes ML, Sutcliffe S, Muly I, Muthiga N, Wanyonyi S, Matous P, Murunga M (2025). Agency, social networks, and adaptation to environmental change. Global Environmental Change 92:102983. https://doi.org/10.1016/j.gloenvcha.2025.102983
 
 Beck HE, Zimmermann NE, McVicar TR, Vergopolan N, Berg A, Wood EF (2018). Present and future Köppen-Geiger climate classification maps at 1-km resolution. Scientific Data 5:180214. https://doi.org/10.1038/sdata.2018.214
 
 Benjamini Y, Hochberg Y (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B 57(1):289-300. https://doi.org/10.1111/j.2517-6161.1995.tb02031.x
+
+Coumou D, Rahmstorf S (2012). A decade of weather extremes. Nature Climate Change 2:491-496. https://doi.org/10.1038/nclimate1452
 
 Donat MG, Alexander LV, Yang H, Durre I, Vose R, Dunn RJH, Willett KM, Aguilar E, Brunet M, Caesar J, Hewitson B, Jack C, Klein Tank AMG, Kruger AC, Marengo J, Peterson TC, Renom M, Oria Rojas C, Rusticucci M, Salinger J, Elrayah AS, Sekele SS, Srivastava AK, Trewin B, Villarroel C, Vincent LA, Zhai P, Zhang X, Kitching S (2013). Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset. Journal of Geophysical Research: Atmospheres 118(5):2098-2118. https://doi.org/10.1002/jgrd.50150
 
@@ -389,17 +407,21 @@ Efron B, Tibshirani RJ (1993). An Introduction to the Bootstrap. Chapman & Hall,
 
 Fan LJ (2014). Quantile trends in temperature extremes in China. Atmospheric and Oceanic Science Letters 7(4):304-308. https://doi.org/10.3878/j.issn.1674-2834.13.0102
 
+Fischer EM, Knutti R (2015). Anthropogenic contribution to global occurrence of heavy-precipitation and high-temperature extremes. Nature Climate Change 5:560-564. https://doi.org/10.1038/nclimate2617
+
 Fischer EM, Schär C (2010). Consistent geographical patterns of changes in high-impact European heatwaves. Nature Geoscience 3:398-403. https://doi.org/10.1038/ngeo866
+
+Fischer EM, Sippel S, Knutti R (2021). Increasing probability of record-shattering climate extremes. Nature Climate Change 11:689-695. https://doi.org/10.1038/s41558-021-01092-9
 
 Francis D, Fonseca R (2024). Recent and projected changes in climate patterns in the Middle East and North Africa (MENA) region. Scientific Reports 14:10279. https://doi.org/10.1038/s41598-024-60976-w
 
 Frich P, Alexander LV, Della-Marta P, Gleason B, Haylock M, Klein Tank AMG, Peterson T (2002). Observed coherent changes in climatic extremes during the second half of the twentieth century. Climate Research 19:193-212. https://doi.org/10.3354/cr019193
 
+García-García A, Cuesta-Valero FJ, Miralles DG, Mahecha MD, Quaas J, Reichstein M, Zscheischler J, Peng J (2023). Soil heat extremes can outpace air temperature extremes. Nature Climate Change 13:1237-1241. https://doi.org/10.1038/s41558-023-01812-3
+
 Hall P, Horowitz JL, Jing B-Y (1995). On blocking rules for the bootstrap with dependent data. Biometrika 82(3):561-574. https://doi.org/10.1093/biomet/82.3.561
 
 Hubert L, Arabie P (1985). Comparing partitions. Journal of Classification 2:193-218. https://doi.org/10.1007/BF01908075
-
-Howarth C, McLoughlin N, Murtagh E, Kythreotis AP, Porter J (2025). Integrating climate mitigation and adaptation in the UK: A new anticipatory narrative for achieving "Climate Resilient Net Zero" in preparing for heat risk. Global Environmental Change 92:102994. https://doi.org/10.1016/j.gloenvcha.2025.102994
 
 IPCC (2021). Weather and climate extreme events in a changing climate. In: Masson-Delmotte V, Zhai P, Pirani A, Connors SL, Péan C, Berger S, Caud N, Chen Y, Goldfarb L, Gomis MI, Huang M, Leitzell K, Lonnoy E, Matthews JBR, Maycock TK, Waterfield T, Yelekçi O, Yu R, Zhou B (eds) Climate Change 2021: The Physical Science Basis. Cambridge University Press, Cambridge, Chapter 11. https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-11/
 
@@ -425,15 +447,17 @@ Lv B, Wang S, Chen G, Xiang B (2026). Precipitation and soil moisture coupling c
 
 Maraun D, Schiemann R, Ossó A, Jury M (2025). Changes in event soil moisture-temperature coupling can intensify very extreme heat beyond expectations. Nature Communications 16:734. https://doi.org/10.1038/s41467-025-56109-0
 
+McKinnon KA, Poppick A, Simpson IR (2021). Hot extremes have become drier in the United States Southwest. Nature Climate Change 11:598-604. https://doi.org/10.1038/s41558-021-01076-9
+
 Moberg A, Jones PD (2005). Trends in indices for extremes in daily temperature and precipitation in central and western Europe, 1901-99. International Journal of Climatology 25(9):1149-1171. https://doi.org/10.1002/joc.1163
 
 Moran PAP (1950). Notes on continuous stochastic phenomena. Biometrika 37(1-2):17-23. https://doi.org/10.1093/biomet/37.1-2.17
 
+Mora C, Dousset B, Caldwell IR, Powell FE, Geronimo RC, Bielecki CR, Counsell CWW, Dietrich BS, Johnston ET, Louis LV, Lucas MP, McKenzie MM, Shea AG, Tseng H, Giambelluca TW, Leon LR, Hawkins E, Trauernicht C (2017). Global risk of deadly heat. Nature Climate Change 7:501-506. https://doi.org/10.1038/nclimate3322
+
 Naderi M, Saatsaz M, Behrouj Peely A (2024). Extreme climate events under global warming in Iran. Hydrological Sciences Journal 69(3):337-364. https://doi.org/10.1080/02626667.2024.2317269
 
 Nairn JR, Fawcett RJB (2015). The excess heat factor: a metric for heatwave intensity and its use in classifying heatwave severity. International Journal of Environmental Research and Public Health 12(1):227-253. https://doi.org/10.3390/ijerph120100227
-
-Neudörfer P, Valdivieso P (2025). Social capital as a policy catalyst: Enhancing municipal investment in climate risk reduction and adaptation. Global Environmental Change 94:103041. https://doi.org/10.1016/j.gloenvcha.2025.103041
 
 Pal JS, Eltahir EAB (2016). Future temperature in southwest Asia projected to exceed a threshold for human adaptability. Nature Climate Change 6:197-200. https://doi.org/10.1038/nclimate2833
 
@@ -463,25 +487,23 @@ Schuhen N, Iles CE, Sandstad M, Ananiev V, Sillmann J (2026). Emergence of clima
 
 Seneviratne SI, Corti T, Davin EL, Hirschi M, Jaeger EB, Lehner I, Orlowsky B, Teuling AJ (2010). Investigating soil moisture-climate interactions in a changing climate: a review. Earth-Science Reviews 99(3-4):125-161. https://doi.org/10.1016/j.earscirev.2010.02.004
 
-Soltani M, Laux P, Kunstmann H, Stan K, Sohrabi MM, Molanejad M, Sabziparvar AA, Ranjbar SaadatAbadi A, Ranjbar F, Rousta I, Zawar-Reza P, Khoshakhlagh F, Soltanzadeh I, Babu CA, Azizi GH, Martin MV (2016). Assessment of climate variations in temperature and precipitation extreme events over Iran. Theoretical and Applied Climatology 126:775-795. https://doi.org/10.1007/s00704-015-1609-5
+Seneviratne SI, Donat MG, Mueller B, Alexander LV (2014). No pause in the increase of hot temperature extremes. Nature Climate Change 4:161-163. https://doi.org/10.1038/nclimate2145
 
-Tschakert P, Ogra A, Sharma U, Karthikeyan K, Singh A, Bhowmik A (2025). Intersecting inequalities and urban heat adaptation. Global Environmental Change 92:103003. https://doi.org/10.1016/j.gloenvcha.2025.103003
+Soltani M, Laux P, Kunstmann H, Stan K, Sohrabi MM, Molanejad M, Sabziparvar AA, Ranjbar SaadatAbadi A, Ranjbar F, Rousta I, Zawar-Reza P, Khoshakhlagh F, Soltanzadeh I, Babu CA, Azizi GH, Martin MV (2016). Assessment of climate variations in temperature and precipitation extreme events over Iran. Theoretical and Applied Climatology 126:775-795. https://doi.org/10.1007/s00704-015-1609-5
 
 Vaghefi SA, Keykhai M, Jahanbakhshi F, Sheikholeslami J, Ahmadi A, Yang H, Abbaspour KC (2019). The future of extreme climate in Iran. Scientific Reports 9:1464. https://doi.org/10.1038/s41598-018-38071-8
 
 Vautard R, Cattiaux J, Happé T, Singh J, Bonnet R, Cassou C, Coumou D, D'Andrea F, Faranda D, Fischer EM, Ribes A, Sippel S, Yiou P (2023). Heat extremes in Western Europe increasing faster than simulated due to atmospheric circulation trends. Nature Communications 14:6803. https://doi.org/10.1038/s41467-023-42143-3
 
-Vinod HD (2006). Maximum entropy ensembles for time series inference in economics. Journal of Asian Economics 17(6):955-978. https://doi.org/10.1016/j.asieco.2006.09.001
+Vicedo-Cabrera AM, Scovronick N, Sera F, Royé D, Schneider R, Tobias A, Astrom C, Guo Y, Honda Y, Hondula DM, et al. (2021). The burden of heat-related mortality attributable to recent human-induced climate change. Nature Climate Change 11:492-500. https://doi.org/10.1038/s41558-021-01058-x
 
-Yücel SG, Schwanen T (2025). Heatwave adaptation conditioned by everyday life: Analysing interacting changes to daily activities during Pacific Northwest summers. Global Environmental Change 94:103026. https://doi.org/10.1016/j.gloenvcha.2025.103026
+Vinod HD (2006). Maximum entropy ensembles for time series inference in economics. Journal of Asian Economics 17(6):955-978. https://doi.org/10.1016/j.asieco.2006.09.001
 
 Zhang X, Aguilar E, Sensoy S, Melkonyan H, Tagiyeva U, Ahmed N, Kutaladze N, Rahimzadeh F, Taghipour A, Hantosh TH, Albert P, Semawi M, Karam Ali M, Al-Shabibi MHS, Al-Oulan Z, Zatari T, Al Dean Khelet I, Hamoud S, Sagir R, Demircan M, Eken M, Adiguzel M, Alexander LV, Peterson TC, Wallis T (2005a). Trends in Middle East climate extreme indices from 1950 to 2003. Journal of Geophysical Research: Atmospheres 110:D22104. https://doi.org/10.1029/2005JD006181
 
 Zhang X, Hegerl G, Zwiers FW, Kenyon J (2005b). Avoiding inhomogeneity in percentile-based indices of temperature extremes. Journal of Climate 18(11):1641-1651. https://doi.org/10.1175/JCLI3366.1
 
 Zhang X, Alexander L, Hegerl GC, Jones P, Klein Tank AMG, Peterson TC, Trewin B, Zwiers FW (2011). Indices for monitoring changes in extremes based on daily temperature and precipitation data. WIREs Climate Change 2(6):851-870. https://doi.org/10.1002/wcc.147
-
-Zhu D, Liu M, Shan Y, Li R, Zhang H, Li Y, Bi J, Hubacek K (2025). Medical expenditures under climate change and SSP-informed physiological and socioeconomic scenarios in China. Global Environmental Change 94:103052. https://doi.org/10.1016/j.gloenvcha.2025.103052
 
 Zittis G, Hadjinicolaou P, Lelieveld J (2016). Strongly increasing heat extremes in the Middle East and North Africa (MENA) in the 21st century. Climatic Change 137:245-260. https://doi.org/10.1007/s10584-016-1665-6
 
