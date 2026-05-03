@@ -26,7 +26,7 @@ The novelty of the approach lies in the reproducible integration of several comp
 
 The analysis is based on daily temperature observations from 124 meteorological stations distributed across Iran for the common period 1991-2024. After preprocessing, each station-index series contributes 34 annual values. The network spans coastal, lowland, plateau, and high-elevation settings, and it is dense enough to capture substantial physiographic heterogeneity while remaining entirely observation-based.
 
-![Figure 1. Regional context and station network.](../outputs/figures/ijoc_study_area_regional_context.png)
+![Figure 1. Regional context and station network.](../outputs/figures/ijoc_study_area_regional_context_new.png)
 
 *Figure 1. Regional context and station network used in the analysis. Stations are colored by elevation and numbered by ascending `station_id`; neighboring countries and the Caspian Sea, Persian Gulf, and Gulf of Oman are shown to place the Iranian station network in its wider geographical setting.*
 
