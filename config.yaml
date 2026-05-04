@@ -784,6 +784,69 @@ advanced_analyses:
     permutation_tests: 999
 
   # ---------------------------------------------------------------
+  # compound_dry_hot:
+  # Empirical-copula dry-hot analysis inspired by compound-event
+  # return-period studies. This module is kept separate from the
+  # thermal-index pipeline outputs because it uses precipitation and
+  # temperature jointly.
+  # ---------------------------------------------------------------
+  compound_dry_hot:
+    enabled: true
+
+    # All compound-event outputs are written below this folder under
+    # paths.output_dir.
+    output_subdir: compound_dry_hot
+
+    # Minimum station-years required for station-level empirical
+    # joint-probability estimation.
+    min_station_years: 25
+
+    # Minimum valid daily coverage for precipitation and temperature in
+    # each station-year aggregate.
+    coverage_threshold_pct: 80.0
+
+    # With a 34-year record, these thresholds are intentionally lower
+    # than the 50- or 75-year levels used in century-length studies.
+    return_period_thresholds:
+      - 5
+      - 10
+      - 20
+
+    # Thresholds shown in station-frequency maps.
+    map_thresholds:
+      - 10
+      - 20
+
+    # Early/late periods used for period-shift and driver-shift summaries.
+    baseline_years:
+      - 1991
+      - 2007
+    comparison_years:
+      - 2008
+      - 2024
+
+    # Spatial connectedness settings for annual binary compound-event fields.
+    moran_permutations: 499
+    moran_k_neighbors: 5
+
+    # Compound-event definitions. Precipitation is summed over the selected
+    # months; temperature is averaged over the same months.
+    definitions:
+      - name: annual_tmean
+        title: Annual precipitation + annual mean temperature
+        months: null
+        temperature_col: tmean
+
+      - name: warm_season_tmax
+        title: Warm-season precipitation + maximum temperature
+        months:
+          - 6
+          - 7
+          - 8
+          - 9
+        temperature_col: tmax
+
+  # ---------------------------------------------------------------
   # bootstrap_depth_sensitivity:
   # Compare baseline bootstrap depth against a larger number of reps.
   # ---------------------------------------------------------------

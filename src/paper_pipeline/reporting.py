@@ -45,6 +45,7 @@ def generate_report(
         ("Advanced publication analyses", tables_dir / "station_significance_fdr.csv"),
         ("Climate-change signal analysis", tables_dir / "climate_fingerprint_component_scores.csv"),
         ("Köppen-Geiger climate-regime analysis", tables_dir / "climate_regime_fingerprint_summary.csv"),
+        ("Compound dry-hot analysis", outdir / "compound_dry_hot" / "tables" / "compound_dry_hot_trend_summary.csv"),
     ]
     lines += ["", "## Pipeline-Integrated Robustness Modules"]
     for label, path in module_checks:
@@ -254,6 +255,46 @@ def generate_report(
         if isinstance(regime_tests, pd.DataFrame) and not regime_tests.empty:
             sig = regime_tests.loc[pd.to_numeric(regime_tests["fdr_q_value"], errors="coerce") < 0.05]
             lines.append(f"- FDR-retained between-regime permutation contrasts: {len(sig)}/{len(regime_tests)}")
+        lines.append("")
+
+    compound_trend = advanced_results.get("compound_dry_hot_trend_summary")
+    compound_driver = advanced_results.get("compound_dry_hot_driver_summary")
+    compound_moran = advanced_results.get("compound_dry_hot_moran_trend_summary")
+    if isinstance(compound_trend, pd.DataFrame) and not compound_trend.empty:
+        lines.append("## Compound Dry-Hot Analysis")
+        focus = compound_trend.loc[pd.to_numeric(compound_trend["return_period_threshold_years"], errors="coerce").isin([10.0, 20.0])]
+        for _, row in focus.iterrows():
+            lines.append(
+                f"- {row['definition_title']} | RP >= {float(row['return_period_threshold_years']):g} yr: "
+                f"affected stations changed from {float(row['baseline_mean_affected_stations']):.2f} to "
+                f"{float(row['comparison_mean_affected_stations']):.2f}; "
+                f"Kendall tau = {float(row['kendall_tau']):+.3f}, p = {float(row['kendall_p_value']):.4f}; "
+                f"linear slope = {float(row['linear_slope_stations_per_decade']):+.2f} stations per decade"
+            )
+        if isinstance(compound_driver, pd.DataFrame) and not compound_driver.empty:
+            warm = compound_driver.loc[
+                (compound_driver["definition"] == "warm_season_tmax")
+                & (pd.to_numeric(compound_driver["return_period_threshold_years"], errors="coerce") == 10.0)
+            ]
+            if not warm.empty:
+                lines.append("- Warm-season RP >= 10 yr dominant drivers:")
+                for _, row in warm.iterrows():
+                    lines.append(
+                        f"- {row['period']}: dry = {int(row['dry_dominant_events'])}, "
+                        f"hot = {int(row['hot_dominant_events'])}, co-dominant = {int(row['co_dominant_events'])}"
+                    )
+        if isinstance(compound_moran, pd.DataFrame) and not compound_moran.empty:
+            selected = compound_moran.loc[
+                (compound_moran["definition"] == "warm_season_tmax")
+                & (pd.to_numeric(compound_moran["return_period_threshold_years"], errors="coerce") == 20.0)
+            ]
+            if not selected.empty:
+                row = selected.iloc[0]
+                lines.append(
+                    f"- Warm-season RP >= 20 yr Moran's I trend: "
+                    f"{float(row['linear_slope_moran_per_decade']):+.3f} per decade "
+                    f"(Kendall p = {float(row['kendall_p_value']):.4f})"
+                )
         lines.append("")
 
     (outdir / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")
