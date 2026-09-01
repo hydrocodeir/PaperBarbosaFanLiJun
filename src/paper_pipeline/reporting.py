@@ -46,6 +46,7 @@ def generate_report(
         ("Climate-change signal analysis", tables_dir / "climate_fingerprint_component_scores.csv"),
         ("Köppen-Geiger climate-regime analysis", tables_dir / "climate_regime_fingerprint_summary.csv"),
         ("Compound dry-hot analysis", outdir / "compound_dry_hot" / "tables" / "compound_dry_hot_trend_summary.csv"),
+        ("Temperature internal-consistency sensitivity", tables_dir / "temperature_internal_consistency_quantile_sensitivity.csv"),
     ]
     lines += ["", "## Pipeline-Integrated Robustness Modules"]
     for label, path in module_checks:

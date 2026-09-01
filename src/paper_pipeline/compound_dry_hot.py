@@ -6,9 +6,10 @@ from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.stats import anderson_ksamp, cramervonmises_2samp, kendalltau, ks_2samp, linregress
+from scipy.stats import anderson_ksamp, cramervonmises_2samp, kendalltau, ks_2samp, linregress, pearsonr
 
 from .config_utils import get_plot_dpi
+from .math_utils import moving_block_bootstrap_indices, select_block_length
 from .plotting import (
     _draw_boundary,
     _format_geo_axis,
@@ -208,6 +209,105 @@ def _trend_summary(yearly_extent: pd.DataFrame, cfg: dict, baseline_years: tuple
                 "comparison_minus_baseline_fraction_pct": float(late["affected_fraction_pct"].mean() - early["affected_fraction_pct"].mean()),
                 "max_affected_year": int(local.loc[local["affected_stations"].idxmax(), "year"]),
                 "max_affected_stations": int(local["affected_stations"].max()),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _serial_dependence_trend_sensitivity(yearly_extent: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    """Reassess compound-extent trends while preserving short-range residual dependence.
+
+    The raw Kendall and linear-regression p-values assume independent annual values.
+    This sensitivity removes the fitted linear trend, resamples the residual sequence
+    in moving blocks, and evaluates both a no-trend null and confidence intervals
+    around the observed fitted trend. It is intended as a dependence-aware check,
+    not as a replacement for the descriptive effect estimates.
+    """
+    module_cfg = _cfg(cfg)
+    n_reps = int(module_cfg.get("serial_dependence_bootstrap_reps", 4999))
+    base_seed = int(cfg.get("project", {}).get("random_seed", 42)) + 1871
+    bootstrap_cfg = cfg.get("bootstrap", {})
+    rows = []
+
+    for group_no, ((definition, title, threshold), group) in enumerate(
+        yearly_extent.groupby(["definition", "definition_title", "return_period_threshold_years"])
+    ):
+        local = group.sort_values("year").copy()
+        years = pd.to_numeric(local["year"], errors="coerce").to_numpy(dtype=float)
+        values = pd.to_numeric(local["affected_stations"], errors="coerce").to_numpy(dtype=float)
+        mask = np.isfinite(years) & np.isfinite(values)
+        years = years[mask]
+        values = values[mask]
+        if len(values) < 8:
+            continue
+
+        x = years - years.min()
+        fit = linregress(x, values)
+        fitted = fit.intercept + fit.slope * x
+        residuals = values - fitted
+        residuals = residuals - residuals.mean()
+        if len(residuals) > 2 and np.std(residuals[:-1]) > 0 and np.std(residuals[1:]) > 0:
+            lag1_r, lag1_p = pearsonr(residuals[:-1], residuals[1:])
+        else:
+            lag1_r, lag1_p = np.nan, np.nan
+
+        block_length = select_block_length(
+            len(values),
+            module_cfg.get("serial_dependence_block_length", bootstrap_cfg.get("block_length", "auto")),
+            rule=str(bootstrap_cfg.get("block_length_rule", "cube_root")),
+            min_block_length=int(bootstrap_cfg.get("min_block_length", 2)),
+            max_block_length=bootstrap_cfg.get("max_block_length"),
+        )
+        observed_tau, _ = kendalltau(years, values)
+        observed_slope_decade = float(fit.slope * 10.0)
+        rng = np.random.default_rng(base_seed + group_no)
+        null_taus = np.empty(n_reps, dtype=float)
+        null_slopes = np.empty(n_reps, dtype=float)
+        fitted_taus = np.empty(n_reps, dtype=float)
+        fitted_slopes = np.empty(n_reps, dtype=float)
+
+        for rep in range(n_reps):
+            idx = moving_block_bootstrap_indices(len(values), block_length, rng)
+            boot_residuals = residuals[idx]
+            null_values = values.mean() + boot_residuals
+            fitted_values = fitted + boot_residuals
+            null_taus[rep] = kendalltau(years, null_values).statistic
+            null_slopes[rep] = linregress(x, null_values).slope * 10.0
+            fitted_taus[rep] = kendalltau(years, fitted_values).statistic
+            fitted_slopes[rep] = linregress(x, fitted_values).slope * 10.0
+
+        null_taus = null_taus[np.isfinite(null_taus)]
+        null_slopes = null_slopes[np.isfinite(null_slopes)]
+        fitted_taus = fitted_taus[np.isfinite(fitted_taus)]
+        fitted_slopes = fitted_slopes[np.isfinite(fitted_slopes)]
+        tau_p = (
+            float((1 + np.sum(np.abs(null_taus) >= abs(observed_tau))) / (len(null_taus) + 1))
+            if len(null_taus) and np.isfinite(observed_tau)
+            else np.nan
+        )
+        slope_p = (
+            float((1 + np.sum(np.abs(null_slopes) >= abs(observed_slope_decade))) / (len(null_slopes) + 1))
+            if len(null_slopes)
+            else np.nan
+        )
+        rows.append(
+            {
+                "definition": definition,
+                "definition_title": title,
+                "return_period_threshold_years": float(threshold),
+                "n_years": int(len(values)),
+                "detrended_lag1_r": float(lag1_r) if np.isfinite(lag1_r) else np.nan,
+                "detrended_lag1_p_value": float(lag1_p) if np.isfinite(lag1_p) else np.nan,
+                "block_length_years": int(block_length),
+                "bootstrap_replicates": int(n_reps),
+                "observed_kendall_tau": float(observed_tau),
+                "block_null_kendall_p_value": tau_p,
+                "kendall_tau_boot_ci_low": float(np.quantile(fitted_taus, 0.025)) if len(fitted_taus) else np.nan,
+                "kendall_tau_boot_ci_high": float(np.quantile(fitted_taus, 0.975)) if len(fitted_taus) else np.nan,
+                "observed_linear_slope_stations_per_decade": observed_slope_decade,
+                "block_null_linear_p_value": slope_p,
+                "linear_slope_boot_ci_low": float(np.quantile(fitted_slopes, 0.025)) if len(fitted_slopes) else np.nan,
+                "linear_slope_boot_ci_high": float(np.quantile(fitted_slopes, 0.975)) if len(fitted_slopes) else np.nan,
             }
         )
     return pd.DataFrame(rows)
@@ -583,6 +683,7 @@ def run_compound_dry_hot_analysis(
     baseline_years, comparison_years = _periods_from_cfg(cfg, station_year["year"])
     yearly_extent = _make_yearly_extent(station_year, cfg)
     trend = _trend_summary(yearly_extent, cfg, baseline_years, comparison_years)
+    serial_sensitivity = _serial_dependence_trend_sensitivity(yearly_extent, cfg)
     distribution_tests = _distribution_shift_tests(yearly_extent, baseline_years, comparison_years)
     frequency = _station_frequency(station_year, stations, cfg, baseline_years, comparison_years)
     driver = _driver_summary(station_year, cfg, baseline_years, comparison_years)
@@ -591,6 +692,7 @@ def run_compound_dry_hot_analysis(
     station_year.to_csv(tables_dir / "compound_dry_hot_station_year.csv", index=False)
     yearly_extent.to_csv(tables_dir / "compound_dry_hot_yearly_extent.csv", index=False)
     trend.to_csv(tables_dir / "compound_dry_hot_trend_summary.csv", index=False)
+    serial_sensitivity.to_csv(tables_dir / "compound_dry_hot_serial_dependence_sensitivity.csv", index=False)
     distribution_tests.to_csv(tables_dir / "compound_dry_hot_distribution_shift_tests.csv", index=False)
     frequency.to_csv(tables_dir / "compound_dry_hot_station_frequency.csv", index=False)
     driver.to_csv(tables_dir / "compound_dry_hot_driver_summary.csv", index=False)
@@ -624,6 +726,7 @@ def run_compound_dry_hot_analysis(
         "compound_dry_hot_station_year": station_year,
         "compound_dry_hot_yearly_extent": yearly_extent,
         "compound_dry_hot_trend_summary": trend,
+        "compound_dry_hot_serial_dependence_sensitivity": serial_sensitivity,
         "compound_dry_hot_distribution_shift_tests": distribution_tests,
         "compound_dry_hot_station_frequency": frequency,
         "compound_dry_hot_driver_summary": driver,

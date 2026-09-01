@@ -5,7 +5,6 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
 
 
 def make_quantile_grid(start: float, stop: float, step: float) -> List[float]:
@@ -128,6 +127,8 @@ def maximum_entropy_bootstrap(arr: np.ndarray, rng: np.random.Generator) -> np.n
 
 
 def residual_bootstrap(x: np.ndarray, y: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    import statsmodels.api as sm
+
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
     if len(y) < 3:

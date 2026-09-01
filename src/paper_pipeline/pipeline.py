@@ -56,6 +56,7 @@ from .plotting import (
     plot_station_heatmap,
 )
 from .progress_utils import ProgressTracker
+from .qc_sensitivity import run_internal_consistency_sensitivity
 from .quantile import add_sensitivity_check_columns, run_station_qr
 from .reporting import generate_report
 from .year_config import filter_to_analysis_years, format_year_range_label, get_effective_year_range
@@ -88,6 +89,9 @@ def _read_cached_advanced_results(tables_dir: Path) -> dict[str, pd.DataFrame]:
         "climate_regime_emergence_summary": "climate_regime_emergence_summary.csv",
         "climate_regime_fingerprint_summary": "climate_regime_fingerprint_summary.csv",
         "climate_regime_difference_tests": "climate_regime_difference_tests.csv",
+        "temperature_internal_consistency_screening": "temperature_internal_consistency_screening.csv",
+        "temperature_internal_consistency_quantile_sensitivity": "temperature_internal_consistency_quantile_sensitivity.csv",
+        "temperature_internal_consistency_compound_sensitivity": "temperature_internal_consistency_compound_sensitivity.csv",
     }
     results: dict[str, pd.DataFrame] = {}
     for key, filename in table_map.items():
@@ -99,6 +103,7 @@ def _read_cached_advanced_results(tables_dir: Path) -> dict[str, pd.DataFrame]:
         "compound_dry_hot_station_year": "compound_dry_hot_station_year.csv",
         "compound_dry_hot_yearly_extent": "compound_dry_hot_yearly_extent.csv",
         "compound_dry_hot_trend_summary": "compound_dry_hot_trend_summary.csv",
+        "compound_dry_hot_serial_dependence_sensitivity": "compound_dry_hot_serial_dependence_sensitivity.csv",
         "compound_dry_hot_distribution_shift_tests": "compound_dry_hot_distribution_shift_tests.csv",
         "compound_dry_hot_station_frequency": "compound_dry_hot_station_frequency.csv",
         "compound_dry_hot_driver_summary": "compound_dry_hot_driver_summary.csv",
@@ -233,6 +238,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
             advanced_results.update(run_climate_change_signal_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_climate_regime_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_compound_dry_hot_analysis(data, stations, cfg, outdir, progress_callback=log_detail))
+            advanced_results.update(run_internal_consistency_sensitivity(data, annual, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
             advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
@@ -409,6 +415,7 @@ def run_pipeline(config_path: str = "config.yaml", start_phase: int = 1) -> Path
     advanced_results.update(run_climate_change_signal_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_climate_regime_analysis(data, annual, qr_summary, feature_table, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_compound_dry_hot_analysis(data, stations, cfg, outdir, progress_callback=log_detail))
+    advanced_results.update(run_internal_consistency_sensitivity(data, annual, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_method_sensitivity(data, annual, qr_summary, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_driver_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))
     advanced_results.update(run_regionalization_analysis(feature_table, stations, cfg, outdir, progress_callback=log_detail))

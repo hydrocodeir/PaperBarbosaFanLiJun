@@ -829,6 +829,12 @@ advanced_analyses:
     moran_permutations: 499
     moran_k_neighbors: 5
 
+    # Dependence-aware trend sensitivity for affected-station time series.
+    # Residuals from the fitted trend are resampled in moving blocks under a
+    # no-trend null and around the fitted trend for confidence intervals.
+    serial_dependence_bootstrap_reps: 4999
+    serial_dependence_block_length: auto
+
     # Compound-event definitions. Precipitation is summed over the selected
     # months; temperature is averaged over the same months.
     definitions:
@@ -845,6 +851,11 @@ advanced_analyses:
           - 8
           - 9
         temperature_col: tmax
+
+  # Masks Tmin > Tmax and Tmean outside [Tmin, Tmax] in a sensitivity rerun.
+  # The source observations and the primary as-observed analysis are preserved.
+  internal_consistency_sensitivity:
+    enabled: true
 
   # ---------------------------------------------------------------
   # bootstrap_depth_sensitivity:
