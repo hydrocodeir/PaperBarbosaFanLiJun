@@ -30,7 +30,7 @@ We analyzed daily minimum, maximum, and mean temperature together with daily pre
 
 *Figure 1. Iranian station network used in the analysis. Station color denotes elevation; neighboring countries and adjacent seas provide regional context.*
 
-Median daily completeness was 98.96% for minimum temperature, 99.42% for maximum temperature, 99.35% for mean temperature, and 98.94% for precipitation, with no duplicate station dates. Quality screening identified 45 records at 32 stations for which minimum temperature exceeded maximum temperature and, after these overlapping conflicts were excluded, 2,165 records at 61 stations for which mean temperature fell outside the interval defined by the daily minimum and maximum. Because the source archive lacks the metadata required to correct individual observations, we retained the supplied values in the primary analysis but repeated the regional thermal and compound analyses after masking inconsistent values, thereby testing their influence without modifying any source record.
+Median daily completeness was 98.96% for minimum temperature, 99.42% for maximum temperature, 99.35% for mean temperature, and 98.94% for precipitation, with no duplicate station dates. Across the 1,539,956 station-day records, missing values numbered 23,135 for minimum temperature, 13,944 for maximum temperature, 20,750 for mean temperature, and 16,347 for precipitation. Quality screening identified 45 records at 32 stations for which minimum temperature exceeded maximum temperature and, after these overlapping conflicts were excluded, 2,165 records at 61 stations for which mean temperature fell outside the interval defined by the daily minimum and maximum. Because the source archive lacks the metadata required to correct individual observations, we retained the supplied values in the primary analysis but repeated the regional thermal and compound analyses after masking inconsistent values, thereby testing their influence without modifying any source record.
 
 We applied Pettitt, standard normal homogeneity, and Buishand-type tests to annual mean temperature as diagnostic screens (Pettitt, 1979; Buishand, 1982; Alexandersson, 1986). At least one test flagged 119 raw annual series, whereas only 39 detrended series were flagged; because breakpoint tests can respond to genuine trend as well as non-climatic discontinuity, and because the archive lacks station histories and a reference-network homogenization design, we did not impose automatic daily adjustments. We instead repeated regional summaries after excluding every station flagged by a detrended test and omitted leap days before calculating day-of-year thresholds.
 
@@ -60,6 +60,15 @@ For a warm index, positive \(\Delta_1\) indicates that high-count years increase
 
 We estimated station-level uncertainty with a moving-block bootstrap using 200 primary replicates and block length \(\lceil n^{1/3}\rceil\), bounded between 2 and 8 years, which yielded 4-year blocks for the 34-year series. A 400-replicate rerun assessed Monte Carlo stability, while maximum-entropy bootstrap results provided a method sensitivity check (Kunsch, 1989; Hall et al., 1995; Lahiri, 2003; Vinod, 2006). Because analytic tail intervals were incomplete, we used bootstrap percentile intervals at the tail quantiles; at \(\tau=0.50\), analytic station-level probabilities were adjusted separately for each index using the Benjamini–Hochberg false discovery rate (FDR) at 0.05 (Benjamini and Hochberg, 1995).
 
+The quantile estimates minimize the asymmetric absolute-loss function
+
+$$
+\hat{\boldsymbol{\beta}}(\tau)=\arg\min_{\boldsymbol{\beta}}\sum_{i=1}^{n}\rho_{\tau}\!\left(y_i-\mathbf{x}_i^{\mathsf{T}}\boldsymbol{\beta}\right),\qquad
+\rho_{\tau}(u)=u\left[\tau-\mathbf{1}(u<0)\right],
+$$
+
+where \(\mathbf{x}_i=(1,T_i)^{\mathsf{T}}\). This makes explicit that lower and upper quantiles are estimated from asymmetric losses rather than from separate transformations of a mean model.
+
 ### 2.4. Spatial and climate-regime analyses
 
 We measured spatial autocorrelation in station slopes with Moran's \(I\), using five nearest neighbors and 499 label permutations (Moran, 1950), but treated the resulting maps as displays of station values rather than spatially continuous inference. Hierarchical clustering provided an exploratory description of similar quantile profiles, with stability evaluated through reduced features, alternative linkage and distance choices, and the adjusted Rand index (Hubert and Arabie, 1985). Because several partitions were sensitive to feature selection or lacked geographic compactness, detailed cluster assignments and representative-station panels are reported in the Supplementary Material and do not constitute primary evidence.
@@ -71,6 +80,8 @@ We assigned station locations to the 1-km present-day Köppen–Geiger classific
 We calculated annual mean-temperature anomalies relative to each station's 1991–2007 mean, averaged them across available stations for each year, and related annual index counts to the resulting regional station-temperature anomaly with quantile models. The coefficient provides an internally scaled association in days yr⁻¹ °C⁻¹, but it is not independent evidence of forcing because the anomaly and indices derive from the same station archive.
 
 We also defined station-level signal-to-noise ratios as the absolute bootstrap mean slope divided by its bootstrap standard deviation, using a ratio of at least 2 together with the expected warming-consistent sign as a descriptive screening threshold. By contrast, composite “fingerprint scores” produced during exploratory analysis were excluded from primary evidence because their components are dependent and their equal weighting lacks external calibration.
+
+Additional diagnostics were retained for transparency and are reported in the Supplementary Material: representative-station extraction from cluster centroids, alternative linkage and distance specifications, interpolation-method comparisons for display maps, simple associations of trend metrics with latitude, longitude, and elevation, and signal-emergence summaries based on the same sign and signal-to-noise rule. These diagnostics do not expand the causal scope of the station analysis.
 
 ### 2.6. Compound dry–hot analysis
 
@@ -162,6 +173,14 @@ Masking logically inconsistent daily temperatures had still smaller effects, as 
 
 The split-period slopes did not indicate uniform acceleration at every quantile. Warm-day OLS and median slopes increased from 10.94 and 10.43 days decade⁻¹ in 1991–2007 to 20.01 and 24.50 in 2008–2024, whereas the upper-quantile slope decreased from 23.65 to 14.97; warm nights showed a similar contrast. Negative cool-day and cool-night OLS slopes were larger in magnitude during the first half of the record, but given the 17-year subperiods, these estimates indicate descriptive temporal nonlinearity rather than tested breakpoints.
 
+![Figure 8. Robustness and split-period diagnostics.](../outputs/figures/ijoc_robustness_synthesis.png)
+
+*Figure 8. Synthesis of bootstrap-method, bootstrap-depth, homogeneity-exclusion, and related robustness diagnostics. The figure is used to compare sensitivity of estimates, not to create an additional significance test.*
+
+![Figure 9. Split-period quantile comparison.](../outputs/figures/ijoc_split_period_comparison.png)
+
+*Figure 9. Network-mean OLS and focal-quantile slopes for 1991–2007 and 2008–2024. Differences among quantiles are interpreted as descriptive temporal nonlinearity because each subperiod contains 17 years.*
+
 ### 3.4. Expansion of compound dry–hot conditions
 
 The number of stations meeting the empirical dry–hot thresholds increased under both event definitions (Fig. 6; Table 3). Under the annual definition, \(RP\geq10\) events affected an average of 12.71 stations yr⁻¹ in 1991–2007 and 39.82 in 2008–2024, with a linear trend of 15.63 stations decade⁻¹. The raw Kendall result (\(\tau=0.318\), p = 0.0086) remained positive under the moving-block null (p = 0.0152). Annual \(RP\geq20\) events likewise increased from 3.12 to 17.12 affected stations yr⁻¹, for which the dependence-aware Kendall p-value was 0.0258.
@@ -190,6 +209,14 @@ Event-component classification also changed between periods (Fig. 7). Among warm
 ![Figure 7. Change in the relative rarity of dry and hot event components.](../outputs/compound_dry_hot/figures/compound_dry_hot_driver_shift.png)
 
 *Figure 7. Fractions of compound station-events classified as dry-dominant, hot-dominant, or co-dominant in 1991–2007 and 2008–2024. Dominance denotes the larger marginal empirical return period and is not a causal attribution.*
+
+![Figure 10. Spatial frequency of compound dry–hot station-years.](../outputs/compound_dry_hot/figures/compound_dry_hot_station_frequency_maps.png)
+
+*Figure 10. Station-level frequency of annual and June–September compound dry–hot events at empirical (RP\geq10) and (RP\geq20) thresholds. Values are percentages of valid station-years; they are not area-weighted estimates.*
+
+![Figure 11. Spatial connectedness of compound events.](../outputs/compound_dry_hot/figures/compound_dry_hot_moran_connectedness.png)
+
+*Figure 11. Annual Moran's (I) diagnostics for the spatial connectedness of compound dry–hot event fields. Positive trends indicate increasing similarity among neighboring station classifications, subject to the network geometry and permutation design.*
 
 ## 4. Discussion
 
@@ -259,15 +286,17 @@ These constraints narrow, rather than negate, the central conclusion. Across sev
 
 ## 5. Conclusions
 
-We show that a single mean trend is insufficient to represent recent changes in Iranian thermal extremes. Across 124 stations during 1991–2024, warm-event counts generally increased and cool-event counts declined, but rates of change varied across the annual count distributions. Network warm-day slopes rose from 9.45 days decade⁻¹ at the 0.10 quantile to 22.50 days decade⁻¹ at the 0.90 quantile, whereas cool-day slopes changed from −5.60 to −15.37 days decade⁻¹. Warm-night and cool-night trends were also widespread but had smaller upper-to-lower contrasts, identifying daytime indices as the clearest expression of distributional asymmetry.
+This study provides a station-based assessment of how the distribution of annual thermal-extreme counts changed across Iran between 1991 and 2024. The principal result is not a single national warming coefficient but a systematic change in the shape of the frequency distributions. Network warm-day slopes increased from 9.45 days decade⁻¹ at the 0.10 quantile to 22.50 days decade⁻¹ at the 0.90 quantile, while cool-day slopes changed from −5.60 to −15.37 days decade⁻¹. Thus, years already characterized by frequent warm days intensified faster than low-frequency years, and years with many cool days experienced the strongest contraction. Warm nights and cool nights changed in the same respective directions, but their smaller (Delta_1) contrasts indicate a more distribution-wide nighttime response.
 
-The national direction extended across all six Köppen–Geiger groups, although hot-steppe and cold dry-summer stations had the largest mean upper-quantile warm-day trends and hot-desert stations had the largest upper-quantile cool-day reduction and stronger nighttime changes. Because only two of 32 regime contrasts survived FDR adjustment, these differences describe climatic context rather than distinct causal responses; spatial autocorrelation provides firmer evidence that some daytime trend fields, particularly cool-day slopes, were geographically organized. National summaries and maps should consequently be evaluated alongside station estimates and uncertainty rather than interpreted as a continuous uniform field.
+The direction of change was shared across all six Köppen–Geiger groups, but its magnitude and quantile structure varied. Hot-steppe and cold dry-summer stations had the largest mean upper-quantile warm-day slopes, whereas hot-desert stations showed the strongest upper-quantile cool-day reduction and pronounced nighttime changes. Only two of 32 regime contrasts remained after FDR correction, so these differences are best treated as climatic context rather than evidence that the classes define distinct causal responses. Moran's (I) nevertheless showed geographic organization for several daytime fields, particularly cool-day slopes. National means should therefore be read with station-level estimates, uncertainty intervals, and the spatial diagnostics rather than as a continuous uniform surface.
 
-The compound analysis identified a parallel dry–hot signal within the empirical range of the archive. Warm-season events with a joint return-period class of at least 10 years affected an average of 10.35 stations yr⁻¹ in 1991–2007 and 41.53 stations yr⁻¹ in 2008–2024, and the affected-station trend remained positive under a four-year residual moving-block analysis. Event composition shifted at the same time: precipitation deficit was usually the rarer marginal component in the early period, whereas high temperature was more often the rarer component in the late period. This transition agrees with the independent increase in warm-event frequencies but does not establish causation between heat and precipitation deficit.
+The compound analysis identified a parallel expansion of concurrent dry–hot conditions. Under the warm-season (RP\geq10) empirical class, the mean number of affected stations increased from 10.35 yr⁻¹ in 1991–2007 to 41.53 yr⁻¹ in 2008–2024; the trend remained positive under four-year residual moving-block resampling, with (	au=0.583), a slope of 19.24 stations decade⁻¹, and a 95% interval of 13.94–24.53. The (RP\geq20) class showed the same direction. Event composition also changed from predominantly dry-dominant to predominantly hot-dominant station-events. These are within-record rarity results, not stationary estimates of 10- or 20-year hazards, and the component shift does not establish a causal heat–precipitation pathway.
 
-Confidence in the principal direction comes from convergence among tests that address different uncertainties: FDR screening retained widespread median station trends, block-bootstrap intervals quantified tail uncertainty, fixed 1991–2007 thresholds reproduced the primary signs, homogeneity-flag exclusion left regional contrasts close to their original values, alternative bootstrap analyses preserved the broad pattern, and internal-consistency masking had negligible effects. We did not retain the exploratory composite fingerprint score because its dependent components and equal weights lacked independent calibration, preferring instead to keep the contributing lines of evidence visible.
+Confidence in the principal direction rests on convergence across distinct checks. FDR screening retained 115 warm-day, 104 warm-night, 97 cool-day, and 86 cool-night median station trends; fixed 1991–2007 thresholds reproduced the signs of the full-period analysis; excluding 39 detrended-homogeneity-flagged stations changed regional (Delta_1) by at most 1.29 days decade⁻¹ in absolute value; and masking contradictory daily temperature records changed focal network slopes by no more than 0.026 days decade⁻¹. Increasing bootstrap depth had little effect on mean estimates, although differences among resampling models at the upper quantile show that tail interval endpoints remain method-dependent. These checks support the direction and broad spatial pattern, not arbitrary precision in every local tail estimate.
 
-These conclusions remain bounded by a 34-year record that is too short for stable inference about very long return periods or century-scale variability, while the absence of metadata-supported daily homogenization, area-weighted station coverage, and direct observations of physical drivers limits local, spatial, and causal interpretation. The evidence therefore supports a specific observational conclusion: Iranian thermal extremes shifted in a warming-consistent but distributionally and climatically differentiated manner, and warm-season concurrence of heat and precipitation deficit expanded across the station network. Longer homogenized records, spatial quantile models, process observations, impact data, and counterfactual simulations are required to determine the mechanisms, attribution, and consequences of this recent pattern.
+The scope of inference remains deliberately narrow. A 34-year record limits tail precision, subperiod comparisons, and any extrapolation to century-scale variability; the empirical return-period classes cannot substitute for stationary design estimates. Daily observations were screened but not metadata-homogenized, the network is not area weighted, and the warming covariate is derived from the same archive as the indices. The analysis also lacks direct measurements of humidity, soil moisture, radiation, circulation, evaporative demand, irrigation, exposure, or impacts. Consequently, the evidence supports an observational conclusion that recent Iranian thermal extremes changed in a warming-consistent but distributionally and climatically differentiated manner, accompanied by a larger warm-season station footprint of concurrent dry–hot conditions. It does not identify a dominant physical mechanism or quantify societal risk.
+
+The most direct scientific extension is to combine longer, homogenized station records with spatial quantile models and independent gridded products, then test whether the observed day–night and regime contrasts persist after accounting for spatial covariance and measurement changes. Process observations and model experiments are needed to separate thermodynamic warming from circulation and land–atmosphere feedbacks, while humidity, soil-moisture, evaporative-demand, and impact data are required to determine whether the station-network signal translates into health, agricultural, ecological, or water-management consequences. Until those data are available, the present results offer a reproducible baseline for monitoring distributional thermal change and compound dry–hot concurrence across Iran.
 
 ## Data availability
 
@@ -295,7 +324,7 @@ The analysis pipeline, configuration file, dependency specification, and scripts
 
 ## Supplementary material
 
-The Supplementary Material contains station-level quantile results, robustness summaries, climate-regime contrasts, cluster-stability diagnostics, compound-event tests at all rarity thresholds, and internal-consistency sensitivity tables.
+The Supplementary Material contains station-level quantile results, robustness summaries, climate-regime contrasts, cluster-stability diagnostics, compound-event tests at all rarity thresholds, and internal-consistency sensitivity tables. A structured index of these artifacts is provided in [Supplementary_Material_Q1.md](Supplementary_Material_Q1.md), while the corresponding scientific audit is reported in [Scientific_Audit_Q1.md](Scientific_Audit_Q1.md).
 
 ## References
 

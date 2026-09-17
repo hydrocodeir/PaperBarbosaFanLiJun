@@ -512,3 +512,32 @@ Because the pipeline is now highly configuration-driven, it is a good idea to ar
 - the git commit hash of the repository
 
 for every manuscript-facing run.
+
+## September 2026 publication revision
+
+The revised manuscript is [reports/Manuscript_Q1_2026.md](reports/Manuscript_Q1_2026.md).
+The [Persian delivery guide](reports/Publication_Guide_FA.md) explains the new scientific contribution, results, figures, and remaining submission requirements.
+
+An independent fixed-threshold compound-event extension partitions frequency changes into dry-frequency, hot-frequency, and excess-joint terms. It does not identify causal drivers or isolate copula change. The original manuscript and daily data are preserved. Superseded historical output exports were moved into a verified recovery archive during curation; their numerical evidence is indexed in the supplementary data catalog.
+
+```bash
+python run_publication.py
+python validate_publication.py
+python build_supplementary.py
+python build_publication_docs.py
+```
+
+The extension reads `publication_config.yaml`, rebuilds compound aggregates from raw observations, evaluates ten sensitivity scenarios with 4,999 synchronized year-block replicates each, and exports tables and ten main figures to `outputs/publication_v2/`. PDF/SVG are vector formats; TIFF is 600 dpi. The figure atlas is `outputs/publication_v2/Figure_Atlas.pdf`.
+
+Use `python run_publication.py --figures-only` to redraw existing extension results. Thermal figures require the historical CSV tables already supplied under `outputs/tables/`; this mode is not a raw-to-all-results historical rerun. The validation command independently reconstructs both thermal index sets from raw data but does not rerun historical station bootstrap/clustering. The [new supplementary index](reports/Supplementary_Q1_2026.md) documents these boundaries.
+
+Generated outputs are ignored by the existing Git configuration. Preserve the output directory separately when archiving a manuscript release. Do not publish source observations until their redistribution license is confirmed.
+
+
+The expanded manuscript contains ten main figures, five main tables and a climate-regime analysis with synchronized within-group uncertainty. See [the reference audit](reports/Reference_Audit_2026.md) for the 25-reference bibliography and source comparisons. `reports/verified_references.json` is the curated bibliography used by the document builder. `python audit_references.py` refreshes DOI metadata; registry failures are reported explicitly. The current figure set is defined by `outputs/publication_v2/figure_manifest.csv`; the supplementary set is defined by `supplementary_figure_manifest.csv`.
+
+## Audited output release
+
+The [output audit](reports/Output_Audit_2026.md) records numerical verification, corrections, and file-specific removal decisions. The [supplement](reports/Supplementary_Q1_2026.md) contains eleven figures and eight tables; the [data catalog](reports/Supplementary_Data_Catalog.md) links the complete retained CSV evidence. Curated atlases are in `outputs/publication_v2/`. Historical output narratives are recoverable in `archives/output_cleanup_20260917.zip`; they may contain obsolete links and interpretations. Running the legacy pipeline recreates its original exports and does not automatically apply publication curation.
+
+The separate audit additionally reran all station quantile fits and clustering, reproduced historical diagnostic tables, and reconstructed bootstrap summaries from saved draws. Alternative bootstrap ensembles were not regenerated. Reproduce it with `python audit_output_data.py recompute`, `python check_output_dependencies.py`, and `python check_warming_solver.py`. Do not overwrite the preserved initial inventory.

@@ -1,0 +1,20 @@
+# Separate, reproducible extension; historical outputs are never overwritten.
+seed: 20260917
+data_csv: data/data.csv
+station_csv: data/stationsInfo.csv
+output_dir: outputs/publication_v2
+analysis_years: [1991, 2024]
+baseline_years: [1991, 2007]
+comparison_years: [2008, 2024]
+bootstrap_reps: 4999
+scenarios:
+  - {name: primary, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: false}
+  - {name: tails_20_80, dry_quantile: 0.20, hot_quantile: 0.80, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: false}
+  - {name: tails_30_70, dry_quantile: 0.30, hot_quantile: 0.70, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: false}
+  - {name: coverage_90, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.90, block_length: 4, refit_thresholds: true, inclusive: false}
+  - {name: block_2, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 2, refit_thresholds: true, inclusive: false}
+  - {name: block_6, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 6, refit_thresholds: true, inclusive: false}
+  - {name: fixed_threshold_uncertainty, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 4, refit_thresholds: false, inclusive: false}
+  - {name: inclusive_ties, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: true}
+  - {name: positive_dry_threshold, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: false, exclude_zero_threshold: true}
+  - {name: common_station_network, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: false, common_network: true}
