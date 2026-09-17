@@ -1,0 +1,11 @@
+figure,width_inches,height_inches,formats
+fig01_station_network,7.1,5.4,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig02_quantile_profiles,7.1,5.4,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig03_thermal_asymmetry_maps,7.1,6.4,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig04_fixed_baseline_changes,7.1,3.1,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig05_climate_regimes,7.1,5.7,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig06_fixed_compound_extent,7.1,4.8,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig07_compound_partition,7.1,3.5,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig08_compound_partition_maps,7.1,6.4,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig09_compound_climate_regimes,7.1,3.9,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+fig10_partition_sensitivity,7.1,4.1,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW

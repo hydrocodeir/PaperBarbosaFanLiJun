@@ -1,0 +1,15 @@
+{
+  "project_name": "Quantile Regression + Bootstrap + Clustering for Temperature Extremes",
+  "year_range": [
+    1991,
+    2024
+  ],
+  "n_years": 34,
+  "n_stations": 124,
+  "bootstrap_reps": 200,
+  "focus_quantiles": [
+    0.1,
+    0.5,
+    0.9
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "created_utc": "2026-09-17T18:05:17.336704+00:00",
+  "config": {
+    "seed": 20260917,
+    "data_csv": "data/data.csv",
+    "station_csv": "data/stationsInfo.csv",
+    "output_dir": "outputs/publication_v2",
+    "analysis_years": [
+      1991,
+      2024
+    ],
+    "baseline_years": [
+      1991,
+      2007
+    ],
+    "comparison_years": [
+      2008,
+      2024
+    ],
+    "bootstrap_reps": 4999,
+    "scenarios": [
+      {
+        "name": "primary",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.8,
+        "block_length": 4,
+        "refit_thresholds": true,
+        "inclusive": false
+      },
+      {
+        "name": "tails_20_80",
+        "dry_quantile": 0.2,
+        "hot_quantile": 0.8,
+        "coverage": 0.8,
+        "block_length": 4,
+        "refit_thresholds": true,
+        "inclusive": false
+      },
+      {
+        "name": "tails_30_70",
+        "dry_quantile": 0.3,
+        "hot_quantile": 0.7,
+        "coverage": 0.8,
+        "block_length": 4,
+        "refit_thresholds": true,
+        "inclusive": false
+      },
+      {
+        "name": "coverage_90",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.9,
+        "block_length": 4,
+        "refit_thresholds": true,
+        "inclusive": false
+      },
+      {
+        "name": "block_2",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.8,
+        "block_length": 2,
+        "refit_thresholds": true,
+        "inclusive": false
+      },
+      {
+        "name": "block_6",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.8,
+        "block_length": 6,
+        "refit_thresholds": true,
+        "inclusive": false
+      },
+      {
+        "name": "fixed_threshold_uncertainty",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.8,
+        "block_length": 4,
+        "refit_thresholds": false,
+        "inclusive": false
+      },
+      {
+        "name": "inclusive_ties",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.8,
+        "block_length": 4,
+        "refit_thresholds": true,
+        "inclusive": true
+      },
+      {
+        "name": "positive_dry_threshold",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.8,
+        "block_length": 4,
+        "refit_thresholds": true,
+        "inclusive": false,
+        "exclude_zero_threshold": true
+      },
+      {
+        "name": "common_station_network",
+        "dry_quantile": 0.25,
+        "hot_quantile": 0.75,
+        "coverage": 0.8,
+        "block_length": 4,
+        "refit_thresholds": true,
+        "inclusive": false,
+        "common_network": true
+      }
+    ]
+  },
+  "raw_data_audit": {
+    "rows": 1539956,
+    "stations": 124,
+    "tmin_gt_tmax": 45,
+    "tmean_outside_nonoverlap": 2165,
+    "negative_precipitation": 0
+  },
+  "input_sha256": {
+    "data/data.csv": "fda57a81f41622771325d66e132bd19adbd27e4ed10d5310bd8684b5cfb8c1ce",
+    "data/stationsInfo.csv": "8b53cee0fab3328fbf2b3ad1ea0f90655b428df700eb540c06945f2dcda2a5e8",
+    "D:\\Pooya\\w\\GitHub\\HydroCodeIR\\PaperBarbosaFanLiJun\\publication_config.yaml": "f3ce6538f3418b4580476eff1f7ec748dafd418cfee3c252680e8e1190af49f5",
+    "src/paper_pipeline/compound_partition.py": "31cafc4bf048139528d8978b17dd6bef2c4dcfe91e11c11b125624840d64a968",
+    "run_publication.py": "4bafa5d05f52e489a13bdffdad3b876a2ed1ab7af744f12ac83803f63256d5bf"
+  },
+  "python": "3.13.9",
+  "platform": "Windows-11-10.0.22621-SP0",
+  "packages": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "scipy": "1.17.0",
+    "matplotlib": "3.10.8",
+    "statsmodels": "0.14.6",
+    "geopandas": "1.1.2",
+    "PyYAML": "6.0.3"
+  },
+  "scope": "New compound partition rebuilt from raw data; thermal figures use separately verified historical derived tables.",
+  "uncertainty": "Circular year blocks synchronized across stations/variables, separately within periods; percentile intervals; thresholds refitted except named sensitivity.",
+  "interpretation": "Excess-joint contribution is changing indicator covariance, not isolated copula change or causal attribution."
+}

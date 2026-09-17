@@ -1,0 +1,17 @@
+index_name,method_label,algorithm,linkage,metric,n_stations_compared,adjusted_rand_index,same_label_fraction
+cool_days,hierarchical_complete_euclidean,hierarchical,complete,euclidean,124,0.45759856528356424,0.1774193548387097
+cool_days,hierarchical_average_cityblock,hierarchical,average,cityblock,124,0.4469196987760476,0.016129032258064516
+cool_days,hierarchical_ward_euclidean,hierarchical,ward,euclidean,124,0.40881698312960313,0.008064516129032258
+cool_days,kmeans,kmeans,,,124,0.35570749279649577,0.008064516129032258
+cool_nights,hierarchical_average_cityblock,hierarchical,average,cityblock,124,1.0,1.0
+cool_nights,hierarchical_complete_euclidean,hierarchical,complete,euclidean,124,0.21002930763921882,0.0
+cool_nights,kmeans,kmeans,,,124,0.13037059846248925,0.3951612903225806
+cool_nights,hierarchical_ward_euclidean,hierarchical,ward,euclidean,124,0.12293318813311697,0.4838709677419355
+warm_days,hierarchical_average_cityblock,hierarchical,average,cityblock,124,0.9791210109681805,0.04838709677419355
+warm_days,hierarchical_ward_euclidean,hierarchical,ward,euclidean,124,0.845015005146798,0.24193548387096775
+warm_days,hierarchical_complete_euclidean,hierarchical,complete,euclidean,124,0.6885827852090545,0.0
+warm_days,kmeans,kmeans,,,124,0.6264819146532672,0.0
+warm_nights,hierarchical_average_cityblock,hierarchical,average,cityblock,124,0.9395120119340581,0.8145161290322581
+warm_nights,hierarchical_ward_euclidean,hierarchical,ward,euclidean,124,0.5296180039282633,0.6209677419354839
+warm_nights,kmeans,kmeans,,,124,0.3419285908476179,0.46774193548387094
+warm_nights,hierarchical_complete_euclidean,hierarchical,complete,euclidean,124,0.17605374236660332,0.3951612903225806

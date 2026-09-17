@@ -1,0 +1,497 @@
+index_name,station_id,station_name,cluster_baseline,cluster_hierarchical_complete_euclidean,cluster_hierarchical_ward_euclidean,cluster_hierarchical_average_cityblock,cluster_kmeans
+cool_days,19996,Bahookalat,2,1,1,3,3
+cool_days,40700,Parsabad,2,1,1,3,1
+cool_days,40701,Maku,1,2,2,4,2
+cool_days,40702,Jolfa,2,1,1,3,1
+cool_days,40703,Khoy,1,2,4,4,3
+cool_days,40704,Ahar,2,1,1,3,1
+cool_days,40706,Tabriz,2,1,4,4,3
+cool_days,40708,Ardebil,2,1,1,3,1
+cool_days,40709,Astara,2,1,1,3,3
+cool_days,40710,Sarab,2,1,1,3,1
+cool_days,40712,Orumiyeh,2,4,2,2,2
+cool_days,40713,Maragheh-Synoptic,1,4,2,4,2
+cool_days,40716,Mianeh,1,2,2,4,2
+cool_days,40717,Khalkhal,2,2,4,4,3
+cool_days,40718,Bandar-E-Anzali,2,1,1,3,1
+cool_days,40719,Rasht,2,1,1,3,1
+cool_days,40723,Bojnurd,2,1,1,3,3
+cool_days,40724,Piranshahr,2,2,4,4,3
+cool_days,40726,Mahabad,2,1,4,3,3
+cool_days,40727,Saqez,2,1,1,3,3
+cool_days,40728,Takab,1,2,4,4,3
+cool_days,40729,Zanjan,1,2,3,4,4
+cool_days,40730,Khorramdareh,2,1,1,3,3
+cool_days,40731,Qazvin,1,2,4,4,4
+cool_days,40732,Ramsar,2,1,1,3,1
+cool_days,40734,Nowshahr,2,1,1,3,3
+cool_days,40736,Babolsar,2,1,1,3,1
+cool_days,40737,Gharakhil,2,1,1,3,1
+cool_days,40738,Gorgan,2,1,1,3,3
+cool_days,40739,Shahrud,2,1,1,3,1
+cool_days,40740,Quchan,2,1,1,3,1
+cool_days,40741,Sarakhs,2,2,1,4,3
+cool_days,40742,Biyarjomand,2,1,1,3,3
+cool_days,40743,Sabzevar,2,1,1,3,1
+cool_days,40744,Golmakan,2,1,1,3,1
+cool_days,40745,Mashhad,2,1,1,3,1
+cool_days,40746,Neyshabur,2,1,1,3,3
+cool_days,40747,Sanandaj,1,2,3,4,4
+cool_days,40748,Bijar,1,2,3,4,4
+cool_days,40749,Zarrineh,1,2,3,4,4
+cool_days,40751,Tehran (Shemiran),1,2,3,4,4
+cool_days,40752,Karaj,1,2,3,4,4
+cool_days,40754,Tehran (Mehrabad Airport),2,1,1,3,1
+cool_days,40755,Abali,2,2,4,4,4
+cool_days,40757,Semnan,2,2,4,4,3
+cool_days,40758,Garmsar,2,1,1,3,1
+cool_days,40762,Torbat-E Heydariyeh,1,2,3,4,4
+cool_days,40763,Kashmar,2,2,4,4,3
+cool_days,40764,Ravansar,1,4,2,4,2
+cool_days,40765,Sarpol-E-Zahab,1,2,4,4,2
+cool_days,40766,Kermanshah,2,1,1,3,1
+cool_days,40768,Hamedan (Airport),1,2,3,4,4
+cool_days,40769,Arak,1,2,4,4,4
+cool_days,40770,Qom,1,2,4,4,3
+cool_days,40771,Kangavar,1,2,3,4,4
+cool_days,40772,Qorveh,1,2,3,4,4
+cool_days,40774,Borujerd,2,2,4,4,3
+cool_days,40778,Gonabad,1,2,3,4,4
+cool_days,40779,Eslamabad-E-Gharb,2,1,1,3,1
+cool_days,40780,Ilam,1,2,2,4,2
+cool_days,40782,Khorramabad,1,2,4,4,4
+cool_days,40783,Aligudarz,1,2,4,4,3
+cool_days,40785,Kashan,2,2,4,4,3
+cool_days,40787,Daran,1,2,2,4,2
+cool_days,40789,Khur-Va-Biabanak,2,2,4,4,3
+cool_days,40790,Robat-E-Poshtebadam,2,1,1,3,1
+cool_days,40791,Tabas,1,2,4,4,3
+cool_days,40792,Ferdows,2,1,1,3,1
+cool_days,40793,Qaen,2,2,3,4,4
+cool_days,40794,Safiabad (Dezful),2,1,4,4,1
+cool_days,40796,Dehloran,1,2,3,4,4
+cool_days,40797,Kuhrang,1,4,2,4,2
+cool_days,40798,Shahrekord,1,2,2,4,4
+cool_days,40799,Ardestan,1,2,4,4,4
+cool_days,40800,Esfahan,1,2,2,4,4
+cool_days,40801,Naein,2,1,1,3,3
+cool_days,40802,Esfahan (Airport),2,1,1,3,3
+cool_days,40803,Kabutarabad,1,2,2,4,2
+cool_days,40809,Birjand,1,2,4,4,4
+cool_days,40810,Bostan,1,2,2,4,2
+cool_days,40811,Ahvaz,2,2,4,4,3
+cool_days,40812,Masjedsoleyman,2,1,4,3,1
+cool_days,40813,Ramhormoz,1,2,2,4,2
+cool_days,40818,Abadeh,2,1,1,3,1
+cool_days,40821,Yazd,2,1,1,3,1
+cool_days,40827,Nehbandan,2,2,4,4,3
+cool_days,40829,Zabol,2,2,4,4,3
+cool_days,40831,Abadan,1,4,2,4,2
+cool_days,40832,Bandar-E- Mahshahr,2,1,1,3,3
+cool_days,40833,Omidiyeh (Aghajari),2,2,1,4,3
+cool_days,40835,Dogonbadan,1,2,3,4,4
+cool_days,40836,Yasuj,2,1,1,3,3
+cool_days,40839,Anar,2,1,1,3,1
+cool_days,40841,Kerman,2,1,1,3,1
+cool_days,40844,Dorudzan,2,1,1,3,1
+cool_days,40847,Zarqan,2,2,4,4,3
+cool_days,40848,Shiraz,2,2,4,4,3
+cool_days,40849,Shahrebabak,2,1,1,3,1
+cool_days,40851,Sirjan,2,1,1,3,1
+cool_days,40853,Baft,2,1,4,3,1
+cool_days,40854,Bam,2,2,4,4,3
+cool_days,40856,Zahedan,2,2,4,4,3
+cool_days,40857,Bushehr (Coastal),3,3,2,1,2
+cool_days,40858,Bushehr (Airport),2,1,1,3,1
+cool_days,40859,Fasa,2,1,1,3,1
+cool_days,40870,Khash,2,1,1,3,1
+cool_days,40873,Lar,2,1,1,3,1
+cool_days,40875,Bandarabbas,1,4,2,4,2
+cool_days,40876,Minab,1,4,2,4,2
+cool_days,40877,Kahnuj,2,1,1,3,1
+cool_days,40878,Saravan,2,1,1,3,1
+cool_days,40879,Iranshahr,2,1,1,3,1
+cool_days,40882,Kish Island,1,4,2,4,2
+cool_days,40883,Bandar-E-Lengeh,4,3,2,1,2
+cool_days,40889,Siri Island,1,4,2,4,2
+cool_days,40890,Abumusa Island,3,3,2,1,2
+cool_days,40893,Jask,4,4,2,4,2
+cool_days,40898,Chahbahar,4,4,2,2,2
+cool_days,88187,Jam,1,2,4,4,3
+cool_days,99331,Tehran (Geophysic),1,2,3,4,4
+cool_days,99407,Boshruyeh,2,1,1,3,3
+cool_days,99421,Natanz,1,2,3,4,4
+cool_days,99459,Borujen,1,2,2,4,2
+cool_days,99623,Zahak,2,1,1,3,1
+cool_nights,19996,Bahookalat,2,1,3,2,1
+cool_nights,40700,Parsabad,2,3,2,2,2
+cool_nights,40701,Maku,2,3,3,2,1
+cool_nights,40702,Jolfa,2,3,2,2,1
+cool_nights,40703,Khoy,2,1,3,2,1
+cool_nights,40704,Ahar,2,3,2,2,2
+cool_nights,40706,Tabriz,2,3,2,2,2
+cool_nights,40708,Ardebil,2,1,3,2,1
+cool_nights,40709,Astara,2,3,2,2,2
+cool_nights,40710,Sarab,2,3,2,2,2
+cool_nights,40712,Orumiyeh,2,3,2,2,2
+cool_nights,40713,Maragheh-Synoptic,2,1,3,2,1
+cool_nights,40716,Mianeh,2,1,4,2,1
+cool_nights,40717,Khalkhal,2,1,4,2,1
+cool_nights,40718,Bandar-E-Anzali,2,3,2,2,2
+cool_nights,40719,Rasht,2,1,3,2,1
+cool_nights,40723,Bojnurd,2,3,2,2,2
+cool_nights,40724,Piranshahr,2,1,3,2,1
+cool_nights,40726,Mahabad,2,3,2,2,2
+cool_nights,40727,Saqez,2,1,4,2,1
+cool_nights,40728,Takab,2,3,2,2,2
+cool_nights,40729,Zanjan,2,1,4,2,1
+cool_nights,40730,Khorramdareh,2,1,4,2,1
+cool_nights,40731,Qazvin,2,3,2,2,2
+cool_nights,40732,Ramsar,2,1,4,2,1
+cool_nights,40734,Nowshahr,2,1,4,2,1
+cool_nights,40736,Babolsar,2,1,4,2,1
+cool_nights,40737,Gharakhil,2,3,2,2,2
+cool_nights,40738,Gorgan,1,4,1,1,3
+cool_nights,40739,Shahrud,2,3,2,2,2
+cool_nights,40740,Quchan,1,4,1,1,3
+cool_nights,40741,Sarakhs,2,3,2,2,2
+cool_nights,40742,Biyarjomand,2,1,4,2,1
+cool_nights,40743,Sabzevar,2,3,3,2,1
+cool_nights,40744,Golmakan,2,3,2,2,2
+cool_nights,40745,Mashhad,2,1,4,2,1
+cool_nights,40746,Neyshabur,2,3,2,2,2
+cool_nights,40747,Sanandaj,2,1,4,2,4
+cool_nights,40748,Bijar,2,3,2,2,2
+cool_nights,40749,Zarrineh,2,3,2,2,2
+cool_nights,40751,Tehran (Shemiran),2,3,2,2,2
+cool_nights,40752,Karaj,2,3,2,2,1
+cool_nights,40754,Tehran (Mehrabad Airport),2,3,2,2,2
+cool_nights,40755,Abali,2,3,2,2,2
+cool_nights,40757,Semnan,2,3,2,2,2
+cool_nights,40758,Garmsar,4,1,4,4,4
+cool_nights,40762,Torbat-E Heydariyeh,2,3,2,2,2
+cool_nights,40763,Kashmar,2,3,2,2,2
+cool_nights,40764,Ravansar,2,1,3,2,1
+cool_nights,40765,Sarpol-E-Zahab,2,1,4,2,4
+cool_nights,40766,Kermanshah,2,1,4,2,1
+cool_nights,40768,Hamedan (Airport),2,3,2,2,2
+cool_nights,40769,Arak,2,3,2,2,2
+cool_nights,40770,Qom,2,1,3,2,1
+cool_nights,40771,Kangavar,2,1,4,2,4
+cool_nights,40772,Qorveh,2,1,4,2,4
+cool_nights,40774,Borujerd,2,1,4,2,4
+cool_nights,40778,Gonabad,2,3,2,2,2
+cool_nights,40779,Eslamabad-E-Gharb,2,1,4,2,4
+cool_nights,40780,Ilam,1,4,1,1,3
+cool_nights,40782,Khorramabad,2,1,3,2,1
+cool_nights,40783,Aligudarz,2,1,3,2,1
+cool_nights,40785,Kashan,2,1,3,2,1
+cool_nights,40787,Daran,2,3,2,2,2
+cool_nights,40789,Khur-Va-Biabanak,2,1,4,2,4
+cool_nights,40790,Robat-E-Poshtebadam,2,3,2,2,2
+cool_nights,40791,Tabas,2,3,2,2,1
+cool_nights,40792,Ferdows,2,1,4,2,1
+cool_nights,40793,Qaen,2,1,4,2,1
+cool_nights,40794,Safiabad (Dezful),2,1,4,2,4
+cool_nights,40796,Dehloran,2,1,4,2,1
+cool_nights,40797,Kuhrang,2,3,2,2,2
+cool_nights,40798,Shahrekord,1,4,1,1,3
+cool_nights,40799,Ardestan,2,3,2,2,2
+cool_nights,40800,Esfahan,2,3,3,2,1
+cool_nights,40801,Naein,2,1,4,2,1
+cool_nights,40802,Esfahan (Airport),1,4,1,1,3
+cool_nights,40803,Kabutarabad,2,1,3,2,1
+cool_nights,40809,Birjand,2,3,2,2,2
+cool_nights,40810,Bostan,2,1,4,2,4
+cool_nights,40811,Ahvaz,2,3,2,2,2
+cool_nights,40812,Masjedsoleyman,2,3,2,2,2
+cool_nights,40813,Ramhormoz,2,1,3,2,1
+cool_nights,40818,Abadeh,2,1,4,2,1
+cool_nights,40821,Yazd,2,1,3,2,1
+cool_nights,40827,Nehbandan,2,3,2,2,2
+cool_nights,40829,Zabol,2,3,2,2,2
+cool_nights,40831,Abadan,2,1,4,2,4
+cool_nights,40832,Bandar-E- Mahshahr,2,1,4,2,4
+cool_nights,40833,Omidiyeh (Aghajari),2,1,4,2,4
+cool_nights,40835,Dogonbadan,2,3,2,2,2
+cool_nights,40836,Yasuj,1,4,1,1,3
+cool_nights,40839,Anar,2,1,4,2,1
+cool_nights,40841,Kerman,2,1,4,2,1
+cool_nights,40844,Dorudzan,1,4,1,1,3
+cool_nights,40847,Zarqan,2,1,4,2,4
+cool_nights,40848,Shiraz,1,4,1,1,3
+cool_nights,40849,Shahrebabak,2,3,2,2,2
+cool_nights,40851,Sirjan,2,3,2,2,2
+cool_nights,40853,Baft,2,1,4,2,4
+cool_nights,40854,Bam,2,1,4,2,1
+cool_nights,40856,Zahedan,2,3,2,2,2
+cool_nights,40857,Bushehr (Coastal),2,1,3,2,1
+cool_nights,40858,Bushehr (Airport),2,1,3,2,1
+cool_nights,40859,Fasa,2,1,4,2,4
+cool_nights,40870,Khash,2,1,4,2,4
+cool_nights,40873,Lar,2,1,3,2,1
+cool_nights,40875,Bandarabbas,2,3,2,2,2
+cool_nights,40876,Minab,2,1,4,2,1
+cool_nights,40877,Kahnuj,2,3,2,2,2
+cool_nights,40878,Saravan,2,3,2,2,2
+cool_nights,40879,Iranshahr,2,3,2,2,2
+cool_nights,40882,Kish Island,3,2,3,3,1
+cool_nights,40883,Bandar-E-Lengeh,2,3,3,2,1
+cool_nights,40889,Siri Island,2,3,3,2,1
+cool_nights,40890,Abumusa Island,2,3,3,2,2
+cool_nights,40893,Jask,2,1,3,2,1
+cool_nights,40898,Chahbahar,2,1,4,2,4
+cool_nights,88187,Jam,2,1,4,2,4
+cool_nights,99331,Tehran (Geophysic),2,3,2,2,2
+cool_nights,99407,Boshruyeh,2,1,4,2,1
+cool_nights,99421,Natanz,2,3,2,2,2
+cool_nights,99459,Borujen,2,1,4,2,4
+cool_nights,99623,Zahak,2,3,2,2,2
+warm_days,19996,Bahookalat,1,4,4,2,3
+warm_days,40700,Parsabad,2,3,3,3,4
+warm_days,40701,Maku,3,2,1,4,1
+warm_days,40702,Jolfa,3,1,1,4,2
+warm_days,40703,Khoy,3,1,1,4,2
+warm_days,40704,Ahar,3,2,1,4,2
+warm_days,40706,Tabriz,2,3,2,3,1
+warm_days,40708,Ardebil,2,3,2,3,1
+warm_days,40709,Astara,2,3,2,3,1
+warm_days,40710,Sarab,3,1,1,4,1
+warm_days,40712,Orumiyeh,3,2,1,4,2
+warm_days,40713,Maragheh-Synoptic,3,2,1,4,2
+warm_days,40716,Mianeh,3,2,1,4,2
+warm_days,40717,Khalkhal,3,2,1,4,2
+warm_days,40718,Bandar-E-Anzali,3,2,1,4,2
+warm_days,40719,Rasht,1,4,4,1,3
+warm_days,40723,Bojnurd,2,3,3,3,4
+warm_days,40724,Piranshahr,3,1,1,4,2
+warm_days,40726,Mahabad,3,1,1,4,2
+warm_days,40727,Saqez,3,1,1,4,2
+warm_days,40728,Takab,3,1,1,4,2
+warm_days,40729,Zanjan,3,1,1,4,2
+warm_days,40730,Khorramdareh,3,1,1,4,2
+warm_days,40731,Qazvin,3,1,1,4,2
+warm_days,40732,Ramsar,3,1,1,4,1
+warm_days,40734,Nowshahr,2,3,2,3,1
+warm_days,40736,Babolsar,2,3,3,3,4
+warm_days,40737,Gharakhil,2,3,2,3,1
+warm_days,40738,Gorgan,2,3,2,3,1
+warm_days,40739,Shahrud,2,3,3,3,4
+warm_days,40740,Quchan,2,3,3,3,4
+warm_days,40741,Sarakhs,2,3,2,3,1
+warm_days,40742,Biyarjomand,2,3,3,3,4
+warm_days,40743,Sabzevar,2,3,2,3,4
+warm_days,40744,Golmakan,2,3,2,3,1
+warm_days,40745,Mashhad,2,3,3,3,4
+warm_days,40746,Neyshabur,2,3,3,3,4
+warm_days,40747,Sanandaj,3,1,1,4,2
+warm_days,40748,Bijar,3,1,1,4,2
+warm_days,40749,Zarrineh,3,2,1,4,2
+warm_days,40751,Tehran (Shemiran),3,1,1,4,2
+warm_days,40752,Karaj,3,1,1,4,2
+warm_days,40754,Tehran (Mehrabad Airport),1,4,4,1,3
+warm_days,40755,Abali,3,1,1,4,1
+warm_days,40757,Semnan,2,3,2,3,1
+warm_days,40758,Garmsar,1,4,4,1,3
+warm_days,40762,Torbat-E Heydariyeh,3,1,1,4,2
+warm_days,40763,Kashmar,2,3,2,3,1
+warm_days,40764,Ravansar,3,2,1,4,2
+warm_days,40765,Sarpol-E-Zahab,3,1,1,4,1
+warm_days,40766,Kermanshah,1,4,4,1,3
+warm_days,40768,Hamedan (Airport),2,3,2,3,1
+warm_days,40769,Arak,3,1,1,4,2
+warm_days,40770,Qom,3,2,1,4,2
+warm_days,40771,Kangavar,3,2,1,4,2
+warm_days,40772,Qorveh,3,2,1,4,2
+warm_days,40774,Borujerd,3,1,1,4,2
+warm_days,40778,Gonabad,2,3,3,3,4
+warm_days,40779,Eslamabad-E-Gharb,2,3,2,3,1
+warm_days,40780,Ilam,3,1,1,4,2
+warm_days,40782,Khorramabad,3,1,1,4,2
+warm_days,40783,Aligudarz,2,3,2,3,1
+warm_days,40785,Kashan,3,2,1,4,2
+warm_days,40787,Daran,3,2,1,4,2
+warm_days,40789,Khur-Va-Biabanak,3,1,1,4,2
+warm_days,40790,Robat-E-Poshtebadam,2,3,2,3,1
+warm_days,40791,Tabas,3,1,1,4,2
+warm_days,40792,Ferdows,2,3,3,3,4
+warm_days,40793,Qaen,3,1,1,4,2
+warm_days,40794,Safiabad (Dezful),3,1,1,4,2
+warm_days,40796,Dehloran,3,1,1,4,2
+warm_days,40797,Kuhrang,3,2,1,4,1
+warm_days,40798,Shahrekord,3,2,1,4,2
+warm_days,40799,Ardestan,2,3,2,3,1
+warm_days,40800,Esfahan,4,2,1,4,2
+warm_days,40801,Naein,2,3,2,3,1
+warm_days,40802,Esfahan (Airport),2,3,2,3,4
+warm_days,40803,Kabutarabad,3,1,1,4,2
+warm_days,40809,Birjand,2,3,2,3,1
+warm_days,40810,Bostan,3,2,1,4,2
+warm_days,40811,Ahvaz,3,1,1,4,2
+warm_days,40812,Masjedsoleyman,3,1,1,4,2
+warm_days,40813,Ramhormoz,3,1,1,4,2
+warm_days,40818,Abadeh,3,2,1,4,2
+warm_days,40821,Yazd,2,3,2,3,1
+warm_days,40827,Nehbandan,2,3,2,3,1
+warm_days,40829,Zabol,3,2,1,4,2
+warm_days,40831,Abadan,3,1,1,4,2
+warm_days,40832,Bandar-E- Mahshahr,3,1,1,4,2
+warm_days,40833,Omidiyeh (Aghajari),3,1,1,4,2
+warm_days,40835,Dogonbadan,3,1,1,4,2
+warm_days,40836,Yasuj,3,1,1,4,1
+warm_days,40839,Anar,2,3,2,3,1
+warm_days,40841,Kerman,2,3,2,3,1
+warm_days,40844,Dorudzan,3,1,1,4,2
+warm_days,40847,Zarqan,3,1,1,4,2
+warm_days,40848,Shiraz,3,1,1,4,2
+warm_days,40849,Shahrebabak,3,1,1,4,2
+warm_days,40851,Sirjan,3,1,1,4,1
+warm_days,40853,Baft,3,2,1,4,2
+warm_days,40854,Bam,3,2,1,4,2
+warm_days,40856,Zahedan,2,3,3,3,4
+warm_days,40857,Bushehr (Coastal),3,2,1,4,2
+warm_days,40858,Bushehr (Airport),1,4,4,1,3
+warm_days,40859,Fasa,2,3,2,3,1
+warm_days,40870,Khash,2,3,3,3,4
+warm_days,40873,Lar,2,3,2,3,1
+warm_days,40875,Bandarabbas,2,3,3,3,4
+warm_days,40876,Minab,3,2,1,4,2
+warm_days,40877,Kahnuj,2,3,3,3,4
+warm_days,40878,Saravan,2,3,3,3,4
+warm_days,40879,Iranshahr,2,3,2,3,1
+warm_days,40882,Kish Island,2,3,2,3,1
+warm_days,40883,Bandar-E-Lengeh,2,3,2,3,1
+warm_days,40889,Siri Island,2,3,3,3,4
+warm_days,40890,Abumusa Island,3,2,1,4,2
+warm_days,40893,Jask,1,4,4,2,3
+warm_days,40898,Chahbahar,2,3,2,3,1
+warm_days,88187,Jam,3,1,1,4,2
+warm_days,99331,Tehran (Geophysic),3,1,1,4,2
+warm_days,99407,Boshruyeh,2,3,3,3,4
+warm_days,99421,Natanz,2,3,2,3,1
+warm_days,99459,Borujen,3,2,1,4,2
+warm_days,99623,Zahak,3,2,1,4,1
+warm_nights,19996,Bahookalat,3,4,2,4,2
+warm_nights,40700,Parsabad,4,4,4,4,4
+warm_nights,40701,Maku,4,3,4,4,4
+warm_nights,40702,Jolfa,4,2,3,4,1
+warm_nights,40703,Khoy,4,2,3,4,1
+warm_nights,40704,Ahar,4,3,4,4,4
+warm_nights,40706,Tabriz,4,4,4,4,4
+warm_nights,40708,Ardebil,4,3,3,4,1
+warm_nights,40709,Astara,4,3,3,4,1
+warm_nights,40710,Sarab,4,4,4,4,4
+warm_nights,40712,Orumiyeh,3,4,2,2,2
+warm_nights,40713,Maragheh-Synoptic,4,3,3,4,1
+warm_nights,40716,Mianeh,4,3,3,4,1
+warm_nights,40717,Khalkhal,4,3,4,4,4
+warm_nights,40718,Bandar-E-Anzali,4,4,4,4,1
+warm_nights,40719,Rasht,4,2,3,4,1
+warm_nights,40723,Bojnurd,4,4,4,4,4
+warm_nights,40724,Piranshahr,4,2,3,4,1
+warm_nights,40726,Mahabad,4,3,4,4,4
+warm_nights,40727,Saqez,4,4,4,4,4
+warm_nights,40728,Takab,4,4,4,4,2
+warm_nights,40729,Zanjan,4,3,4,4,4
+warm_nights,40730,Khorramdareh,4,3,3,4,1
+warm_nights,40731,Qazvin,4,3,4,4,4
+warm_nights,40732,Ramsar,4,2,3,4,1
+warm_nights,40734,Nowshahr,4,3,3,4,1
+warm_nights,40736,Babolsar,4,3,3,4,1
+warm_nights,40737,Gharakhil,4,3,4,4,4
+warm_nights,40738,Gorgan,3,4,2,2,2
+warm_nights,40739,Shahrud,3,4,2,2,2
+warm_nights,40740,Quchan,1,1,1,1,3
+warm_nights,40741,Sarakhs,4,3,4,4,4
+warm_nights,40742,Biyarjomand,4,4,4,4,2
+warm_nights,40743,Sabzevar,4,4,4,4,4
+warm_nights,40744,Golmakan,4,4,4,4,4
+warm_nights,40745,Mashhad,4,3,4,4,4
+warm_nights,40746,Neyshabur,3,4,2,2,2
+warm_nights,40747,Sanandaj,4,4,4,4,4
+warm_nights,40748,Bijar,4,3,4,4,4
+warm_nights,40749,Zarrineh,4,4,4,4,4
+warm_nights,40751,Tehran (Shemiran),3,4,2,2,2
+warm_nights,40752,Karaj,4,3,4,4,4
+warm_nights,40754,Tehran (Mehrabad Airport),3,4,2,2,2
+warm_nights,40755,Abali,4,4,4,2,2
+warm_nights,40757,Semnan,3,4,2,2,2
+warm_nights,40758,Garmsar,2,2,3,3,1
+warm_nights,40762,Torbat-E Heydariyeh,4,4,4,4,2
+warm_nights,40763,Kashmar,4,4,4,4,2
+warm_nights,40764,Ravansar,4,4,4,4,4
+warm_nights,40765,Sarpol-E-Zahab,4,4,4,4,4
+warm_nights,40766,Kermanshah,4,4,4,4,4
+warm_nights,40768,Hamedan (Airport),3,4,2,2,2
+warm_nights,40769,Arak,4,4,4,4,4
+warm_nights,40770,Qom,4,3,4,4,4
+warm_nights,40771,Kangavar,3,4,2,2,2
+warm_nights,40772,Qorveh,4,3,3,4,1
+warm_nights,40774,Borujerd,4,2,3,4,1
+warm_nights,40778,Gonabad,4,4,4,4,4
+warm_nights,40779,Eslamabad-E-Gharb,4,4,4,4,4
+warm_nights,40780,Ilam,1,1,1,1,3
+warm_nights,40782,Khorramabad,4,4,4,4,4
+warm_nights,40783,Aligudarz,4,4,4,4,4
+warm_nights,40785,Kashan,4,3,4,4,1
+warm_nights,40787,Daran,4,3,4,4,4
+warm_nights,40789,Khur-Va-Biabanak,4,3,3,4,1
+warm_nights,40790,Robat-E-Poshtebadam,3,4,2,2,2
+warm_nights,40791,Tabas,4,3,3,4,1
+warm_nights,40792,Ferdows,4,3,3,4,1
+warm_nights,40793,Qaen,4,3,4,4,4
+warm_nights,40794,Safiabad (Dezful),4,4,4,4,4
+warm_nights,40796,Dehloran,4,3,4,4,4
+warm_nights,40797,Kuhrang,4,4,4,4,2
+warm_nights,40798,Shahrekord,1,1,1,1,3
+warm_nights,40799,Ardestan,4,4,4,4,4
+warm_nights,40800,Esfahan,4,2,3,4,1
+warm_nights,40801,Naein,4,3,4,4,4
+warm_nights,40802,Esfahan (Airport),3,4,2,2,2
+warm_nights,40803,Kabutarabad,4,2,3,4,1
+warm_nights,40809,Birjand,3,4,2,2,2
+warm_nights,40810,Bostan,4,3,3,4,1
+warm_nights,40811,Ahvaz,2,2,3,3,1
+warm_nights,40812,Masjedsoleyman,4,4,4,4,4
+warm_nights,40813,Ramhormoz,2,2,3,3,1
+warm_nights,40818,Abadeh,4,3,4,4,4
+warm_nights,40821,Yazd,4,3,4,4,1
+warm_nights,40827,Nehbandan,3,4,2,2,2
+warm_nights,40829,Zabol,4,3,4,4,4
+warm_nights,40831,Abadan,2,2,3,3,1
+warm_nights,40832,Bandar-E- Mahshahr,4,2,3,4,1
+warm_nights,40833,Omidiyeh (Aghajari),4,3,4,4,4
+warm_nights,40835,Dogonbadan,4,4,4,4,2
+warm_nights,40836,Yasuj,1,1,1,1,3
+warm_nights,40839,Anar,4,4,4,4,4
+warm_nights,40841,Kerman,4,4,4,4,4
+warm_nights,40844,Dorudzan,1,1,1,1,3
+warm_nights,40847,Zarqan,4,3,4,4,4
+warm_nights,40848,Shiraz,1,1,1,1,3
+warm_nights,40849,Shahrebabak,3,4,2,2,2
+warm_nights,40851,Sirjan,4,3,4,4,4
+warm_nights,40853,Baft,4,2,3,4,1
+warm_nights,40854,Bam,4,3,3,4,1
+warm_nights,40856,Zahedan,3,4,2,2,2
+warm_nights,40857,Bushehr (Coastal),4,3,4,4,4
+warm_nights,40858,Bushehr (Airport),2,2,3,3,1
+warm_nights,40859,Fasa,4,3,3,4,1
+warm_nights,40870,Khash,4,3,4,4,4
+warm_nights,40873,Lar,4,3,4,4,4
+warm_nights,40875,Bandarabbas,4,4,4,4,4
+warm_nights,40876,Minab,4,3,4,4,4
+warm_nights,40877,Kahnuj,4,4,4,4,4
+warm_nights,40878,Saravan,4,4,4,4,2
+warm_nights,40879,Iranshahr,4,3,4,4,4
+warm_nights,40882,Kish Island,4,3,4,4,4
+warm_nights,40883,Bandar-E-Lengeh,3,4,2,2,2
+warm_nights,40889,Siri Island,4,4,4,4,4
+warm_nights,40890,Abumusa Island,4,3,4,4,4
+warm_nights,40893,Jask,4,4,4,4,2
+warm_nights,40898,Chahbahar,4,2,3,4,1
+warm_nights,88187,Jam,4,3,4,4,4
+warm_nights,99331,Tehran (Geophysic),1,1,1,1,3
+warm_nights,99407,Boshruyeh,4,3,4,4,4
+warm_nights,99421,Natanz,4,4,4,4,4
+warm_nights,99459,Borujen,4,4,4,4,4
+warm_nights,99623,Zahak,4,3,4,4,4

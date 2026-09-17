@@ -210,10 +210,6 @@ __marimo__/
 data/*
 !data/.gitkeep
 
-outputs/*
-!outputs/.gitkeep
-submit/
-
 # Local audit recomputation and recoverable cleanup archives
 .audit_work/
 .audit_work_log.txt

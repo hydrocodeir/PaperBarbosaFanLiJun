@@ -1,0 +1,10 @@
+metric,value
+n_stations,124.0
+median_tmin_completeness_pct,98.9572429342137
+median_tmax_completeness_pct,99.42426926483614
+median_tmean_completeness_pct,99.35179966180851
+stations_with_duplicate_dates,0.0
+stations_with_tmin_gt_tmax,32.0
+stations_with_tmean_outside_range,78.0
+stations_flagged_by_any_raw_homogeneity_test_p_lt_alpha,119.0
+stations_flagged_by_any_detrended_homogeneity_test_p_lt_alpha,39.0

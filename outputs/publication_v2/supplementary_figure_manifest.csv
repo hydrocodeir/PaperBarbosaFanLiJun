@@ -1,0 +1,12 @@
+figure,width_inches,height_inches,formats
+figS01_data_quality,7.1,3.0,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS02_thermal_robustness,7.1,5.4,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS03_station_quantile_maps,7.1,9.4,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS04_median_precision,7.1,6.1,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS05_spatial_diagnostics,7.1,2.8,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS06_cluster_composites,7.1,5.1,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS07_cluster_maps,7.1,6.2,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS08_representative_profiles,7.1,6.4,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS09_internal_warming_association,7.1,6.5,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS10_historical_joint_rarity,7.1,4.8,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW
+figS11_geographical_associations,5.7,2.8,PDF; SVG; PNG 350 dpi; TIFF 600 dpi LZW

@@ -1,0 +1,23 @@
+{
+  "data/Iran_Sea_Ne.geojson": "662924f0c87dc93ef9e045b92f80eba9679ffbcf2144217b148f1a3e99517bac",
+  "data/stationsInfo.csv": "8b53cee0fab3328fbf2b3ad1ea0f90655b428df700eb540c06945f2dcda2a5e8",
+  "outputs/compound_dry_hot/tables/compound_dry_hot_yearly_extent.csv": "2e2f3768b89d9da7d5ba33673e46d4508d8b7f157808964d2e8503d7d9854099",
+  "outputs/publication_v2/tables/screened_annual_seasonal_aggregates.csv": "08be8a143208c21aba3ab44df4e9f32050d18342521dc6ec74dc96f07d77dfad",
+  "outputs/tables/bootstrap_depth_sensitivity_summary.csv": "3162dd0db530cfc44252a9379793a936efec29c9aec0565421afb9476786d7b3",
+  "outputs/tables/bootstrap_method_sensitivity_summary.csv": "834cc25bf941ce847bed652af13422b810de868b28581c5798564cf1e2b174e3",
+  "outputs/tables/climate_signal_emergence_station_level.csv": "eeace22c6211e59635d917bef17111b22c43de23e143b1c1641a4967f8307d41",
+  "outputs/tables/cluster_assignments.csv": "1539fe49f37d59fa6dd704ee97a326194ee404b79cd3529a0c63911fd04ca8d5",
+  "outputs/tables/data_homogeneity_tests_station_summary.csv": "28e67cf795b630990f417126e087601dd83d9a8429efd939f5e2181ec0bfd6ed",
+  "outputs/tables/driver_analysis_summary.csv": "a38ab7897e9a9a190ab2e4ccad1579e36701d6e0118738c95659443e2d9b5238",
+  "outputs/tables/homogeneity_flag_exclusion_sensitivity.csv": "3c551d9e9a6093e90d48ef71416af52562b59eda5a110c2a3e627e7040d83066",
+  "outputs/tables/qr_all_quantiles_long.csv": "842250e1b8d50bee43039d24e76afa80106ce24e7973e28edcad90f06639ece1",
+  "outputs/tables/qr_focus_slopes_and_bootstrap_summary.csv": "e63edebb43ef49c17055a69100cbd7e63e6e57d4c5698f3dd7ad217dcbb222ad",
+  "outputs/tables/regional_cluster_composites.csv": "c65643a1df6be9eb823a8c4510fd8e040131e72b5e32b590fc6ed6223b892bee",
+  "outputs/tables/regional_temperature_anomaly.csv": "7b1c21f8e6d294efc1d50137a6ac13eebc028e4b68139a4bc0b79cd6d73fae4e",
+  "outputs/tables/representative_station_selection.csv": "a6365aefddefe1af02e83342fe934414b89cb4f2fd8da73beae737345dd18465",
+  "outputs/tables/spatial_autocorrelation_moran.csv": "a67e563ff954b6bccbfe42f562468249834ebbc4f894b2fed6eb60959ba675df",
+  "outputs/tables/station_significance_fdr.csv": "ccc0928af601fb140e4daf9e927c41cc22c3ff71151a78cf2f0996487ecc9eb7",
+  "outputs/tables/temperature_internal_consistency_quantile_sensitivity.csv": "74f28d26a5e130eb31402d57e0fc471846ace2e77d544575db03a30be66a2caf",
+  "outputs/tables/warming_link_network_quantile_response.csv": "58d658a703f7b7c8e8697580e737dc07e31896f32d32e6ff1ba90d330b5c2a55",
+  "src/paper_pipeline/supplementary_curator.py": "5098272b97977af2263d89cf118e7087fc83ac2dc8ee5347d2855d403e0b4c3d"
+}

@@ -1,0 +1,97 @@
+climate_regime,climate_regime_label,index_name,metric,n_stations,expected_direction_stations,emerged_stations,expected_direction_fraction,emergence_fraction,median_signal_to_noise
+BWh_hot_desert,BWh hot desert,cool_days,0.10,36,35,7,0.9722222222222222,0.19444444444444445,1.2622509933839199
+BWh_hot_desert,BWh hot desert,cool_days,0.50,36,36,16,1.0,0.4444444444444444,1.9277055962892669
+BWh_hot_desert,BWh hot desert,cool_days,0.90,36,36,14,1.0,0.3888888888888889,1.8103234024510757
+BWh_hot_desert,BWh hot desert,cool_days,Delta1,36,35,3,0.9722222222222222,0.08333333333333333,1.2128185584181232
+BWh_hot_desert,BWh hot desert,cool_nights,0.10,36,36,13,1.0,0.3611111111111111,1.821055380044435
+BWh_hot_desert,BWh hot desert,cool_nights,0.50,36,35,20,0.9722222222222222,0.5555555555555556,2.2760995757440146
+BWh_hot_desert,BWh hot desert,cool_nights,0.90,36,36,18,1.0,0.5,2.0882462134863182
+BWh_hot_desert,BWh hot desert,cool_nights,Delta1,36,34,2,0.9444444444444444,0.05555555555555555,1.1147500932065928
+BWh_hot_desert,BWh hot desert,warm_days,0.10,36,35,9,0.9722222222222222,0.25,1.2960439746950931
+BWh_hot_desert,BWh hot desert,warm_days,0.50,36,34,25,0.9444444444444444,0.6944444444444444,2.5795351411073355
+BWh_hot_desert,BWh hot desert,warm_days,0.90,36,34,18,0.9444444444444444,0.5,1.9275411683209471
+BWh_hot_desert,BWh hot desert,warm_days,Delta1,36,32,3,0.8888888888888888,0.08333333333333333,1.1937231899497665
+BWh_hot_desert,BWh hot desert,warm_nights,0.10,36,36,20,1.0,0.5555555555555556,2.0486716700645666
+BWh_hot_desert,BWh hot desert,warm_nights,0.50,36,36,29,1.0,0.8055555555555556,3.1915079421341632
+BWh_hot_desert,BWh hot desert,warm_nights,0.90,36,36,26,1.0,0.7222222222222222,2.8812870375537365
+BWh_hot_desert,BWh hot desert,warm_nights,Delta1,36,35,5,0.9722222222222222,0.1388888888888889,1.0641595013649425
+BWk_cold_desert,BWk cold desert,cool_days,0.10,18,17,9,0.9444444444444444,0.5,1.9103689818220526
+BWk_cold_desert,BWk cold desert,cool_days,0.50,18,18,7,1.0,0.3888888888888889,1.8504523953623417
+BWk_cold_desert,BWk cold desert,cool_days,0.90,18,18,5,1.0,0.2777777777777778,1.6688155286398887
+BWk_cold_desert,BWk cold desert,cool_days,Delta1,18,18,0,1.0,0.0,0.8698605129157652
+BWk_cold_desert,BWk cold desert,cool_nights,0.10,18,17,6,0.9444444444444444,0.3333333333333333,1.3824653803975475
+BWk_cold_desert,BWk cold desert,cool_nights,0.50,18,17,6,0.9444444444444444,0.3333333333333333,1.51420646157875
+BWk_cold_desert,BWk cold desert,cool_nights,0.90,18,17,7,0.9444444444444444,0.3888888888888889,1.7989378963147198
+BWk_cold_desert,BWk cold desert,cool_nights,Delta1,18,16,1,0.8888888888888888,0.05555555555555555,0.8479463798728707
+BWk_cold_desert,BWk cold desert,warm_days,0.10,18,18,2,1.0,0.1111111111111111,1.4255351352520034
+BWk_cold_desert,BWk cold desert,warm_days,0.50,18,18,13,1.0,0.7222222222222222,2.1546115709030986
+BWk_cold_desert,BWk cold desert,warm_days,0.90,18,18,8,1.0,0.4444444444444444,1.8294503626006962
+BWk_cold_desert,BWk cold desert,warm_days,Delta1,18,18,0,1.0,0.0,1.0333309323972417
+BWk_cold_desert,BWk cold desert,warm_nights,0.10,18,18,6,1.0,0.3333333333333333,1.195835599529659
+BWk_cold_desert,BWk cold desert,warm_nights,0.50,18,18,11,1.0,0.6111111111111112,3.3154227430320216
+BWk_cold_desert,BWk cold desert,warm_nights,0.90,18,18,9,1.0,0.5,1.95649137797942
+BWk_cold_desert,BWk cold desert,warm_nights,Delta1,18,17,1,0.9444444444444444,0.05555555555555555,0.7621212765120137
+BSh_hot_steppe,BSh hot steppe,cool_days,0.10,10,10,3,1.0,0.3,1.2935836476435307
+BSh_hot_steppe,BSh hot steppe,cool_days,0.50,10,10,9,1.0,0.9,2.4439489017388834
+BSh_hot_steppe,BSh hot steppe,cool_days,0.90,10,10,5,1.0,0.5,2.0857499251361777
+BSh_hot_steppe,BSh hot steppe,cool_days,Delta1,10,10,0,1.0,0.0,1.2859282256951219
+BSh_hot_steppe,BSh hot steppe,cool_nights,0.10,10,8,4,0.8,0.4,1.8902889627080286
+BSh_hot_steppe,BSh hot steppe,cool_nights,0.50,10,8,5,0.8,0.5,2.0125391974535667
+BSh_hot_steppe,BSh hot steppe,cool_nights,0.90,10,8,2,0.8,0.2,1.3697328568350957
+BSh_hot_steppe,BSh hot steppe,cool_nights,Delta1,10,9,0,0.9,0.0,0.5030767410843927
+BSh_hot_steppe,BSh hot steppe,warm_days,0.10,10,10,9,1.0,0.9,2.6382184854895394
+BSh_hot_steppe,BSh hot steppe,warm_days,0.50,10,10,10,1.0,1.0,3.198401237836075
+BSh_hot_steppe,BSh hot steppe,warm_days,0.90,10,10,6,1.0,0.6,2.1381527315392193
+BSh_hot_steppe,BSh hot steppe,warm_days,Delta1,10,10,0,1.0,0.0,1.1527825583566154
+BSh_hot_steppe,BSh hot steppe,warm_nights,0.10,10,9,6,0.9,0.6,2.7588584207409714
+BSh_hot_steppe,BSh hot steppe,warm_nights,0.50,10,9,7,0.9,0.7,2.7778039188501578
+BSh_hot_steppe,BSh hot steppe,warm_nights,0.90,10,9,6,0.9,0.6,2.1852389222881605
+BSh_hot_steppe,BSh hot steppe,warm_nights,Delta1,10,8,1,0.8,0.1,1.0378200208698454
+BSk_cold_steppe,BSk cold steppe,cool_days,0.10,35,34,21,0.9714285714285714,0.6,2.4180216278149747
+BSk_cold_steppe,BSk cold steppe,cool_days,0.50,35,35,21,1.0,0.6,2.39513502349835
+BSk_cold_steppe,BSk cold steppe,cool_days,0.90,35,35,3,1.0,0.08571428571428572,1.5112694407621496
+BSk_cold_steppe,BSk cold steppe,cool_days,Delta1,35,35,0,1.0,0.0,0.7456913123911633
+BSk_cold_steppe,BSk cold steppe,cool_nights,0.10,35,30,17,0.8571428571428571,0.4857142857142857,2.1271890646812848
+BSk_cold_steppe,BSk cold steppe,cool_nights,0.50,35,31,21,0.8857142857142857,0.6,2.1841488312687924
+BSk_cold_steppe,BSk cold steppe,cool_nights,0.90,35,32,9,0.9142857142857143,0.2571428571428571,1.6934623032548333
+BSk_cold_steppe,BSk cold steppe,cool_nights,Delta1,35,29,1,0.8285714285714286,0.02857142857142857,0.6600812962427016
+BSk_cold_steppe,BSk cold steppe,warm_days,0.10,35,35,15,1.0,0.42857142857142855,1.8574136105237409
+BSk_cold_steppe,BSk cold steppe,warm_days,0.50,35,35,31,1.0,0.8857142857142857,3.435500166190962
+BSk_cold_steppe,BSk cold steppe,warm_days,0.90,35,35,24,1.0,0.6857142857142857,2.596038244502783
+BSk_cold_steppe,BSk cold steppe,warm_days,Delta1,35,35,1,1.0,0.02857142857142857,1.2747543024122692
+BSk_cold_steppe,BSk cold steppe,warm_nights,0.10,35,32,17,0.9142857142857143,0.4857142857142857,1.900708511503767
+BSk_cold_steppe,BSk cold steppe,warm_nights,0.50,35,31,27,0.8857142857142857,0.7714285714285715,3.2746531320290804
+BSk_cold_steppe,BSk cold steppe,warm_nights,0.90,35,31,25,0.8857142857142857,0.7142857142857143,3.1135550996600188
+BSk_cold_steppe,BSk cold steppe,warm_nights,Delta1,35,31,5,0.8857142857142857,0.14285714285714285,1.271523607620618
+C_temperate,C temperate,cool_days,0.10,15,15,5,1.0,0.3333333333333333,1.7369654234702652
+C_temperate,C temperate,cool_days,0.50,15,15,8,1.0,0.5333333333333333,2.160199636294005
+C_temperate,C temperate,cool_days,0.90,15,15,3,1.0,0.2,1.7831099423143897
+C_temperate,C temperate,cool_days,Delta1,15,15,0,1.0,0.0,1.0406764992649598
+C_temperate,C temperate,cool_nights,0.10,15,14,10,0.9333333333333333,0.6666666666666666,2.5879517697302203
+C_temperate,C temperate,cool_nights,0.50,15,14,11,0.9333333333333333,0.7333333333333333,3.34469149117976
+C_temperate,C temperate,cool_nights,0.90,15,14,11,0.9333333333333333,0.7333333333333333,2.8394805386161592
+C_temperate,C temperate,cool_nights,Delta1,15,14,1,0.9333333333333333,0.06666666666666667,1.4371346730458778
+C_temperate,C temperate,warm_days,0.10,15,15,9,1.0,0.6,2.1815555050937583
+C_temperate,C temperate,warm_days,0.50,15,15,10,1.0,0.6666666666666666,3.5738061684170512
+C_temperate,C temperate,warm_days,0.90,15,15,9,1.0,0.6,2.484590952963216
+C_temperate,C temperate,warm_days,Delta1,15,14,2,0.9333333333333333,0.13333333333333333,1.18108061168767
+C_temperate,C temperate,warm_nights,0.10,15,14,13,0.9333333333333333,0.8666666666666667,2.76981143335635
+C_temperate,C temperate,warm_nights,0.50,15,14,14,0.9333333333333333,0.9333333333333333,3.573207257971025
+C_temperate,C temperate,warm_nights,0.90,15,14,12,0.9333333333333333,0.8,3.3651583285214723
+C_temperate,C temperate,warm_nights,Delta1,15,12,0,0.8,0.0,1.2025559254244391
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_days,0.10,10,10,4,1.0,0.4,1.8581939461410948
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_days,0.50,10,10,8,1.0,0.8,3.2755073895645683
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_days,0.90,10,10,4,1.0,0.4,1.7702456286573054
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_days,Delta1,10,10,1,1.0,0.1,1.0357775856476374
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_nights,0.10,10,9,4,0.9,0.4,1.8276551477675163
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_nights,0.50,10,9,5,0.9,0.5,2.0683356681523923
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_nights,0.90,10,9,4,0.9,0.4,1.4889326446783018
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_nights,Delta1,10,9,0,0.9,0.0,0.5719952288033145
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_days,0.10,10,10,4,1.0,0.4,1.6506560054152972
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_days,0.50,10,10,10,1.0,1.0,3.576632354476594
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_days,0.90,10,10,6,1.0,0.6,2.1795943631458403
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_days,Delta1,10,10,0,1.0,0.0,1.2116385196465065
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_nights,0.10,10,9,4,0.9,0.4,1.4551918291662895
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_nights,0.50,10,9,9,0.9,0.9,3.982091971827976
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_nights,0.90,10,9,8,0.9,0.8,3.367258768173373
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_nights,Delta1,10,9,0,0.9,0.0,0.9145710533560825

@@ -1,0 +1,13 @@
+{
+  "original_files": 705,
+  "original_bytes": 756768648,
+  "remove_files": 583,
+  "remove_bytes": 699588424,
+  "archive": "archives/output_cleanup_20260917.zip",
+  "archive_sha256": "b100424322fda6f4837e81b03cbc395e1a9b2c38c1c412aba01b1c0b9457a4ed",
+  "archived_files": 584,
+  "archive_contents_sha256_verified": true,
+  "deletion_completed": true,
+  "active_files_excluding_audit": 170,
+  "active_bytes_excluding_audit": 97540610
+}

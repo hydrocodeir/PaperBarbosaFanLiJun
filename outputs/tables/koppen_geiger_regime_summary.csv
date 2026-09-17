@@ -1,0 +1,7 @@
+climate_regime,climate_regime_label,n_stations,kg_classes,mean_latitude,mean_longitude,mean_elevation_m,median_elevation_m,mean_kg_confidence_pct,nearest_valid_assignments
+BWh_hot_desert,BWh hot desert,36,BWh:36,29.913083333333336,55.73783333333333,575.0527777777778,545.05,91.08333333333333,1
+BWk_cold_desert,BWk cold desert,18,BWk:18,34.464833333333324,54.751999999999995,1401.7055555555555,1408.1,77.77777777777777,0
+BSh_hot_steppe,BSh hot steppe,10,BSh:10,31.244400000000002,50.8149,495.39,276.25,88.4,0
+BSk_cold_steppe,BSk cold steppe,35,BSk:35,35.60940000000001,50.867714285714285,1442.1285714285714,1418.6,76.2,0
+C_temperate,C temperate,15,"Cfa:2, Csa:13",35.532533333333326,48.826800000000006,671.5733333333334,545.0,90.06666666666666,0
+Dsa_cold_dry_summer,Dsa cold dry-summer,10,Dsa:10,34.143,48.754099999999994,1917.11,2035.5,85.0,0

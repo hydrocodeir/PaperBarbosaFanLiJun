@@ -1,0 +1,13 @@
+definition,definition_title,return_period_threshold_years,period,total_events,dry_dominant_events,hot_dominant_events,co_dominant_events,hot_dominant_fraction_pct,dry_dominant_fraction_pct
+annual_tmean,Annual precipitation + annual mean temperature,5.0,1991-2007,480,290,178,12,37.083333333333336,60.416666666666664
+annual_tmean,Annual precipitation + annual mean temperature,5.0,2008-2024,1101,466,581,54,52.770208900999094,42.32515894641235
+annual_tmean,Annual precipitation + annual mean temperature,10.0,1991-2007,216,134,74,8,34.25925925925926,62.03703703703704
+annual_tmean,Annual precipitation + annual mean temperature,10.0,2008-2024,677,290,342,45,50.51698670605613,42.836041358936484
+annual_tmean,Annual precipitation + annual mean temperature,20.0,1991-2007,53,31,19,3,35.84905660377358,58.490566037735846
+annual_tmean,Annual precipitation + annual mean temperature,20.0,2008-2024,291,125,136,30,46.735395189003434,42.955326460481096
+warm_season_tmax,Warm-season precipitation + maximum temperature,5.0,1991-2007,410,314,90,6,21.951219512195124,76.58536585365853
+warm_season_tmax,Warm-season precipitation + maximum temperature,5.0,2008-2024,1166,257,867,42,74.35677530017152,22.041166380789022
+warm_season_tmax,Warm-season precipitation + maximum temperature,10.0,1991-2007,176,147,27,2,15.340909090909092,83.52272727272727
+warm_season_tmax,Warm-season precipitation + maximum temperature,10.0,2008-2024,706,141,535,30,75.77903682719547,19.97167138810198
+warm_season_tmax,Warm-season precipitation + maximum temperature,20.0,1991-2007,44,39,4,1,9.090909090909092,88.63636363636364
+warm_season_tmax,Warm-season precipitation + maximum temperature,20.0,2008-2024,274,51,205,18,74.81751824817518,18.613138686131386

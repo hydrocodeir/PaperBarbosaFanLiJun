@@ -1,0 +1,14 @@
+{
+  "Manuscript_Q1_2026.md_links": "PASS",
+  "Supplementary_Q1_2026.md_links": "PASS",
+  "reference_count": 25,
+  "supplementary_figure_count": 11,
+  "main_figure_count": 10,
+  "main_table_count": 5,
+  "regime_tables_generated_from_CSV": "PASS",
+  "conclusion_word_count": 443,
+  "all_references_cited_in_body": "PASS",
+  "table1_OLS_values": "PASS",
+  "table1_all_coefficients_and_FDR_counts": "PASS",
+  "table3_all_components_and_intervals": "PASS"
+}

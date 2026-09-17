@@ -1,0 +1,5 @@
+index_name,n_stations,mean_late_minus_baseline_days,median_late_minus_baseline_days,direction_consistent_stations,direction_consistency_fraction
+cool_days,124,-10.689491845125147,-11.176470588235295,124,1.0
+cool_nights,124,-8.192747865275141,-10.70588235294118,110,0.8870967741935484
+warm_days,124,36.78412961958977,35.91176470588236,124,1.0
+warm_nights,124,28.409218848829855,26.705882352941174,117,0.9435483870967742

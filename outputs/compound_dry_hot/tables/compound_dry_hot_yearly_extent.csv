@@ -1,0 +1,205 @@
+definition,definition_title,year,return_period_threshold_years,n_valid_stations,affected_stations,affected_fraction_pct
+annual_tmean,Annual precipitation + annual mean temperature,1991,5.0,113,5,4.424778761061947
+annual_tmean,Annual precipitation + annual mean temperature,1991,10.0,113,2,1.7699115044247788
+annual_tmean,Annual precipitation + annual mean temperature,1991,20.0,113,1,0.8849557522123894
+annual_tmean,Annual precipitation + annual mean temperature,1992,5.0,122,2,1.639344262295082
+annual_tmean,Annual precipitation + annual mean temperature,1992,10.0,122,1,0.819672131147541
+annual_tmean,Annual precipitation + annual mean temperature,1992,20.0,122,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,1993,5.0,120,4,3.3333333333333335
+annual_tmean,Annual precipitation + annual mean temperature,1993,10.0,120,1,0.8333333333333334
+annual_tmean,Annual precipitation + annual mean temperature,1993,20.0,120,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,1994,5.0,122,14,11.475409836065573
+annual_tmean,Annual precipitation + annual mean temperature,1994,10.0,122,6,4.918032786885246
+annual_tmean,Annual precipitation + annual mean temperature,1994,20.0,122,1,0.819672131147541
+annual_tmean,Annual precipitation + annual mean temperature,1995,5.0,123,49,39.83739837398374
+annual_tmean,Annual precipitation + annual mean temperature,1995,10.0,123,23,18.69918699186992
+annual_tmean,Annual precipitation + annual mean temperature,1995,20.0,123,3,2.4390243902439024
+annual_tmean,Annual precipitation + annual mean temperature,1996,5.0,123,8,6.504065040650406
+annual_tmean,Annual precipitation + annual mean temperature,1996,10.0,123,2,1.6260162601626016
+annual_tmean,Annual precipitation + annual mean temperature,1996,20.0,123,2,1.6260162601626016
+annual_tmean,Annual precipitation + annual mean temperature,1997,5.0,123,24,19.51219512195122
+annual_tmean,Annual precipitation + annual mean temperature,1997,10.0,123,6,4.878048780487805
+annual_tmean,Annual precipitation + annual mean temperature,1997,20.0,123,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,1998,5.0,123,54,43.90243902439025
+annual_tmean,Annual precipitation + annual mean temperature,1998,10.0,123,19,15.447154471544716
+annual_tmean,Annual precipitation + annual mean temperature,1998,20.0,123,1,0.8130081300813008
+annual_tmean,Annual precipitation + annual mean temperature,1999,5.0,123,56,45.52845528455285
+annual_tmean,Annual precipitation + annual mean temperature,1999,10.0,123,31,25.203252032520325
+annual_tmean,Annual precipitation + annual mean temperature,1999,20.0,123,7,5.691056910569106
+annual_tmean,Annual precipitation + annual mean temperature,2000,5.0,123,42,34.146341463414636
+annual_tmean,Annual precipitation + annual mean temperature,2000,10.0,123,13,10.56910569105691
+annual_tmean,Annual precipitation + annual mean temperature,2000,20.0,123,3,2.4390243902439024
+annual_tmean,Annual precipitation + annual mean temperature,2001,5.0,123,97,78.86178861788618
+annual_tmean,Annual precipitation + annual mean temperature,2001,10.0,123,66,53.65853658536585
+annual_tmean,Annual precipitation + annual mean temperature,2001,20.0,123,28,22.764227642276424
+annual_tmean,Annual precipitation + annual mean temperature,2002,5.0,123,33,26.829268292682926
+annual_tmean,Annual precipitation + annual mean temperature,2002,10.0,123,9,7.317073170731708
+annual_tmean,Annual precipitation + annual mean temperature,2002,20.0,123,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,2003,5.0,123,19,15.447154471544716
+annual_tmean,Annual precipitation + annual mean temperature,2003,10.0,123,8,6.504065040650406
+annual_tmean,Annual precipitation + annual mean temperature,2003,20.0,123,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,2004,5.0,123,14,11.382113821138212
+annual_tmean,Annual precipitation + annual mean temperature,2004,10.0,123,7,5.691056910569106
+annual_tmean,Annual precipitation + annual mean temperature,2004,20.0,123,1,0.8130081300813008
+annual_tmean,Annual precipitation + annual mean temperature,2005,5.0,123,23,18.69918699186992
+annual_tmean,Annual precipitation + annual mean temperature,2005,10.0,123,10,8.130081300813009
+annual_tmean,Annual precipitation + annual mean temperature,2005,20.0,123,2,1.6260162601626016
+annual_tmean,Annual precipitation + annual mean temperature,2006,5.0,123,14,11.382113821138212
+annual_tmean,Annual precipitation + annual mean temperature,2006,10.0,123,4,3.252032520325203
+annual_tmean,Annual precipitation + annual mean temperature,2006,20.0,123,2,1.6260162601626016
+annual_tmean,Annual precipitation + annual mean temperature,2007,5.0,123,22,17.88617886178862
+annual_tmean,Annual precipitation + annual mean temperature,2007,10.0,123,8,6.504065040650406
+annual_tmean,Annual precipitation + annual mean temperature,2007,20.0,123,2,1.6260162601626016
+annual_tmean,Annual precipitation + annual mean temperature,2008,5.0,123,78,63.41463414634146
+annual_tmean,Annual precipitation + annual mean temperature,2008,10.0,123,49,39.83739837398374
+annual_tmean,Annual precipitation + annual mean temperature,2008,20.0,123,20,16.260162601626018
+annual_tmean,Annual precipitation + annual mean temperature,2009,5.0,123,9,7.317073170731708
+annual_tmean,Annual precipitation + annual mean temperature,2009,10.0,123,2,1.6260162601626016
+annual_tmean,Annual precipitation + annual mean temperature,2009,20.0,123,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,2010,5.0,123,115,93.4959349593496
+annual_tmean,Annual precipitation + annual mean temperature,2010,10.0,123,99,80.48780487804878
+annual_tmean,Annual precipitation + annual mean temperature,2010,20.0,123,50,40.65040650406504
+annual_tmean,Annual precipitation + annual mean temperature,2011,5.0,123,15,12.195121951219512
+annual_tmean,Annual precipitation + annual mean temperature,2011,10.0,123,3,2.4390243902439024
+annual_tmean,Annual precipitation + annual mean temperature,2011,20.0,123,1,0.8130081300813008
+annual_tmean,Annual precipitation + annual mean temperature,2012,5.0,123,20,16.260162601626018
+annual_tmean,Annual precipitation + annual mean temperature,2012,10.0,123,5,4.065040650406504
+annual_tmean,Annual precipitation + annual mean temperature,2012,20.0,123,1,0.8130081300813008
+annual_tmean,Annual precipitation + annual mean temperature,2013,5.0,121,49,40.49586776859504
+annual_tmean,Annual precipitation + annual mean temperature,2013,10.0,121,10,8.264462809917354
+annual_tmean,Annual precipitation + annual mean temperature,2013,20.0,121,1,0.8264462809917356
+annual_tmean,Annual precipitation + annual mean temperature,2014,5.0,123,34,27.642276422764226
+annual_tmean,Annual precipitation + annual mean temperature,2014,10.0,123,17,13.821138211382113
+annual_tmean,Annual precipitation + annual mean temperature,2014,20.0,123,4,3.252032520325203
+annual_tmean,Annual precipitation + annual mean temperature,2015,5.0,122,64,52.459016393442624
+annual_tmean,Annual precipitation + annual mean temperature,2015,10.0,122,19,15.573770491803279
+annual_tmean,Annual precipitation + annual mean temperature,2015,20.0,122,4,3.278688524590164
+annual_tmean,Annual precipitation + annual mean temperature,2016,5.0,122,84,68.85245901639344
+annual_tmean,Annual precipitation + annual mean temperature,2016,10.0,122,46,37.704918032786885
+annual_tmean,Annual precipitation + annual mean temperature,2016,20.0,122,19,15.573770491803279
+annual_tmean,Annual precipitation + annual mean temperature,2017,5.0,122,87,71.31147540983606
+annual_tmean,Annual precipitation + annual mean temperature,2017,10.0,122,53,43.442622950819676
+annual_tmean,Annual precipitation + annual mean temperature,2017,20.0,122,13,10.655737704918034
+annual_tmean,Annual precipitation + annual mean temperature,2018,5.0,122,100,81.9672131147541
+annual_tmean,Annual precipitation + annual mean temperature,2018,10.0,122,54,44.26229508196721
+annual_tmean,Annual precipitation + annual mean temperature,2018,20.0,122,15,12.295081967213115
+annual_tmean,Annual precipitation + annual mean temperature,2019,5.0,123,12,9.75609756097561
+annual_tmean,Annual precipitation + annual mean temperature,2019,10.0,123,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,2019,20.0,123,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,2020,5.0,122,11,9.01639344262295
+annual_tmean,Annual precipitation + annual mean temperature,2020,10.0,122,1,0.819672131147541
+annual_tmean,Annual precipitation + annual mean temperature,2020,20.0,122,0,0.0
+annual_tmean,Annual precipitation + annual mean temperature,2021,5.0,122,121,99.18032786885246
+annual_tmean,Annual precipitation + annual mean temperature,2021,10.0,122,115,94.26229508196721
+annual_tmean,Annual precipitation + annual mean temperature,2021,20.0,122,85,69.67213114754098
+annual_tmean,Annual precipitation + annual mean temperature,2022,5.0,123,115,93.4959349593496
+annual_tmean,Annual precipitation + annual mean temperature,2022,10.0,123,95,77.23577235772358
+annual_tmean,Annual precipitation + annual mean temperature,2022,20.0,123,29,23.577235772357724
+annual_tmean,Annual precipitation + annual mean temperature,2023,5.0,123,101,82.11382113821138
+annual_tmean,Annual precipitation + annual mean temperature,2023,10.0,123,71,57.72357723577236
+annual_tmean,Annual precipitation + annual mean temperature,2023,20.0,123,46,37.39837398373984
+annual_tmean,Annual precipitation + annual mean temperature,2024,5.0,120,86,71.66666666666667
+annual_tmean,Annual precipitation + annual mean temperature,2024,10.0,120,38,31.666666666666668
+annual_tmean,Annual precipitation + annual mean temperature,2024,20.0,120,3,2.5
+warm_season_tmax,Warm-season precipitation + maximum temperature,1991,5.0,114,33,28.94736842105263
+warm_season_tmax,Warm-season precipitation + maximum temperature,1991,10.0,114,13,11.403508771929825
+warm_season_tmax,Warm-season precipitation + maximum temperature,1991,20.0,114,2,1.7543859649122806
+warm_season_tmax,Warm-season precipitation + maximum temperature,1992,5.0,121,6,4.958677685950414
+warm_season_tmax,Warm-season precipitation + maximum temperature,1992,10.0,121,1,0.8264462809917356
+warm_season_tmax,Warm-season precipitation + maximum temperature,1992,20.0,121,1,0.8264462809917356
+warm_season_tmax,Warm-season precipitation + maximum temperature,1993,5.0,122,11,9.01639344262295
+warm_season_tmax,Warm-season precipitation + maximum temperature,1993,10.0,122,5,4.098360655737705
+warm_season_tmax,Warm-season precipitation + maximum temperature,1993,20.0,122,1,0.819672131147541
+warm_season_tmax,Warm-season precipitation + maximum temperature,1994,5.0,122,22,18.0327868852459
+warm_season_tmax,Warm-season precipitation + maximum temperature,1994,10.0,122,8,6.557377049180328
+warm_season_tmax,Warm-season precipitation + maximum temperature,1994,20.0,122,4,3.278688524590164
+warm_season_tmax,Warm-season precipitation + maximum temperature,1995,5.0,122,3,2.459016393442623
+warm_season_tmax,Warm-season precipitation + maximum temperature,1995,10.0,122,1,0.819672131147541
+warm_season_tmax,Warm-season precipitation + maximum temperature,1995,20.0,122,0,0.0
+warm_season_tmax,Warm-season precipitation + maximum temperature,1996,5.0,123,14,11.382113821138212
+warm_season_tmax,Warm-season precipitation + maximum temperature,1996,10.0,123,5,4.065040650406504
+warm_season_tmax,Warm-season precipitation + maximum temperature,1996,20.0,123,1,0.8130081300813008
+warm_season_tmax,Warm-season precipitation + maximum temperature,1997,5.0,123,15,12.195121951219512
+warm_season_tmax,Warm-season precipitation + maximum temperature,1997,10.0,123,5,4.065040650406504
+warm_season_tmax,Warm-season precipitation + maximum temperature,1997,20.0,123,1,0.8130081300813008
+warm_season_tmax,Warm-season precipitation + maximum temperature,1998,5.0,123,17,13.821138211382113
+warm_season_tmax,Warm-season precipitation + maximum temperature,1998,10.0,123,7,5.691056910569106
+warm_season_tmax,Warm-season precipitation + maximum temperature,1998,20.0,123,3,2.4390243902439024
+warm_season_tmax,Warm-season precipitation + maximum temperature,1999,5.0,123,10,8.130081300813009
+warm_season_tmax,Warm-season precipitation + maximum temperature,1999,10.0,123,6,4.878048780487805
+warm_season_tmax,Warm-season precipitation + maximum temperature,1999,20.0,123,2,1.6260162601626016
+warm_season_tmax,Warm-season precipitation + maximum temperature,2000,5.0,123,28,22.764227642276424
+warm_season_tmax,Warm-season precipitation + maximum temperature,2000,10.0,123,8,6.504065040650406
+warm_season_tmax,Warm-season precipitation + maximum temperature,2000,20.0,123,0,0.0
+warm_season_tmax,Warm-season precipitation + maximum temperature,2001,5.0,123,25,20.32520325203252
+warm_season_tmax,Warm-season precipitation + maximum temperature,2001,10.0,123,14,11.382113821138212
+warm_season_tmax,Warm-season precipitation + maximum temperature,2001,20.0,123,4,3.252032520325203
+warm_season_tmax,Warm-season precipitation + maximum temperature,2002,5.0,121,61,50.413223140495866
+warm_season_tmax,Warm-season precipitation + maximum temperature,2002,10.0,121,35,28.925619834710744
+warm_season_tmax,Warm-season precipitation + maximum temperature,2002,20.0,121,7,5.785123966942149
+warm_season_tmax,Warm-season precipitation + maximum temperature,2003,5.0,123,45,36.58536585365854
+warm_season_tmax,Warm-season precipitation + maximum temperature,2003,10.0,123,18,14.634146341463415
+warm_season_tmax,Warm-season precipitation + maximum temperature,2003,20.0,123,3,2.4390243902439024
+warm_season_tmax,Warm-season precipitation + maximum temperature,2004,5.0,123,7,5.691056910569106
+warm_season_tmax,Warm-season precipitation + maximum temperature,2004,10.0,123,4,3.252032520325203
+warm_season_tmax,Warm-season precipitation + maximum temperature,2004,20.0,123,0,0.0
+warm_season_tmax,Warm-season precipitation + maximum temperature,2005,5.0,123,38,30.89430894308943
+warm_season_tmax,Warm-season precipitation + maximum temperature,2005,10.0,123,11,8.94308943089431
+warm_season_tmax,Warm-season precipitation + maximum temperature,2005,20.0,123,2,1.6260162601626016
+warm_season_tmax,Warm-season precipitation + maximum temperature,2006,5.0,123,63,51.21951219512195
+warm_season_tmax,Warm-season precipitation + maximum temperature,2006,10.0,123,33,26.829268292682926
+warm_season_tmax,Warm-season precipitation + maximum temperature,2006,20.0,123,12,9.75609756097561
+warm_season_tmax,Warm-season precipitation + maximum temperature,2007,5.0,123,12,9.75609756097561
+warm_season_tmax,Warm-season precipitation + maximum temperature,2007,10.0,123,2,1.6260162601626016
+warm_season_tmax,Warm-season precipitation + maximum temperature,2007,20.0,123,1,0.8130081300813008
+warm_season_tmax,Warm-season precipitation + maximum temperature,2008,5.0,123,45,36.58536585365854
+warm_season_tmax,Warm-season precipitation + maximum temperature,2008,10.0,123,19,15.447154471544716
+warm_season_tmax,Warm-season precipitation + maximum temperature,2008,20.0,123,2,1.6260162601626016
+warm_season_tmax,Warm-season precipitation + maximum temperature,2009,5.0,123,12,9.75609756097561
+warm_season_tmax,Warm-season precipitation + maximum temperature,2009,10.0,123,8,6.504065040650406
+warm_season_tmax,Warm-season precipitation + maximum temperature,2009,20.0,123,2,1.6260162601626016
+warm_season_tmax,Warm-season precipitation + maximum temperature,2010,5.0,123,55,44.71544715447155
+warm_season_tmax,Warm-season precipitation + maximum temperature,2010,10.0,123,24,19.51219512195122
+warm_season_tmax,Warm-season precipitation + maximum temperature,2010,20.0,123,8,6.504065040650406
+warm_season_tmax,Warm-season precipitation + maximum temperature,2011,5.0,123,37,30.08130081300813
+warm_season_tmax,Warm-season precipitation + maximum temperature,2011,10.0,123,16,13.008130081300813
+warm_season_tmax,Warm-season precipitation + maximum temperature,2011,20.0,123,3,2.4390243902439024
+warm_season_tmax,Warm-season precipitation + maximum temperature,2012,5.0,123,17,13.821138211382113
+warm_season_tmax,Warm-season precipitation + maximum temperature,2012,10.0,123,5,4.065040650406504
+warm_season_tmax,Warm-season precipitation + maximum temperature,2012,20.0,123,1,0.8130081300813008
+warm_season_tmax,Warm-season precipitation + maximum temperature,2013,5.0,121,81,66.94214876033058
+warm_season_tmax,Warm-season precipitation + maximum temperature,2013,10.0,121,59,48.760330578512395
+warm_season_tmax,Warm-season precipitation + maximum temperature,2013,20.0,121,17,14.049586776859504
+warm_season_tmax,Warm-season precipitation + maximum temperature,2014,5.0,123,80,65.04065040650407
+warm_season_tmax,Warm-season precipitation + maximum temperature,2014,10.0,123,48,39.02439024390244
+warm_season_tmax,Warm-season precipitation + maximum temperature,2014,20.0,123,16,13.008130081300813
+warm_season_tmax,Warm-season precipitation + maximum temperature,2015,5.0,122,56,45.90163934426229
+warm_season_tmax,Warm-season precipitation + maximum temperature,2015,10.0,122,20,16.39344262295082
+warm_season_tmax,Warm-season precipitation + maximum temperature,2015,20.0,122,5,4.098360655737705
+warm_season_tmax,Warm-season precipitation + maximum temperature,2016,5.0,122,55,45.08196721311475
+warm_season_tmax,Warm-season precipitation + maximum temperature,2016,10.0,122,23,18.852459016393443
+warm_season_tmax,Warm-season precipitation + maximum temperature,2016,20.0,122,6,4.918032786885246
+warm_season_tmax,Warm-season precipitation + maximum temperature,2017,5.0,122,88,72.1311475409836
+warm_season_tmax,Warm-season precipitation + maximum temperature,2017,10.0,122,60,49.18032786885246
+warm_season_tmax,Warm-season precipitation + maximum temperature,2017,20.0,122,34,27.868852459016395
+warm_season_tmax,Warm-season precipitation + maximum temperature,2018,5.0,120,101,84.16666666666667
+warm_season_tmax,Warm-season precipitation + maximum temperature,2018,10.0,120,58,48.333333333333336
+warm_season_tmax,Warm-season precipitation + maximum temperature,2018,20.0,120,19,15.833333333333334
+warm_season_tmax,Warm-season precipitation + maximum temperature,2019,5.0,123,104,84.55284552845528
+warm_season_tmax,Warm-season precipitation + maximum temperature,2019,10.0,123,75,60.97560975609756
+warm_season_tmax,Warm-season precipitation + maximum temperature,2019,20.0,123,27,21.951219512195124
+warm_season_tmax,Warm-season precipitation + maximum temperature,2020,5.0,122,51,41.80327868852459
+warm_season_tmax,Warm-season precipitation + maximum temperature,2020,10.0,122,14,11.475409836065573
+warm_season_tmax,Warm-season precipitation + maximum temperature,2020,20.0,122,2,1.639344262295082
+warm_season_tmax,Warm-season precipitation + maximum temperature,2021,5.0,122,117,95.90163934426229
+warm_season_tmax,Warm-season precipitation + maximum temperature,2021,10.0,122,99,81.14754098360656
+warm_season_tmax,Warm-season precipitation + maximum temperature,2021,20.0,122,49,40.16393442622951
+warm_season_tmax,Warm-season precipitation + maximum temperature,2022,5.0,123,80,65.04065040650407
+warm_season_tmax,Warm-season precipitation + maximum temperature,2022,10.0,123,52,42.27642276422764
+warm_season_tmax,Warm-season precipitation + maximum temperature,2022,20.0,123,29,23.577235772357724
+warm_season_tmax,Warm-season precipitation + maximum temperature,2023,5.0,123,97,78.86178861788618
+warm_season_tmax,Warm-season precipitation + maximum temperature,2023,10.0,123,64,52.03252032520325
+warm_season_tmax,Warm-season precipitation + maximum temperature,2023,20.0,123,18,14.634146341463415
+warm_season_tmax,Warm-season precipitation + maximum temperature,2024,5.0,120,90,75.0
+warm_season_tmax,Warm-season precipitation + maximum temperature,2024,10.0,120,62,51.666666666666664
+warm_season_tmax,Warm-season precipitation + maximum temperature,2024,20.0,120,36,30.0

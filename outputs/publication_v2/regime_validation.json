@@ -1,0 +1,12 @@
+{
+  "annual_bootstrap_matches_prior_network": true,
+  "warm_season_bootstrap_matches_prior_network": true,
+  "thermal_regime_means_reproduced_from_station_slopes": true,
+  "scope": "Within-regime intervals are exploratory; no between-regime significance claim or causal attribution. Synchronized primary draws, with threshold re-estimation.",
+  "source_hashes": {
+    "src\\paper_pipeline\\publication_regimes.py": "ea55211d0e2849a189e59013d77542ad3d0c7b527545fdd1cf29bcb1566d73e8",
+    "outputs\\tables\\koppen_geiger_station_assignments.csv": "735da72ddf6fb064f96244fda38e932c8cd28682f78ca3799f83793590b2bbaa",
+    "outputs\\tables\\qr_focus_slopes_and_bootstrap_summary.csv": "e63edebb43ef49c17055a69100cbd7e63e6e57d4c5698f3dd7ad217dcbb222ad",
+    "outputs\\publication_v2\\tables\\screened_annual_seasonal_aggregates.csv": "08be8a143208c21aba3ab44df4e9f32050d18342521dc6ec74dc96f07d77dfad"
+  }
+}

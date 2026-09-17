@@ -1,0 +1,25 @@
+climate_regime,climate_regime_label,index_name,n_stations,mean_late_minus_baseline_days,median_late_minus_baseline_days,direction_consistent_stations,direction_consistency_fraction
+BWh_hot_desert,BWh hot desert,cool_days,36,-11.116576213818863,-10.941176470588236,36,1.0
+BWh_hot_desert,BWh hot desert,cool_nights,36,-11.574707244008714,-11.516544117647062,36,1.0
+BWh_hot_desert,BWh hot desert,warm_days,36,32.00869319950203,30.705882352941178,36,1.0
+BWh_hot_desert,BWh hot desert,warm_nights,36,32.29827069716775,29.823529411764707,36,1.0
+BWk_cold_desert,BWk cold desert,cool_days,18,-8.039760348583878,-7.441176470588237,18,1.0
+BWk_cold_desert,BWk cold desert,cool_nights,18,-6.167374727668846,-8.882352941176471,15,0.8333333333333334
+BWk_cold_desert,BWk cold desert,warm_days,18,28.726511437908496,28.28860294117647,18,1.0
+BWk_cold_desert,BWk cold desert,warm_nights,18,24.33833061002179,23.264705882352942,18,1.0
+BSh_hot_steppe,BSh hot steppe,cool_days,10,-11.984558823529413,-11.882352941176473,10,1.0
+BSh_hot_steppe,BSh hot steppe,cool_nights,10,-6.580514705882353,-12.854779411764707,8,0.8
+BSh_hot_steppe,BSh hot steppe,warm_days,10,46.620588235294115,44.29044117647059,10,1.0
+BSh_hot_steppe,BSh hot steppe,warm_nights,10,30.86544117647059,31.941176470588236,9,0.9
+BSk_cold_steppe,BSk cold steppe,cool_days,35,-10.591281512605043,-11.352941176470589,35,1.0
+BSk_cold_steppe,BSk cold steppe,cool_nights,35,-5.509033613445378,-8.823529411764707,28,0.8
+BSk_cold_steppe,BSk cold steppe,warm_days,35,38.35609243697479,38.294117647058826,35,1.0
+BSk_cold_steppe,BSk cold steppe,warm_nights,35,25.347163865546218,25.64705882352941,31,0.8857142857142857
+C_temperate,C temperate,cool_days,15,-10.129411764705882,-9.058823529411768,15,1.0
+C_temperate,C temperate,cool_nights,15,-10.462745098039216,-14.0,14,0.9333333333333333
+C_temperate,C temperate,warm_days,15,41.121568627450976,42.76470588235294,15,1.0
+C_temperate,C temperate,warm_nights,15,31.83137254901961,33.1764705882353,14,0.9333333333333333
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_days,10,-13.81029411764706,-13.323529411764707,10,1.0
+Dsa_cold_dry_summer,Dsa cold dry-summer,cool_nights,10,-7.263602941176472,-10.759191176470587,9,0.9
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_days,10,46.63492647058823,46.529411764705884,10,1.0
+Dsa_cold_dry_summer,Dsa cold dry-summer,warm_nights,10,24.863970588235293,22.378676470588232,9,0.9

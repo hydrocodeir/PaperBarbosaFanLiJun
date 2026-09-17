@@ -1,0 +1,592 @@
+[
+  {
+    "check": "saved_bootstrap_all_summaries",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 32,
+      "max_abs_difference": 1.0658141036401503e-14,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "saved_bootstrap_replicate_counts",
+    "status": "MATCH",
+    "detail": 99200
+  },
+  {
+    "check": "all_40176_station_quantile_slopes",
+    "status": "MATCH",
+    "detail": {
+      "rows": 40176,
+      "columns_checked": 6,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "all_station_focal_slopes_and_analytic_intervals",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 19,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/data_homogeneity_tests_station_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 124,
+      "columns_checked": 25,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/data_quality_homogeneity_overview.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 9,
+      "columns_checked": 2,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/data_quality_station_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 124,
+      "columns_checked": 10,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/homogeneity_flag_exclusion_sensitivity.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 4,
+      "columns_checked": 22,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "cluster_assignments",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 4,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "cluster_assignments_reduced_features",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 4,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/alternative_clustering_assignments.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 8,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/alternative_clustering_sensitivity_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 16,
+      "columns_checked": 8,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/spatial_autocorrelation_moran.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 12,
+      "columns_checked": 5,
+      "max_abs_difference": 1.1102230246251565e-16,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/station_significance_fdr.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 1488,
+      "columns_checked": 12,
+      "max_abs_difference": 7.105427357601002e-15,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/driver_analysis_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 48,
+      "columns_checked": 9,
+      "max_abs_difference": 2.220446049250313e-16,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/regional_cluster_composites.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 64,
+      "columns_checked": 9,
+      "max_abs_difference": 7.105427357601002e-15,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/regional_cluster_spatial_validation.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 4,
+      "columns_checked": 8,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_fingerprint_component_scores.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 26,
+      "columns_checked": 6,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_fingerprint_network_components.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 16,
+      "columns_checked": 6,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_fingerprint_permutation_null.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 499,
+      "columns_checked": 2,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_signal_emergence_station_level.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 1984,
+      "columns_checked": 10,
+      "max_abs_difference": 3.552713678800501e-15,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_signal_emergence_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 16,
+      "columns_checked": 8,
+      "max_abs_difference": 4.440892098500626e-16,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/fixed_baseline_annual_extreme_indices.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 4216,
+      "columns_checked": 12,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/fixed_baseline_period_change_station_level.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 10,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/fixed_baseline_period_change_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 4,
+      "columns_checked": 6,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/fixed_baseline_qr_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 19,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/regional_temperature_anomaly.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 34,
+      "columns_checked": 4,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/regional_temperature_anomaly_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 1,
+      "columns_checked": 7,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/warming_link_network_quantile_response.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 16,
+      "columns_checked": 7,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/warming_link_station_quantile_response.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 17,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_regime_difference_tests.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 32,
+      "columns_checked": 13,
+      "max_abs_difference": 8.881784197001252e-16,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_regime_emergence_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 96,
+      "columns_checked": 10,
+      "max_abs_difference": 4.440892098500626e-16,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_regime_fingerprint_components.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 144,
+      "columns_checked": 5,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_regime_fingerprint_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 24,
+      "columns_checked": 5,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_regime_fixed_baseline_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 24,
+      "columns_checked": 8,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_regime_quantile_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 24,
+      "columns_checked": 20,
+      "max_abs_difference": 7.105427357601002e-15,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/climate_regime_warming_response_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 24,
+      "columns_checked": 15,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/koppen_geiger_regime_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 6,
+      "columns_checked": 10,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/koppen_geiger_station_assignments.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 124,
+      "columns_checked": 14,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_distribution_shift_tests.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 6,
+      "columns_checked": 13,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_driver_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 12,
+      "columns_checked": 10,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_moran_trend_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 6,
+      "columns_checked": 9,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_moran_yearly.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 204,
+      "columns_checked": 7,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_serial_dependence_sensitivity.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 6,
+      "columns_checked": 16,
+      "max_abs_difference": 1.9984014443252818e-15,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_station_frequency.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 738,
+      "columns_checked": 20,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_station_year.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 8309,
+      "columns_checked": 26,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_trend_summary.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 6,
+      "columns_checked": 17,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "compound_dry_hot/tables/compound_dry_hot_yearly_extent.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 204,
+      "columns_checked": 7,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/temperature_internal_consistency_compound_sensitivity.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 6,
+      "columns_checked": 18,
+      "max_abs_difference": 1.734723475976807e-18,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/temperature_internal_consistency_quantile_sensitivity.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 4,
+      "columns_checked": 19,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "tables/temperature_internal_consistency_screening.csv",
+    "status": "MATCH",
+    "detail": {
+      "rows": 2,
+      "columns_checked": 6,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "bootstrap_depth_scope",
+    "status": "CHECKED_AGGREGATION",
+    "detail": "400-replicate station estimates aggregated; individual alternative draws unavailable, ensemble not rerun."
+  },
+  {
+    "check": "bootstrap_method_scope",
+    "status": "CHECKED_AGGREGATION",
+    "detail": "Saved meboot station results checked; alternative ensemble not rerun."
+  },
+  {
+    "check": "interpolation_method_sensitivity_summary",
+    "status": "MATCH",
+    "detail": {
+      "rows": 24,
+      "columns_checked": 7,
+      "max_abs_difference": 2.5508484213787597e-12,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "completed",
+    "status": "DONE",
+    "detail": "Review mismatches before changing or deleting outputs."
+  },
+  {
+    "check": "clustering_feature_table_source_columns",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 57,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "publication_summary_table_source_columns",
+    "status": "MATCH",
+    "detail": {
+      "rows": 496,
+      "columns_checked": 43,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "clustering_feature_screening_summary",
+    "status": "MATCH",
+    "detail": {
+      "rows": 52,
+      "columns_checked": 7,
+      "max_abs_difference": 0.0,
+      "mismatched_columns": []
+    }
+  },
+  {
+    "check": "cluster_robustness_summary",
+    "status": "MATCH",
+    "detail": "ARI independently recomputed from assignments."
+  },
+  {
+    "check": "representative_station_selection",
+    "status": "MATCH",
+    "detail": "Every representative and centroid distance independently reconstructed."
+  },
+  {
+    "check": "primary_compound_intervals_and_station_means",
+    "status": "MATCH",
+    "detail": "All eight estimates and both interval families reproduced from saved fields."
+  },
+  {
+    "check": "regime_components_intervals_and_network_closure",
+    "status": "MATCH",
+    "detail": "48 group intervals and eight weighted network means checked."
+  },
+  {
+    "check": "all_sensitivity_station_means",
+    "status": "MATCH",
+    "detail": "All 80 scenario-component means and sample sizes reproduced; interval ordering checked."
+  },
+  {
+    "check": "dependency_check_completed",
+    "status": "DONE",
+    "detail": "No additional bootstrap realizations simulated in this check."
+  }
+]

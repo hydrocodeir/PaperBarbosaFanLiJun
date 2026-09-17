@@ -1,0 +1,3 @@
+screen,rows_flagged,stations_affected,action_in_sensitivity,total_input_rows,rows_flagged_pct
+tmin_greater_than_tmax,45,32,"set tmin, tmax, and tmean to missing",1539956,0.0029221614124039907
+tmean_outside_valid_min_max_range,2165,61,set tmean to missing,1539956,0.14058843239676977
