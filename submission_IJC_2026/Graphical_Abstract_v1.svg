@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="50mm" height="60mm" viewBox="0 0 590 709" role="img" aria-labelledby="title desc">
+  <title id="title">Graphical abstract: thermal change and dry–hot concurrence across Iran</title>
+  <desc id="desc">A compact summary of observed thermal-count trends, rising summer dry–hot frequency, and its partition into dry-frequency, hot-frequency, and excess-joint terms.</desc>
+  <rect width="590" height="709" fill="#ffffff"/>
+  <rect x="0" y="0" width="590" height="112" fill="#17365d"/>
+  <text x="295" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#ffffff">Distributional thermal change and</text>
+  <text x="295" y="61" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#ffffff">increasing dry–hot concurrence in Iran</text>
+  <text x="295" y="91" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#d9e8f5">[AUTHOR NAMES; corresponding author marked *]</text>
+
+  <rect x="24" y="133" width="542" height="142" rx="14" fill="#eef5fb" stroke="#2f6f9f" stroke-width="2"/>
+  <text x="44" y="164" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#17365d">Thermal-event counts, 1991–2024</text>
+  <line x1="70" y1="229" x2="505" y2="229" stroke="#8aaec7" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="120" cy="229" r="13" fill="#2f6f9f"/>
+  <circle cx="455" cy="229" r="13" fill="#d55e00"/>
+  <path d="M140 229 L432 229" stroke="#17365d" stroke-width="5" marker-end="url(#arrow)"/>
+  <text x="120" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#2f6f9f">q10</text>
+  <text x="120" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#17365d">+9.52 d decade⁻¹</text>
+  <text x="455" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#d55e00">q90</text>
+  <text x="455" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#17365d">+22.37 d decade⁻¹</text>
+  <text x="295" y="187" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#3f4f5f">Warm-day slopes were positive; q90 minus q10 uncertainty crossed zero.</text>
+
+  <rect x="24" y="294" width="542" height="146" rx="14" fill="#fff3e8" stroke="#d55e00" stroke-width="2"/>
+  <text x="44" y="326" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#8a3b00">June–September dry–hot frequency</text>
+  <text x="115" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#6c757d">5.54%</text>
+  <path d="M186 374 L390 374" stroke="#d55e00" stroke-width="10" stroke-linecap="round" marker-end="url(#arrowOrange)"/>
+  <text x="452" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#d55e00">18.39%</text>
+  <text x="295" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#8a3b00">Increase: +12.85 percentage points [7.20, 27.18]</text>
+
+  <rect x="24" y="459" width="542" height="137" rx="14" fill="#f3f7f4" stroke="#009e73" stroke-width="2"/>
+  <text x="44" y="490" font-family="Arial, sans-serif" font-size="19" font-weight="700" fill="#00664b">Exact partition of the summer increase</text>
+  <rect x="54" y="517" width="392" height="34" rx="6" fill="#e69f00"/>
+  <rect x="446" y="517" width="114" height="34" rx="6" fill="#56b4e9"/>
+  <text x="250" y="541" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#252525">Hot-frequency +9.91</text>
+  <text x="503" y="541" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#17365d">Dry +2.89</text>
+  <text x="295" y="579" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#00664b">Excess-joint term: +0.06 [−1.79, 2.37]</text>
+
+  <rect x="24" y="615" width="542" height="70" rx="12" fill="#17365d"/>
+  <text x="295" y="644" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff">More frequent hot seasons accounted for most of the point increase;</text>
+  <text x="295" y="668" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff">strengthened excess concurrence was not resolved.</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#17365d"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#d55e00"/>
+    </marker>
+  </defs>
+</svg>

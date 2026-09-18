@@ -1,0 +1,20 @@
+International Journal of Climatology upload set
+
+1. Manuscript_IJC_2026.docx
+   File designation: Main Document / Manuscript
+
+2. Supporting_Information_IJC_2026.docx
+   File designation: Supporting Information for Review
+
+3. Graphical_Abstract_50x60mm_300dpi.tiff
+   File designation: Graphical Abstract
+
+4. Cover_Letter_IJC_2026.docx
+   File designation: Cover Letter (optional)
+
+5. Figure_01_*.tiff through Figure_10_*.tiff
+   File designation: Figure, if the portal requests separate figure uploads.
+   The same figures are embedded in the main Word file for free-format review.
+
+STOP BEFORE UPLOAD: the manuscript, cover letter, and graphical abstract still contain
+highlighted author-supplied fields. Complete the checklist in the parent folder first.

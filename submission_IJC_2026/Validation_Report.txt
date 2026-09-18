@@ -1,0 +1,44 @@
+International Journal of Climatology submission validation
+==========================================================
+Journal-counted manuscript words (references and figure/table captions excluded; table text retained): 6738
+Abstract words: 235
+Running-title characters: 48
+References: 33
+Main figures / tables: 10 / 4
+Supporting figures / tables: 15 / 15
+
+New International Journal of Climatology citations:
+- Donat et al. (2014): PASS
+- Rahimzadeh et al. (2009): PASS
+- Rahimzadeh and Nassaji Zavareh (2014): PASS
+- Yosef et al. (2021): PASS
+- Wu et al. (2021): PASS
+- Najafi et al. (2025): PASS
+- uncited reference entries: none
+
+DOCX structure (paragraphs, tables, embedded figures):
+- Manuscript_IJC_2026.docx: (187, 4, 10)
+- Supporting_Information_IJC_2026.docx: (93, 15, 15)
+- Cover_Letter_IJC_2026.docx: (18, 0, 0)
+- Submission_Checklist_IJC_2026.docx: (37, 0, 0)
+
+Placeholder counts highlighted in yellow:
+- Manuscript_IJC_2026.docx: 11
+- Supporting_Information_IJC_2026.docx: 0
+- Cover_Letter_IJC_2026.docx: 8
+- Submission_Checklist_IJC_2026.docx: 0
+
+Automated checks:
+- main_word_count_at_or_below_7500: PASS
+- abstract_at_or_below_300: PASS
+- running_title_below_70_characters: PASS
+- main_figures_1_to_10_present: PASS
+- main_tables_1_to_4_present: PASS
+- supplement_figures_S1_to_S15_present: PASS
+- supplement_tables_S1_to_S15_present: PASS
+- six_new_IJC_references_cited: PASS
+- all_reference_entries_cited_in_main_text: PASS
+- all_docx_files_valid: PASS
+
+AUTHOR ACTION REQUIRED: highlighted placeholders contain factual information absent from the repository.
+Complete them and rerun this builder before submission.
