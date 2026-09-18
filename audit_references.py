@@ -47,7 +47,7 @@ def main():
             records[doi] = record
             title = record.get("title", [""])[0]
             reference = mapping.get(doi, "NEW CANDIDATE")
-            original_title = reference.split("). ", 1)[-1].split(". *", 1)[0].strip("*")
+            original_title = re.split(r"\s+\*", reference.split("). ", 1)[-1], maxsplit=1)[0].strip("* .")
             if reference.split("). ", 1)[-1].startswith("*"):
                 original_title = reference.split("). ", 1)[-1].split("*")[1]
             years = {key: value.get("date-parts", []) for key, value in record.items() if key.startswith("published") or key == "issued"}

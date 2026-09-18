@@ -1,0 +1,12 @@
+# Focused one-factor sensitivity; preserves the primary historical index estimand.
+baseline_years: [1991, 2007]
+analysis_years: [1991, 2024]
+annual_min_valid_fraction: 0.80
+minimum_window_samples: 15
+scenarios:
+  - {name: full_w11_t7, reference_end: 2024, window: 11, method: linear, correction: false}
+  - {name: full_w5_t7, reference_end: 2024, window: 5, method: linear, correction: false}
+  - {name: fixed_w11_t7_raw, reference_end: 2007, window: 11, method: linear, correction: false}
+  - {name: fixed_w11_t7_corrected, reference_end: 2007, window: 11, method: linear, correction: true}
+  - {name: fixed_w5_t7_corrected, reference_end: 2007, window: 5, method: linear, correction: true}
+  - {name: fixed_w5_t8_corrected, reference_end: 2007, window: 5, method: median_unbiased, correction: true}

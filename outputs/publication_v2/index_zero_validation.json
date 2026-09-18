@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "32_repeated_sample_quantile_checks_T7_T8": "PASS",
+    "all_29376_historical_station_year_count_matches": "PASS",
+    "literal_16_donor_replacement_counts_for_36_station_year_indices": "PASS",
+    "correction_leaves_out_of_base_counts_unchanged_and_rates_match": "PASS",
+    "all_120_index_sensitivity_intervals_reconstructed": "PASS",
+    "all_56_network_regime_component_dilution_identities": "PASS",
+    "joint_intervals_paired_tie_intervals_and_fixed_threshold_scaling": "PASS",
+    "all_621_station_rule_event_frequencies_independently_reclassified": "PASS",
+    "new_analysis_source_hashes": "PASS"
+  },
+  "scope": "Independent index-count/quantile/reclassification/arithmetic/provenance checks; not validation of nominal bootstrap coverage or homogenization."
+}

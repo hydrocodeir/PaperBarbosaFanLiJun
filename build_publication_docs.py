@@ -42,20 +42,34 @@ def main():
         pattern=rf"<!-- {tag} -->.*?<!-- END_{tag} -->"
         manuscript,count=re.subn(pattern,f"<!-- {tag} -->\n{markdown_table(frame)}\n<!-- END_{tag} -->",manuscript,flags=re.S)
         assert count==1,tag
+    intervals = pd.read_csv(OUT / "tables/thermal_network_intervals.csv")
+    metadata = json.loads((OUT / "thermal_network_metadata.json").read_text())
+    block = metadata["settings"]["primary_block_length"]
+    intervals = intervals.loc[(intervals.network == "common_fixed") & (intervals.block_length == block)]
+    labels = {"warm_days": "Warm days", "warm_nights": "Warm nights", "cool_days": "Cool days", "cool_nights": "Cool nights"}
+    metrics = ["OLS", "q10", "q50", "q90", "Delta1"]
+    records, display = [], []
+    for idx, label in labels.items():
+        d = intervals.loc[intervals.index_name == idx].set_index("metric")
+        record = {"index_name": idx, "n_stations": metadata["common_station_count"]}
+        cells = [label]
+        for metric in metrics:
+            r = d.loc[metric]
+            for key in ["estimate", "ci_low", "ci_high"]:
+                record[metric + "_" + key] = r[key]
+            cells.append(f"{r.estimate:.2f} [{r.ci_low:.2f}, {r.ci_high:.2f}]")
+        records.append(record)
+        display.append(cells)
+    t1 = pd.DataFrame(records)
+    t1.to_csv(OUT / "tables/table01_thermal_trends.csv", index=False)
+    frame = pd.DataFrame(display, columns=["Index", "OLS [95% interval]", "q10 [95% interval]", "q50 [95% interval]", "q90 [95% interval]", "Δ₁ [95% interval]"])
+    manuscript, count = re.subn(r"<!-- THERMAL_NETWORK_TABLE -->.*?<!-- END_THERMAL_NETWORK_TABLE -->",
+        "<!-- THERMAL_NETWORK_TABLE -->\n" + markdown_table(frame) + "\n<!-- END_THERMAL_NETWORK_TABLE -->", manuscript, flags=re.S)
+    assert count == 1
     manuscript += "## References\n\n" + "\n\n".join(refs) + "\n"
     manuscript_path.write_text(manuscript, encoding="utf-8")
     primary = pd.read_csv(OUT / "tables/compound_partition_primary.csv")
     scenarios = pd.read_csv(OUT / "tables/compound_partition_sensitivity.csv")
-    profiles = pd.read_csv(OUT / "tables/network_quantile_profiles_recomputed.csv")
-    t1 = profiles.loc[profiles.tau.round(2).isin([.1, .5, .9])].pivot(index="index_name", columns="tau", values="network_slope")
-    t1.columns = [f"q{t:.2f}" for t in t1.columns]
-    t1["OLS"] = profiles.groupby("index_name").ols_slope.first()
-    t1["Delta1"] = t1["q0.90"] - t1["q0.10"]
-    fdr = pd.read_csv(ROOT / "outputs/tables/station_significance_fdr.csv")
-    fdr = fdr.loc[fdr.tau == .5].copy()
-    fdr["retained"] = fdr.fdr_reject.astype(str).str.lower().isin(["true", "1", "1.0"])
-    t1["median_fdr_retained"] = fdr.groupby("index_name").retained.sum()
-    t1.to_csv(OUT / "tables/table01_thermal_trends.csv")
     joint = scenarios.loc[scenarios.component == "joint_change", ["definition", "scenario", "n_stations", "estimate_pp", "ci_low_pp", "ci_high_pp"]]
     from src.paper_pipeline.supplementary_curator import build_supplementary_document
     report = build_supplementary_document(ROOT, OUT, primary, scenarios)
@@ -96,17 +110,16 @@ def main():
         year=re.search(r"\((\d{4}[ab]?)\)",ref).group(1)
         assert re.search(re.escape(author)+r"[^;\n]{0,65}"+year,body), (author,year)
     checks["all_references_cited_in_body"] = "PASS"
-    for _, row in t1.iterrows():
-        assert f"{row.OLS:.2f}".replace("-", "−") in manuscript
-    checks["table1_OLS_values"] = "PASS"
-    labels = {"warm_days": "Warm days", "warm_nights": "Warm nights", "cool_days": "Cool days", "cool_nights": "Cool nights"}
-    for index, row in t1.iterrows():
-        line = next(line for line in manuscript.splitlines() if line.startswith(f"| {labels[index]} |"))
+    for row in records:
+        line = next(line for line in manuscript.splitlines() if line.startswith(f"| {labels[row['index_name']]} |"))
         cells = [c.strip().replace("−", "-") for c in line.split("|")[2:-1]]
-        expected = [row.OLS, row["q0.10"], row["q0.50"], row["q0.90"], row.Delta1]
-        assert all(abs(float(a) - b) <= .0051 for a, b in zip(cells[:5], expected))
-        assert int(cells[-1].split("/")[0]) == row.median_fdr_retained
-    checks["table1_all_coefficients_and_FDR_counts"] = "PASS"
+        assert len(cells) == 5
+        for metric, cell in zip(metrics, cells):
+            numbers = [float(n) for n in re.findall(r"-?\d+\.\d+", cell)]
+            expected = [row[metric + "_" + k] for k in ["estimate", "ci_low", "ci_high"]]
+            assert len(numbers) == 3 and all(abs(a-b) <= .0051 for a,b in zip(numbers, expected))
+    checks["table1_fixed_network_coefficients_and_intervals"] = "PASS"
+    checks["thermal_network_station_count"] = metadata["common_station_count"]
     for definition, label in [("annual", "Annual"), ("warm_season", "June–September")]:
         line = next(line for line in manuscript.splitlines() if line.startswith(f"| {label} |"))
         cells = [c.strip().replace("−", "-") for c in line.split("|")[2:-1]]
@@ -116,7 +129,17 @@ def main():
             numbers = [float(n) for n in re.findall(r"-?\d+\.\d+", cell)]
             assert all(abs(a-b) <= .0051 for a,b in zip(numbers, [row.estimate_pp,row.ci_low_pp,row.ci_high_pp]))
     checks["table3_all_components_and_intervals"] = "PASS"
+    construction = pd.read_csv(OUT / "tables/index_definition_period_summary.csv")
+    for case in ["fixed_w11_t7_raw", "fixed_w11_t7_corrected", "fixed_w5_t7_corrected", "fixed_w5_t8_corrected"]:
+        for idx in ["warm_days", "warm_nights"]:
+            value = construction.loc[(construction.scenario == case) & (construction.index_name == idx), "change_days"].item()
+            assert f"{value:.2f}" in manuscript, (case, idx, value)
+    checks["matched_network_uncorrected_and_corrected_headline_values"] = "PASS"
+    assert "(75/103) × 17.647059" in manuscript and "no additional evidence" in manuscript
+    checks["zero_cutoff_reweighting_explicitly_separated"] = "PASS"
     (OUT / "document_validation.json").write_text(json.dumps(checks, indent=2), encoding="utf-8")
+    from manage_output_cleanup import catalog
+    catalog(pd.read_csv(ROOT / "outputs/audit_cleanup/curation_manifest.csv"))
     print(json.dumps(checks, indent=2))
 
 if __name__ == "__main__":

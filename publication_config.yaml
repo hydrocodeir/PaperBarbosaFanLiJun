@@ -7,6 +7,11 @@ analysis_years: [1991, 2024]
 baseline_years: [1991, 2007]
 comparison_years: [2008, 2024]
 bootstrap_reps: 4999
+thermal_network:
+  seed: 20260918
+  bootstrap_reps: 4999
+  primary_block_length: 4
+  block_lengths: [2, 4, 6]
 scenarios:
   - {name: primary, dry_quantile: 0.25, hot_quantile: 0.75, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: false}
   - {name: tails_20_80, dry_quantile: 0.20, hot_quantile: 0.80, coverage: 0.80, block_length: 4, refit_thresholds: true, inclusive: false}

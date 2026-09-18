@@ -8,7 +8,7 @@
     "real_data_joint_event_subset_and_partition": "PASS",
     "raw_rebuild_full_record_all_station_year_indices": "PASS",
     "raw_rebuild_fixed_baseline_all_station_year_indices": "PASS",
-    "recomputed_network_focal_quantiles_match_manuscript": "PASS"
+    "historical_available_network_focal_quantiles_match_archive": "PASS"
   },
   "scope": "Complete raw reconstruction of both thermal index sets; new compound extension and figures. Historical station bootstrap/clustering full pipeline NOT rerun."
 }

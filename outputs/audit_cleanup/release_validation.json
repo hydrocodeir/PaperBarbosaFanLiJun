@@ -1,10 +1,10 @@
 {
-  "all_84_curated_graphic_files_integrity": "PASS",
+  "all_100_curated_graphic_files_integrity": "PASS",
   "atlas_page_counts": "PASS",
   "all_recorded_figure_source_hashes": "PASS",
   "active_document_links": "PASS",
   "supplement_numbering_and_missing_tail_tests": "PASS",
-  "all_retained_research_tables_cataloged": 69,
+  "all_retained_research_tables_cataloged": 94,
   "archived_removals_absent_from_active_tree": 583,
   "scope": "Integrity, numerical-source provenance, catalog completeness and document consistency; see numerical audit for scientific verification limits."
 }

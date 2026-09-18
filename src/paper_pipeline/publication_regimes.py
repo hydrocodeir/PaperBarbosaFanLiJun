@@ -78,18 +78,5 @@ def plot_regimes(root, out, countries, records, save, map_base):
             heat.text(x,y,f"{values[y,x]:.1f}",ha="center",va="center",fontsize=7,color="white" if abs(values[y,x])>14 else "#202528")
     fig.colorbar(im,ax=heat,fraction=.026,pad=.02,label="Days per decade")
     save(fig,out,"fig05_climate_regimes",records)
-    summary=pd.read_csv(out / "tables/climate_regime_compound_partition.csv")
-    fig,axes=plt.subplots(1,2,figsize=(7.1,3.9),sharex=True,sharey=True,layout="constrained")
-    for k,(definition,ax) in enumerate(zip(["annual","warm_season"],axes)):
-        local=summary.loc[(summary.definition==definition)&(summary.component=="joint_change")].set_index("climate_regime").loc[REGIMES]
-        for y,((_,row),color) in enumerate(zip(local.iterrows(),COLORS)):
-            ax.plot([row.ci_low_pp,row.ci_high_pp],[y,y],color=color,lw=1.6)
-            ax.scatter(row.estimate_pp,y,color=color,s=23)
-            ax.text(.98,y,f"n={row.n_stations:d}" if isinstance(row.n_stations,int) else f"n={int(row.n_stations)}",transform=ax.get_yaxis_transform(),ha="right",va="center",fontsize=6,color="#50575B")
-        ax.axvline(0,color="gray",lw=.6)
-        ax.set_xlim(-3,70)
-        ax.set_xticks([0,20,40,60])
-        ax.set(yticks=range(6),yticklabels=LABELS,title=f"({'ab'[k]}) {'Annual' if k==0 else 'June–September'}")
-    axes[0].invert_yaxis()
-    fig.supxlabel("Joint-frequency change (percentage points); 95% within-regime intervals",fontsize=8)
-    save(fig,out,"fig09_compound_climate_regimes",records)
+    from .definition_figures import plot_zero_regimes
+    plot_zero_regimes(out, records, save)

@@ -1,0 +1,19 @@
+{
+  "seed": 20260917,
+  "bootstrap_reps": 4999,
+  "block_length": 4,
+  "rules": [
+    "strict",
+    "dry_inclusive_only",
+    "both_inclusive"
+  ],
+  "selection": "Zero/positive strata are fixed from observed baseline precipitation quartiles, not reselected in bootstrap draws. All tie comparisons use identical stations and sampled years.",
+  "interpretation": "Strict all-network point estimate equals positive-subset estimate times subset fraction; not independent robustness evidence. Fixed-threshold draws obey the same scaling; refitted draws can give positive cutoffs to observed-zero stations, so interval scaling need not hold.",
+  "sources": {
+    "outputs/publication_v2/tables/screened_annual_seasonal_aggregates.csv": "08be8a143208c21aba3ab44df4e9f32050d18342521dc6ec74dc96f07d77dfad",
+    "outputs/publication_v2/tables/compound_partition_stations.csv": "064aac42975465b42dd26412c07b1fd23a84acae006c8e255c738651a92dc48a",
+    "outputs/tables/koppen_geiger_station_assignments.csv": "735da72ddf6fb064f96244fda38e932c8cd28682f78ca3799f83793590b2bbaa",
+    "publication_config.yaml": "302402ea232105dfe48983f894699f6bff44032e0f7ba1487ab5af3787aefdff",
+    "src/paper_pipeline/zero_threshold.py": "0654b047066f99066c786a74745f22ee8173910af7e85b0d7f0e2ff422f18a2c"
+  }
+}

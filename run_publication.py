@@ -22,6 +22,12 @@ def main():
         run_partition(cfg, ROOT, config_path)
         from paper_pipeline.publication_regimes import build_regime_tables
         build_regime_tables(ROOT, out, cfg)
+        from paper_pipeline.thermal_network import build_thermal_network
+        build_thermal_network(ROOT, out, cfg)
+        from paper_pipeline.index_definition import build_index_definition
+        from paper_pipeline.zero_threshold import build_zero_threshold
+        build_index_definition(ROOT, out, yaml.safe_load((ROOT / "index_definition_config.yaml").read_text()))
+        build_zero_threshold(ROOT, out, cfg)
     from paper_pipeline.publication_figures import create_figures
     create_figures(ROOT, out)
     print(f"Publication outputs: {out}", flush=True)

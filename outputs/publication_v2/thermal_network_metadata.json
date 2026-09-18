@@ -1,0 +1,60 @@
+{
+  "seed": 20260918,
+  "settings": {
+    "seed": 20260918,
+    "bootstrap_reps": 4999,
+    "primary_block_length": 4,
+    "block_lengths": [
+      2,
+      4,
+      6
+    ]
+  },
+  "common_station_count": 108,
+  "years": [
+    1991,
+    1992,
+    1993,
+    1994,
+    1995,
+    1996,
+    1997,
+    1998,
+    1999,
+    2000,
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "bootstrap": "Circular moving blocks of (original year, full network response vector) pairs; shared indices across networks and four indices. Observed station membership held fixed.",
+  "solver": "Exact line-intersection check-loss minimization; midpoint of extreme optimal vertex slopes for nonunique solutions.",
+  "units": "Days per decade; common_365_equivalent uses 365*observed count/valid days as a coverage diagnostic only.",
+  "intervals": "Pointwise percentile 95%; nominal six-contrast Bonferroni endpoints for four common-network Delta1 values and two paired day-minus-night contrasts. Family columns for other quantities are not confirmatory.",
+  "limitations": "Conditional on annual index thresholds and observed fixed station set; no daily threshold refitting, homogenization, or guarantee of finite-sample coverage. Time covariates retained; approximate block resampling in a trending short record.",
+  "input_hashes": {
+    "outputs/tables/annual_extreme_indices.csv": "512b65e3b8507fbcf2976b129698194bffead040e8e8e29904015d298d967979",
+    "publication_config.yaml": "302402ea232105dfe48983f894699f6bff44032e0f7ba1487ab5af3787aefdff",
+    "src/paper_pipeline/thermal_network.py": "486230fd9cb142096da2736b664e6d63dda297f1f7e19c750a4060669dd2844a"
+  }
+}

@@ -534,10 +534,48 @@ Use `python run_publication.py --figures-only` to redraw existing extension resu
 Generated outputs are ignored by the existing Git configuration. Preserve the output directory separately when archiving a manuscript release. Do not publish source observations until their redistribution license is confirmed.
 
 
-The expanded manuscript contains ten main figures, five main tables and a climate-regime analysis with synchronized within-group uncertainty. See [the reference audit](reports/Reference_Audit_2026.md) for the 25-reference bibliography and source comparisons. `reports/verified_references.json` is the curated bibliography used by the document builder. `python audit_references.py` refreshes DOI metadata; registry failures are reported explicitly. The current figure set is defined by `outputs/publication_v2/figure_manifest.csv`; the supplementary set is defined by `supplementary_figure_manifest.csv`.
+The expanded manuscript contains ten main figures, five main tables and a climate-regime analysis with synchronized within-group uncertainty. See [the reference audit](reports/Reference_Audit_2026.md) for the 26-reference bibliography and source comparisons. `reports/verified_references.json` is the curated bibliography used by the document builder. `python audit_references.py` refreshes DOI metadata; registry failures are reported explicitly. The current figure set is defined by `outputs/publication_v2/figure_manifest.csv`; the supplementary set is defined by `supplementary_figure_manifest.csv`.
 
 ## Audited output release
 
-The [output audit](reports/Output_Audit_2026.md) records numerical verification, corrections, and file-specific removal decisions. The [supplement](reports/Supplementary_Q1_2026.md) contains eleven figures and eight tables; the [data catalog](reports/Supplementary_Data_Catalog.md) links the complete retained CSV evidence. Curated atlases are in `outputs/publication_v2/`. Historical output narratives are recoverable in `archives/output_cleanup_20260917.zip`; they may contain obsolete links and interpretations. Running the legacy pipeline recreates its original exports and does not automatically apply publication curation.
+The [output audit](reports/Output_Audit_2026.md) records numerical verification, corrections, and file-specific removal decisions. The [supplement](reports/Supplementary_Q1_2026.md) contains fifteen figures and fourteen tables; the [data catalog](reports/Supplementary_Data_Catalog.md) links the complete retained CSV evidence. Curated atlases are in `outputs/publication_v2/`. Historical output narratives are recoverable in `archives/output_cleanup_20260917.zip`; they may contain obsolete links and interpretations. Running the legacy pipeline recreates its original exports and does not automatically apply publication curation.
 
 The separate audit additionally reran all station quantile fits and clustering, reproduced historical diagnostic tables, and reconstructed bootstrap summaries from saved draws. Alternative bootstrap ensembles were not regenerated. Reproduce it with `python audit_output_data.py recompute`, `python check_output_dependencies.py`, and `python check_warming_solver.py`. Do not overwrite the preserved initial inventory.
+
+## Novelty and reviewer revision — 18 September 2026
+
+The introduction, Table 5, Discussion and Conclusions now state the specific observational contribution and distinguish numerical differences from comparisons between unlike estimands. Table 5 compares nine studies, including Zhao and Xiong (2026). The [Persian reviewer report](reports/Q1_Reviewer_Report_2026_FA.md) prioritizes remaining methodological improvements; its proposed analyses have not been represented as completed. See the updated [reference audit](reports/Reference_Audit_2026.md) for source checks.
+
+## Fixed thermal network and contrast uncertainty (2026-09-18)
+
+Primary thermal network regressions now use the same 108 stations for all four indices and all 34 years. Available and index-specific fixed networks, a valid-day coverage diagnostic, and leave-one-year-out fits are retained as sensitivities. Synchronized original-year/response block pairs (4,999 replicates; lengths 2, 4 and 6) provide direct intervals for OLS, quantile slopes, upper-minus-lower slope contrasts, and paired day–night differences. All six primary asymmetry contrast intervals include zero; the manuscript distinguishes this unresolved asymmetry from warming-consistent slope directions.
+
+See [the implementation report](reports/Thermal_Network_Revision_2026_FA.md), [Table 1 and Figure 2](reports/Manuscript_Q1_2026.md), and [Tables S9–S11 / Figures S12–S13](reports/Supplementary_Q1_2026.md). The active package has 10 main and 15 supplementary figures, and 5 main and 14 supplementary tables.
+
+```bash
+python run_thermal_network.py
+python validate_thermal_network.py
+python build_supplementary.py
+python build_publication_docs.py
+python run_publication.py --figures-only
+python build_publication_docs.py
+python validate_curated_release.py
+```
+
+The first document build updates Table 1 before main figure source hashes are recorded; the second assembles the final atlases. The document builder refreshes the data catalog from retained CSV files. The complete `run_publication.py` also runs the thermal network analysis; the standalone command avoids rerunning the unchanged compound analysis.
+
+## Index construction and structural-zero audit (2026-09-18)
+
+[The second implementation report](reports/Index_Zero_Revision_2026_FA.md) documents controlled reference/window/quantile sensitivities and exhaustive in-base replacement on the same 108 thermal stations. Corrected early-reference count changes replace the uncorrected headline period differences. A separate audit decomposes structural-zero dilution, positive-cutoff station selection and matched-station dry/hot tie effects; excluding zero-cutoff stations is not independent robustness evidence.
+
+```bash
+python run_index_definition.py
+python run_zero_threshold.py
+python validate_index_zero.py
+python run_publication.py --figures-only
+python build_supplementary.py
+python build_publication_docs.py
+python validate_curated_release.py
+```
+
+The complete publication command also runs these analyses. `index_definition_config.yaml` declares the six controlled constructions. Main Figures 4, 9 and 10 and supplementary Figures S14–S15 / Tables S12–S14 present the resulting comparisons. Original indices remain archived under their original paths; raw observations are unchanged.

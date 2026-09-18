@@ -68,7 +68,7 @@ def main():
     baseline = pd.read_csv(ROOT / "outputs/tables/homogeneity_flag_exclusion_sensitivity.csv").set_index("index_name")
     for _, row in profiles.loc[profiles.tau.round(2).isin([.1, .5, .9])].iterrows():
         assert abs(row.network_slope - baseline.loc[row.index_name, f"slope_{row.tau:.2f}_all_stations"]) < .01
-    checks["recomputed_network_focal_quantiles_match_manuscript"] = "PASS"
+    checks["historical_available_network_focal_quantiles_match_archive"] = "PASS"
     result = {"checks": checks, "scope": "Complete raw reconstruction of both thermal index sets; new compound extension and figures. Historical station bootstrap/clustering full pipeline NOT rerun."}
     (ROOT / "outputs/publication_v2/validation.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps(result, indent=2), flush=True)

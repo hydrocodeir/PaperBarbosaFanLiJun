@@ -36,3 +36,11 @@ Use `python audit_output_data.py recompute`, then `python check_output_dependenc
 The recovery ZIP stores project-relative paths. Extract selected files into a separate folder for inspection before choosing to restore them; a blind extraction over the current output tree would reintroduce superseded material. The raw `data/`, reference `assets/` and original manuscript were not modified by cleanup. The archive remains outside `outputs/` and therefore reduces clutter, not total project disk usage.
 
 Data units, source-data and boundary redistribution permissions, station metadata/homogenization and submission-specific requirements remain author responsibilities as described in the manuscript. These limitations are not resolved by a successful numerical audit.
+
+## Subsequent thermal revision — 18 September 2026
+
+The cleanup counts above describe the original curation. The later [thermal network revision](Thermal_Network_Revision_2026_FA.md) adds two supplementary figures and three supplementary tables, revises main Figure 2 and Table 1, and retains twelve new thermal research CSV files. The current package has 10 main and 13 supplementary figures, with 5 main and 11 supplementary tables. The refreshed data catalog and release validation describe the current package; the original cleanup manifest remains a historical record.
+
+## Subsequent index and zero-threshold revision — 18 September 2026
+
+The [second revision](Index_Zero_Revision_2026_FA.md) adds 13 research CSV files, two supplementary figures and three supplementary tables, and revises main Figures 4, 9 and 10. The active package now has 10 main and 15 supplementary figures, 5 main and 14 supplementary tables. Historical cleanup counts and the original removal manifest remain unchanged. New outputs are included in the current data catalog and release validation.

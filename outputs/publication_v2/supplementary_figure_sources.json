@@ -2,7 +2,13 @@
   "data/Iran_Sea_Ne.geojson": "662924f0c87dc93ef9e045b92f80eba9679ffbcf2144217b148f1a3e99517bac",
   "data/stationsInfo.csv": "8b53cee0fab3328fbf2b3ad1ea0f90655b428df700eb540c06945f2dcda2a5e8",
   "outputs/compound_dry_hot/tables/compound_dry_hot_yearly_extent.csv": "2e2f3768b89d9da7d5ba33673e46d4508d8b7f157808964d2e8503d7d9854099",
+  "outputs/publication_v2/tables/index_definition_trends.csv": "29c0085dde9f59229128cfdbabe8a96b280b4a212f19eacde954367596adee01",
   "outputs/publication_v2/tables/screened_annual_seasonal_aggregates.csv": "08be8a143208c21aba3ab44df4e9f32050d18342521dc6ec74dc96f07d77dfad",
+  "outputs/publication_v2/tables/thermal_network_comparison.csv": "fc9c6311d77736afaa0c1e6ddbf548296549571ca57b7f675ca4e2fc10e96200",
+  "outputs/publication_v2/tables/thermal_network_contrasts.csv": "c5f6abdd5f13a6f191c859088989ea5dc0df16650f2c2e0f5adece4e118d36c6",
+  "outputs/publication_v2/tables/thermal_network_coverage.csv": "7ff7eb5aabd76687b4d6f3d59a422c5297c140237c7c329fa0387151cf9b146e",
+  "outputs/publication_v2/tables/thermal_network_intervals.csv": "4268f74e7c5c57e30e226c7ecccef12bfff23116d85c4c1bac0387eb300cc39c",
+  "outputs/publication_v2/tables/zero_threshold_paired_effects.csv": "d0bacf7d8bfceacbc7898f474764c5907b7aeefb3caa3c6c5c4d3ecc79a84ca9",
   "outputs/tables/bootstrap_depth_sensitivity_summary.csv": "3162dd0db530cfc44252a9379793a936efec29c9aec0565421afb9476786d7b3",
   "outputs/tables/bootstrap_method_sensitivity_summary.csv": "834cc25bf941ce847bed652af13422b810de868b28581c5798564cf1e2b174e3",
   "outputs/tables/climate_signal_emergence_station_level.csv": "eeace22c6211e59635d917bef17111b22c43de23e143b1c1641a4967f8307d41",
@@ -19,5 +25,6 @@
   "outputs/tables/station_significance_fdr.csv": "ccc0928af601fb140e4daf9e927c41cc22c3ff71151a78cf2f0996487ecc9eb7",
   "outputs/tables/temperature_internal_consistency_quantile_sensitivity.csv": "74f28d26a5e130eb31402d57e0fc471846ace2e77d544575db03a30be66a2caf",
   "outputs/tables/warming_link_network_quantile_response.csv": "58d658a703f7b7c8e8697580e737dc07e31896f32d32e6ff1ba90d330b5c2a55",
-  "src/paper_pipeline/supplementary_curator.py": "5098272b97977af2263d89cf118e7087fc83ac2dc8ee5347d2855d403e0b4c3d"
+  "src/paper_pipeline/definition_figures.py": "c9f7b279b68527e5c371f118283ae6bf116194fa72e793987cdc8245542e0c37",
+  "src/paper_pipeline/supplementary_curator.py": "6edaa097b0dc1f2c8e285d389db118b34edfa69323ab1ff9b5a7334bccf60992"
 }

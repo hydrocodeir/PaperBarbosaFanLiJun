@@ -80,29 +80,23 @@ def create_figures(root: Path, out: Path):
     save(fig, out, "fig01_station_network", records)
 
     # Explicitly distinguish quantiles of the network mean from mean station slopes.
-    network = annual.groupby("year")[INDEXES].mean()
-    x = (network.index.to_numpy() - network.index.min()) / 10
-    design = sm.add_constant(x)
-    all_qr = pd.read_csv(historical / "qr_all_quantiles_long.csv")
-    taus = sorted(all_qr.tau.unique())
-    numerical = []
+    profiles = pd.read_csv(table / "thermal_network_profiles.csv")
     fig, axes = plt.subplots(2, 2, figsize=(7.1, 5.4), sharex=True, sharey=True, layout="constrained")
     for k, (idx, name, color, ax) in enumerate(zip(INDEXES, NAMES, COLORS, axes.flat)):
-        slopes = [float(sm.QuantReg(network[idx].to_numpy(), design).fit(q=tau, max_iter=50000).params[1]) for tau in taus]
-        mean_slope = float(sm.OLS(network[idx].to_numpy(), design).fit().params[1])
-        station_profile = all_qr.loc[all_qr.index_name == idx].groupby("tau").slope
-        lo, hi = station_profile.quantile(.25).reindex(taus), station_profile.quantile(.75).reindex(taus)
-        ax.fill_between(taus, lo, hi, color=color, alpha=.13, linewidth=0, label="Station-slope IQR")
-        ax.plot(taus, slopes, color=color, lw=1.8, label="Network-mean QR")
-        ax.axhline(mean_slope, color="#4D5559", lw=1, ls="--", label="Network-mean OLS")
+        fixed = profiles.loc[(profiles.index_name == idx) & (profiles.network == "common_fixed")].sort_values("tau")
+        available = profiles.loc[(profiles.index_name == idx) & (profiles.network == "available")].sort_values("tau")
+        ax.fill_between(fixed.tau, fixed.ci_low, fixed.ci_high, color=color, alpha=.17, linewidth=0, label="Pointwise 95% interval")
+        ax.plot(fixed.tau, fixed.slope, color=color, lw=1.8, label="Fixed network QR (n = 108)")
+        ax.plot(available.tau, available.slope, color="#555D63", lw=.9, ls="--", label="Available network QR")
+        ax.axhline(fixed.ols_slope.iloc[0], color=color, lw=1, ls=":", label="Fixed network OLS")
+        focal = fixed.loc[fixed.tau.isin([.1,.5,.9])]
+        ax.scatter(focal.tau, focal.slope, s=13, color=color, zorder=4)
         ax.axhline(0, color="#8B9498", lw=.6)
         ax.set(title=f"({chr(97+k)}) {name}", xticks=[.1, .3, .5, .7, .9])
-        for tau, slope in zip(taus, slopes):
-            numerical.append(dict(index_name=idx, tau=tau, network_slope=slope, ols_slope=mean_slope))
-    axes[0, 0].legend(loc="upper left", frameon=False)
+    fig.legend(*axes[0, 0].get_legend_handles_labels(), loc="outside upper center", ncol=2, frameon=False)
     fig.supxlabel("Conditional quantile of annual event counts", fontsize=8)
     fig.supylabel("Trend (days per decade)", fontsize=8)
-    pd.DataFrame(numerical).to_csv(table / "network_quantile_profiles_recomputed.csv", index=False)
+    # Retain network_quantile_profiles_recomputed.csv as the archived available-network calculation.
     save(fig, out, "fig02_quantile_profiles", records)
 
     fig, axes = plt.subplots(2, 2, figsize=(7.1, 6.4), layout="constrained")
@@ -116,22 +110,8 @@ def create_figures(root: Path, out: Path):
                  extend="both", label="Upper minus lower quantile slope, Δ₁ (days per decade)")
     save(fig, out, "fig03_thermal_asymmetry_maps", records)
 
-    fixed = pd.read_csv(historical / "fixed_baseline_period_change_station_level.csv")
-    fig, ax = plt.subplots(figsize=(7.1, 3.1), layout="constrained")
-    rng = np.random.default_rng(42)
-    for k, (idx, color) in enumerate(zip(INDEXES, COLORS)):
-        values = fixed.loc[fixed.index_name == idx, "late_minus_baseline_days"].dropna().to_numpy()
-        ax.scatter(values, k + rng.uniform(-.18, .18, len(values)), s=8, color=color, alpha=.4, linewidths=0)
-        q1, median, q3 = np.quantile(values, [.25, .5, .75])
-        ax.plot([q1, q3], [k, k], color="#242A30", lw=2)
-        ax.scatter([median], [k], marker="|", s=90, color="#242A30", zorder=4)
-        ax.scatter([values.mean()], [k], marker="D", s=25, facecolor="white", edgecolor="black", zorder=5)
-    ax.axvline(0, lw=.7, color="#7A8285")
-    ax.set(yticks=range(4), yticklabels=NAMES, xlabel="Late minus early annual count (days per year)")
-    ax.invert_yaxis()
-    ax.legend(handles=[Line2D([], [], marker="D", markerfacecolor="white", color="black", linestyle="", label="Network mean"),
-                       Line2D([], [], color="black", lw=2, marker="|", label="Station median and IQR")], frameon=False, loc="lower right")
-    save(fig, out, "fig04_fixed_baseline_changes", records)
+    from .definition_figures import plot_index_period_changes
+    plot_index_period_changes(out, records, save)
 
     ts = pd.read_csv(table / "compound_fixed_threshold_extent.csv")
     fig, axes = plt.subplots(2, 1, figsize=(7.1, 4.8), sharex=True, sharey=True, layout="constrained")
@@ -183,10 +163,13 @@ def create_figures(root: Path, out: Path):
     for k, (definition, ax) in enumerate(zip(["annual", "warm_season"], axes)):
         local = sensitivity.loc[(sensitivity.definition == definition) & (sensitivity.component == "joint_change")]
         for y, (_, row) in enumerate(local.iterrows()):
-            ax.plot([row.ci_low_pp, row.ci_high_pp], [y, y], color="#277C87", lw=1.3)
-            ax.scatter(row.estimate_pp, y, color="#277C87", s=18)
+            reweight = row.scenario == "positive_dry_threshold"
+            color = "#A06B35" if reweight else "#277C87"
+            ax.plot([row.ci_low_pp, row.ci_high_pp], [y, y], color=color, lw=1.3)
+            ax.scatter(row.estimate_pp, y, color=color, s=22 if reweight else 18, marker="D" if reweight else "o")
         ax.axvline(0, color="gray", lw=.6)
-        ax.set(yticks=range(len(local)), yticklabels=[x.replace("_", " ") for x in local.scenario],
+        names = {"positive_dry_threshold": "Zero-cutoff exclusion (reweighting)", "inclusive_ties": "Both ties included (definition)"}
+        ax.set(yticks=range(len(local)), yticklabels=[names.get(x,x.replace("_", " ")) for x in local.scenario],
                title=f"({'ab'[k]}) {'Annual' if k == 0 else 'June–September'}", xlabel="Joint-frequency change (pp)")
     axes[0].invert_yaxis()
     save(fig, out, "fig10_partition_sensitivity", records)
@@ -198,7 +181,7 @@ def create_figures(root: Path, out: Path):
     sources = ["outputs/tables/annual_extreme_indices.csv", "outputs/tables/qr_all_quantiles_long.csv",
                "outputs/tables/qr_focus_slopes_and_bootstrap_summary.csv", "outputs/tables/fixed_baseline_period_change_station_level.csv",
                "outputs/tables/climate_regime_quantile_summary.csv", "data/Iran_Sea_Ne.geojson",
-               "src/paper_pipeline/publication_figures.py", "src/paper_pipeline/publication_regimes.py",
+               "src/paper_pipeline/publication_figures.py", "src/paper_pipeline/publication_regimes.py", "src/paper_pipeline/definition_figures.py",
                "outputs/tables/koppen_geiger_station_assignments.csv"]
     sources += [str(p.relative_to(root)) for p in sorted(table.glob("*.csv"))]
     (out / "figure_source_hashes.json").write_text(json.dumps({p: file_hash(root/p) for p in sources}, indent=2), encoding="utf-8")

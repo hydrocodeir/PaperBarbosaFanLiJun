@@ -12,7 +12,7 @@ ROOT=Path(__file__).resolve().parent
 OUT=ROOT/'outputs/publication_v2'
 checks={}
 stems=[]
-for name,count in [('figure_manifest.csv',10),('supplementary_figure_manifest.csv',11)]:
+for name,count in [('figure_manifest.csv',10),('supplementary_figure_manifest.csv',15)]:
     m=pd.read_csv(OUT/name)
     assert len(m)==count and m.figure.is_unique
     stems.extend(m.figure)
@@ -27,8 +27,8 @@ for p in (OUT/'figures').iterdir():
             im.verify()
     elif p.suffix=='.pdf':assert len(PdfReader(p).pages)==1
     elif p.suffix=='.svg':ET.parse(p)
-checks['all_84_curated_graphic_files_integrity']='PASS'
-for name,count in [('Figure_Atlas.pdf',10),('Supplementary_Figure_Atlas.pdf',11)]:
+checks['all_100_curated_graphic_files_integrity']='PASS'
+for name,count in [('Figure_Atlas.pdf',10),('Supplementary_Figure_Atlas.pdf',15)]:
     assert len(PdfReader(OUT/name).pages)==count
 checks['atlas_page_counts']='PASS'
 for name in ['figure_source_hashes.json','supplementary_figure_sources.json']:
@@ -36,15 +36,18 @@ for name in ['figure_source_hashes.json','supplementary_figure_sources.json']:
         with (ROOT/rel).open('rb') as f:actual=hashlib.file_digest(f,'sha256').hexdigest()
         assert actual==expected_hash,(name,rel)
 checks['all_recorded_figure_source_hashes']='PASS'
-paths=['reports/Manuscript_Q1_2026.md','reports/Supplementary_Q1_2026.md','reports/Supplementary_Data_Catalog.md','reports/Output_Audit_2026.md','reports/Publication_Guide_FA.md','outputs/README.md','outputs/output_docs/README.md']
+paths=['reports/Manuscript_Q1_2026.md','reports/Supplementary_Q1_2026.md','reports/Supplementary_Data_Catalog.md','reports/Output_Audit_2026.md','reports/Publication_Guide_FA.md','reports/Reference_Audit_2026.md','reports/Q1_Reviewer_Report_2026_FA.md','reports/Thermal_Network_Revision_2026_FA.md','reports/Index_Zero_Revision_2026_FA.md','outputs/README.md']
+# The former per-output documentation tree was retired after curation.
+if (ROOT/'outputs/output_docs/README.md').exists():
+    paths.append('outputs/output_docs/README.md')
 for rel in paths:
     p=ROOT/rel
     for target in re.findall(r'\]\(([^)]+)\)',p.read_text(encoding='utf-8')):
         if not target.startswith(('http','#')):assert (p.parent/target).exists(),(rel,target)
 checks['active_document_links']='PASS'
 s=(ROOT/'reports/Supplementary_Q1_2026.md').read_text(encoding='utf-8')
-assert [int(n) for n in re.findall(r'^### Table S(\d+)\.',s,re.M)]==list(range(1,9))
-assert [int(n) for n in re.findall(r'^### Figure S(\d+)\.',s,re.M)]==list(range(1,12))
+assert [int(n) for n in re.findall(r'^### Table S(\d+)\.',s,re.M)]==list(range(1,15))
+assert [int(n) for n in re.findall(r'^### Figure S(\d+)\.',s,re.M)]==list(range(1,16))
 assert s.count('| NA | 0 |')==8
 checks['supplement_numbering_and_missing_tail_tests']='PASS'
 catalog=(ROOT/'reports/Supplementary_Data_Catalog.md').read_text(encoding='utf-8')

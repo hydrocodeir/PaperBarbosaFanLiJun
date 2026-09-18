@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "independent_linear_program_check_loss_72_weighted_fits": {
+      "max_loss_difference": 1.0658141036401503e-13,
+      "status": "PASS"
+    },
+    "known_linear_trend_all_quantiles": "PASS",
+    "common_membership_independently_reconstructed": 108,
+    "station_means_and_fixed_membership": "PASS",
+    "288_real_bootstrap_fits_checked_against_LP": "PASS",
+    "sampled_year_pairs_block_contiguity_and_reconstruction": "PASS",
+    "all_reported_pointwise_intervals_and_paired_contrasts": "PASS",
+    "324_primary_profile_points_LP_checked_and_all_bands_reconstructed": "PASS",
+    "source_hashes": "PASS"
+  },
+  "scope": "Independent optimization, arithmetic and provenance checks; not empirical confirmation of nominal interval coverage or raw-data homogenization."
+}

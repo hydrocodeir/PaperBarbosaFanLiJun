@@ -12,7 +12,7 @@ from .compound_partition import file_hash
 
 SPECS = [
 ('figS01_data_quality','Coverage and homogeneity diagnostics','Calendar-based valid-day fractions for temperature and precipitation, calculated from the screened aggregates for all available station-years; boxes summarize station medians. Detrended homogeneity flags use nominal p < 0.05 for annual mean temperature; flags are diagnostic, not proof of artificial breaks.'),
-('figS02_thermal_robustness','Sensitivity of thermal estimates','(a) Mean station interval-width ratio for 400 versus 200 moving-block replicates. (b) Mean absolute difference between saved moving-block and maximum-entropy bootstrap means. (c) Change in network slopes after internal-consistency screening. (d) Change after excluding homogeneity-flagged stations. Units in (b–d) are days per decade. The two historical alternative bootstrap ensembles were checked through their saved station summaries, not regenerated.'),
+('figS02_thermal_robustness','Sensitivity of thermal estimates','(a) Mean station interval-width ratio for 400 versus 200 moving-block replicates. (b) Mean absolute difference between saved moving-block and maximum-entropy bootstrap means. (c) Change in network slopes after internal-consistency screening. (d) Change after excluding homogeneity-flagged stations. Units in (b–d) are days per decade. Panels (c–d) use the historical available network, not the primary fixed 108-station network. The two historical alternative bootstrap ensembles were checked through their saved station summaries, not regenerated.'),
 ('figS03_station_quantile_maps','Station quantile slopes','Station estimates at the 0.10, 0.50 and 0.90 quantiles of annual thermal counts, on one common symmetric scale. No interpolation, area weighting or local significance symbols are used. Units are days per decade.'),
 ('figS04_median_precision','Bootstrap precision of median trends','Absolute bootstrap mean divided by bootstrap standard deviation at the median. This descriptive precision ratio is dimensionless; it is neither an emergence date nor a calibrated detection probability. No threshold-based significance labels are shown.'),
 ('figS05_spatial_diagnostics','Spatial dependence and multiplicity','(a) Moran’s I with five-nearest-neighbor weights. (b) Numbers of locally retained tests after Benjamini–Hochberg adjustment separately within each index–quantile family. NA means analytic tail intervals and tests are unavailable, not that zero stations are significant. Historical analytic probabilities are approximate and do not adjust for serial dependence. These counts do not constitute a field-significance test; permutation probabilities are tabulated separately.'),
@@ -22,6 +22,10 @@ SPECS = [
 ('figS09_internal_warming_association','Association with the network temperature anomaly','(a) Internally derived annual network temperature anomaly relative to 1991–2007. (b–e) Fixed-baseline network thermal-count response coefficients at three quantiles, with available median pointwise analytic intervals, in days per degree Celsius. Tail analytic intervals are unavailable and must not be inferred from the unadorned points. The predictor and outcomes share observations and temporal trends; the associations do not attribute change to external forcing.'),
 ('figS10_historical_joint_rarity','Historical joint-rarity sensitivity','Percentage of the available station network exceeding three empirical inverse-joint-probability cutoffs. Labels denote within-record rarity classes, not stable design return periods. This historical calculation uses unscreened daily data, available-row coverage denominators and a varying station network. It is retained as a definition sensitivity and is distinct from the main paper’s fixed marginal AND event.'),
 ('figS11_geographical_associations','Geographical associations of thermal asymmetry','Standardized multiple-regression coefficients relating the upper-minus-lower slope contrast to latitude, longitude and elevation. These are descriptive associations; no causal driver attribution or spatially adjusted significance is implied.'),
+('figS12_thermal_network_composition','Thermal network composition and coverage sensitivity','(a) Number of stations with valid annual counts in the available daytime and nighttime networks; the dashed line marks the fixed common set of 108. (b) Upper-minus-lower quantile slope point estimates for four network definitions. Index-specific fixed sets each contain 109 stations; their common intersection contains 108. The 365-day-equivalent diagnostic scales each common station-year count by 365/valid days and assumes representative missing days. These are sensitivity estimates, not additional significance tests. Units in (b) are days per decade.'),
+('figS13_thermal_contrast_intervals','Paired thermal contrast uncertainty and block sensitivity','(a) Four upper-minus-lower quantile slope contrasts on the common 108-station network. (b) Paired daytime-minus-nighttime contrasts in that signed asymmetry, separately for warm and cool indices. Points and segments show estimates and pointwise 95% percentile intervals from 4,999 synchronized circular year-pairs block replicates for each block length. Original year covariates travel with responses; the same sampled years are used across indices. Four-year blocks define the primary analysis. Intervals are conditional on fixed daily thresholds and the observed station set, and all shown contrast intervals include zero. The wider nominal six-contrast family intervals for the primary analysis are in Table S10.'),
+('figS14_index_definition_asymmetry','Asymmetry sensitivity to index construction','Upper-minus-lower quantile slope contrasts on the same 108 stations under six index constructions. Full denotes the 1991–2024 reference; early denotes 1991–2007. Numbers 11 and 5 are total calendar-day window widths. T7 and T8 denote Hyndman–Fan linear and median-unbiased sample quantiles. Corrected early indices average target-year event counts after excluding that year and duplicating each other baseline year in turn (16 replacements); out-of-base thresholds remain fixed. Segments are exploratory pointwise 95% intervals from the same 4,999 four-year pairs-block draws applied to each constructed annual series. Index construction is held fixed inside this uncertainty resampling. These correlated sensitivities are not independent confirmations or simultaneous tests.'),
+('figS15_zero_threshold_tie_effects','Paired effects of dry and hot threshold ties','Summer joint-frequency-change differences on identical station sets and synchronized year samples. Panel (a) changes P < q25 to P ≤ q25 while retaining T > q75; panel (b) then changes T > q75 to T ≥ q75. Points and exploratory 95% percentile intervals use 4,999 synchronized four-year block replicates with threshold refitting. These are paired definition effects, not changes in the observed climate or formal between-regime tests. In zero-cutoff stations, including dry ties classifies zero-precipitation seasons as dry rather than identifying a departure below the cutoff.'),
 ]
 
 def heat(ax,frame,title,limit=None,cmap='RdBu_r',fmt='.2f',bounds=None):
@@ -137,6 +141,41 @@ def create_supplementary_figures(root,out):
     axes[-1].set_xlabel('Year');save(fig,out,SPECS[9][0],records)
     driver=load('driver_analysis_summary');f=driver.loc[driver.metric=='Delta1'].pivot(index='index_name',columns='predictor',values='std_beta').loc[INDEXES,['latitude','longitude','elevation']];f.index=NAMES;f.columns=['Latitude','Longitude','Elevation']
     fig,ax=plt.subplots(figsize=(5.7,2.8),layout='constrained');im=heat(ax,f,'Geographical associations with thermal asymmetry',limit=max(.5,float(abs(f).max().max())));fig.colorbar(im,ax=ax,label='Standardized coefficient');save(fig,out,SPECS[10][0],records)
+    coverage=load('thermal_network_coverage','publication_v2/tables')
+    comparison=load('thermal_network_comparison','publication_v2/tables')
+    fig,axes=plt.subplots(1,2,figsize=(7.1,3.6),layout='constrained')
+    for idx,label,color,ls in [('warm_days','Daytime','#B74335','-'),('warm_nights','Nighttime','#465AA3',':')]:
+        d=coverage.loc[coverage.index_name==idx]
+        axes[0].plot(d.year,d.n_available,label=label,color=color,lw=1.2,ls=ls)
+    axes[0].axhline(108,color='#333333',ls='--',lw=1,label='Common fixed: 108')
+    axes[0].set(title='(a) Annual station membership',xlabel='Year',ylabel='Valid stations',ylim=(106,126),yticks=[108,112,116,120,124])
+    axes[0].legend(frameon=False,fontsize=6.5,loc='center left')
+    for j,(network,label,marker,color) in enumerate([('available','Available','o','#555D63'),('index_fixed','Index fixed (109)','s','#A97A37'),('common_fixed','Common fixed (108)','D','#287E9B'),('common_365_equivalent','Common: 365-day equivalent','^','#7666A8')]):
+        d=comparison.loc[comparison.network==network].set_index('index_name').loc[INDEXES]
+        axes[1].scatter(d.Delta1,np.arange(4)+(j-1.5)*.14,label=label,marker=marker,color=color,s=22)
+    axes[1].axvline(0,color='gray',lw=.6)
+    axes[1].set(title='(b) Asymmetry point estimates',yticks=range(4),yticklabels=NAMES,xlabel='Δ₁ (days per decade)',ylim=(-.6,4.8))
+    axes[1].invert_yaxis();axes[1].legend(frameon=False,fontsize=5.8,loc='lower right')
+    save(fig,out,SPECS[11][0],records)
+    intervals=load('thermal_network_intervals','publication_v2/tables')
+    contrasts=load('thermal_network_contrasts','publication_v2/tables')
+    fig,axes=plt.subplots(2,1,figsize=(7.1,5.6),layout='constrained',sharex=True,gridspec_kw={'height_ratios':[1.7,1]})
+    for j,(block,color,marker) in enumerate([(2,'#88969E','s'),(4,'#287E9B','o'),(6,'#B17B3B','^')]):
+        d=intervals.loc[(intervals.network=='common_fixed')&(intervals.metric=='Delta1')&(intervals.block_length==block)].set_index('index_name').loc[INDEXES]
+        paired=contrasts.loc[(contrasts.metric=='Delta1')&(contrasts.block_length==block)].set_index('contrast').loc[['warm_day_minus_night','cool_day_minus_night']]
+        for ax,frame in [(axes[0],d),(axes[1],paired)]:
+            y=np.arange(len(frame))+(j-1)*.2
+            ax.hlines(y,frame.ci_low,frame.ci_high,color=color,lw=1.5 if block==4 else .9)
+            ax.scatter(frame.estimate,y,s=25,color=color,marker=marker,label=f'{block}-year blocks')
+    for ax in axes:ax.axvline(0,color='#555D63',lw=.8,ls='--');ax.invert_yaxis()
+    axes[0].set(title='(a) Upper-minus-lower slope contrasts',yticks=range(4),yticklabels=NAMES)
+    axes[0].legend(frameon=False,ncol=3,loc='lower left',fontsize=7)
+    axes[0].set_ylim(4,-.6)
+    axes[1].set(title='(b) Daytime-minus-nighttime asymmetry',yticks=range(2),yticklabels=['Warm indices','Cool indices'],xlabel='Paired contrast (days per decade)')
+    save(fig,out,SPECS[12][0],records)
+    from .definition_figures import plot_definition_supplement
+    plot_definition_supplement(out,records,save)
+    inputs.update([out/'tables/index_definition_trends.csv',out/'tables/zero_threshold_paired_effects.csv',root/'src/paper_pipeline/definition_figures.py'])
     pd.DataFrame(records).to_csv(out/'supplementary_figure_manifest.csv',index=False)
     inputs.update([root/'data/stationsInfo.csv',root/'data/Iran_Sea_Ne.geojson',Path(__file__)])
     (out/'supplementary_figure_sources.json').write_text(json.dumps({p.relative_to(root).as_posix():file_hash(p) for p in sorted(inputs)},indent=2),encoding='utf-8')
@@ -187,6 +226,14 @@ Geographical regressions and regressions on the internally derived temperature a
 
 Historical empirical joint-rarity analyses use an observation-specific inverse joint probability and available-row completeness. Their yearly networks vary; no stable design return period, fixed marginal AND event, physical affected area or causal “driver” is inferred. Figure S10 preserves this analysis only to demonstrate the effect of event definition.
 
+The primary thermal network analysis is distinct from those historical station summaries. It uses the common 108 stations meeting annual-index coverage in all 34 years for all four indices. Each index-specific complete set has 109 stations. Available, index-specific fixed, common fixed and 365-day-equivalent series are archived separately. The latter scales observed counts by 365/valid days and assumes representative missing days; it is not an imputed record.
+
+Network intervals use 4,999 synchronized circular moving-block pairs draws of original calendar year and response field. Original time covariates are retained rather than reassigning sampled responses to a new time axis. All indices and network definitions share the saved sampled year positions. Four-year blocks are primary; two- and six-year blocks are sensitivities. Daily thresholds and station selection are held fixed. OLS, three focal quantile slopes, within-index upper-minus-lower contrasts and paired day-minus-night contrasts are saved for every replicate. The full primary quantile grid has pointwise 95% bands. Nominal family intervals in Table S10 use a six-contrast Bonferroni adjustment, separate from the compound family in Table S1. No exact short-record coverage is claimed. Independent linear programming checks the weighted check-loss minimizer and saved replicate coefficients; membership, means, contrasts and interval arithmetic are also checked by `validate_thermal_network.py`.
+
+Index-construction sensitivities use the same 108-station daily records and masks. Each early-reference target year is removed and replaced by each of the other 16 years in turn; events are counted separately and counts averaged. The late-period cutoffs use the unchanged original reference. This deterministic correction is distinct from the conditional uncertainty bootstrap applied to completed annual indices. The primary full-record construction remains the estimand of Figure 2/Table 1; corrected early-reference differences supersede uncorrected headline period changes in Figure 4. Definitions and quantitative comparisons are in Tables S12–S13.
+
+Structural-zero analyses keep observed-zero/positive strata fixed while varying strict, dry-inclusive-only and both-inclusive rules on identical station sets. For observed strict cutoffs, every zero-cutoff station has zero dry/joint frequency and zero partition components. Full-network point estimates are therefore weighted positive-subset means, exactly. Fixed-threshold draws retain this identity. Refitted cutoffs can become positive at originally zero-cutoff stations, giving nonzero bootstrap contributions; interval endpoints then cannot be rescaled mechanically. Paired rule-effect intervals use the same year draws and retain cross-variable dependence. They remain exploratory: for example, the summer additional hot-tie estimate is −2.28 percentage points while its percentile interval is [−8.51, −2.34], showing bootstrap centering displacement in this discrete short-baseline statistic. This behavior is reported rather than treating every percentile interval as calibrated confirmation.
+
 ## S2. Numerical evidence
 
 ### Table S1. Primary compound partition with pointwise and family intervals
@@ -218,13 +265,59 @@ All entries are percentage points. Pointwise intervals use the 2.5th and 97.5th 
     text+='\n\n### Table S7. Exploratory spatial compactness of clusters\n\nThe statistic is mean within-cluster geographical distance, compared with 499 permutations of cluster labels. These nominal probabilities do not validate the fitted groups as physical climate regions.\n\n'+markdown_table(spatial[['index_name','n_clusters','observed_mean_within_cluster_distance_km','permuted_mean_distance_km','p_perm_more_compact']])
     regimes=pd.read_csv(out/'tables/climate_regime_compound_partition.csv')
     text+='\n\n### Table S8. Compound-frequency change in each climate regime\n\nEqual-station within-group means and exploratory 95% synchronized-block intervals; annual and summer sample sizes differ. The complete four-component results are in the linked data catalog.\n\n'+markdown_table(regimes.loc[regimes.component=='joint_change',['definition','climate_regime','n_stations','n_zero_dry_threshold','estimate_pp','ci_low_pp','ci_high_pp']])
+    comparison=pd.read_csv(out/'tables/thermal_network_comparison.csv')
+    text+='\n\n### Table S9. Thermal trend sensitivity to network definition\n\nAll slopes and contrasts are in days per decade. Available networks contain 115–124 daytime or 114–124 nighttime stations per year; index-specific fixed sets contain 109 and the common set contains 108. Common 365-equivalent denotes the coverage-scaled diagnostic described in Section S1. These point estimates do not replace the primary intervals in Table 1.\n\n'+markdown_table(comparison[['index_name','network','OLS','q10','q50','q90','Delta1']])
+    intervals=pd.read_csv(out/'tables/thermal_network_intervals.csv')
+    primary_block=json.loads((out/'thermal_network_metadata.json').read_text())['settings']['primary_block_length']
+    d=intervals.loc[(intervals.network=='common_fixed')&(intervals.metric=='Delta1')&(intervals.block_length==primary_block)].copy()
+    d['Contrast']=d.index_name.map(dict(zip(INDEXES,NAMES)))+' Δ₁'
+    paired=pd.read_csv(out/'tables/thermal_network_contrasts.csv')
+    paired=paired.loc[(paired.block_length==primary_block)&paired.contrast.isin(['warm_day_minus_night','cool_day_minus_night'])].copy()
+    paired['Contrast']=paired.contrast.map({'warm_day_minus_night':'Warm Δ₁: day minus night','cool_day_minus_night':'Cool Δ₁: day minus night'})
+    columns=['Contrast','estimate','ci_low','ci_high','family_ci_low','family_ci_high']
+    frame=pd.concat([d[columns],paired[columns]],ignore_index=True)
+    frame.columns=['Contrast','Estimate','95% lower','95% upper','Family lower','Family upper']
+    text+='\n\n### Table S10. Primary paired thermal contrasts with uncertainty\n\nDays per decade on the common 108-station network. Pointwise intervals use 2.5th/97.5th percentiles and nominal six-contrast family intervals use 0.4167th/99.5833rd percentiles of 4,999 synchronized four-year block replicates. Day-minus-night comparisons use signed Δ₁, including for cool indices. All six intervals include zero; this does not establish equal slopes or equal asymmetry. Family columns stored for other networks or metrics are not part of this primary inferential family.\n\n'+markdown_table(frame)
+    influence=pd.read_csv(out/'tables/thermal_network_leave_one_year_out.csv')
+    frame=influence.groupby('index_name').agg(q90_min=('q90','min'),q90_max=('q90','max'),Delta1_min=('Delta1','min'),Delta1_max=('Delta1','max')).reindex(INDEXES).reset_index()
+    text+='\n\n### Table S11. Leave-one-year-out thermal point estimates\n\nMinimum and maximum estimates across 34 fits, each omitting one original year from the common-network series and retaining the other calendar-year covariates. Units are days per decade. These ranges describe influence and are not confidence intervals. Omitted-year coefficients for all focal quantiles are archived in the data catalog.\n\n'+markdown_table(frame)
+    from .definition_figures import SCENARIOS, LABELS_INDEX
+    from .publication_regimes import REGIMES
+    settings=json.loads((out/'index_definition_metadata.json').read_text())['settings']
+    design=[]
+    for case in settings['scenarios']:
+        design.append({'Scenario':case['name'],'Reference':f"1991–{case['reference_end']}",'Window (days)':case['window'],'Quantile type':'T7' if case['method']=='linear' else 'T8','In-base correction':'16 donor replacements' if case['correction'] else 'None'})
+    text+='\n\n### Table S12. Controlled thermal-index constructions\n\nAll six scenarios use the same 108 stations, strict inequalities, no leap days and at least 80% valid annual days. They report observed annual counts and, separately, percentages of valid days. The 5-day/T8 corrected sensitivity follows the percentile and in-base replacement conventions used in climdex, but uses a 17-year baseline and the study’s annual coverage rule; it is not a fully standard ETCCDI implementation with standard baseline and monthly completeness requirements. Historical T7 uses linear interpolation between sample order statistics; T8 uses the median-unbiased convention. No sparse reference window triggered the minimum-15-observation guard.\n\n'+markdown_table(pd.DataFrame(design))
+    period=pd.read_csv(out/'tables/index_definition_period_summary.csv')
+    trend=pd.read_csv(out/'tables/index_definition_trends.csv')
+    rows=[]
+    for case in SCENARIOS:
+        for idx in INDEXES:
+            r=period.loc[(period.scenario==case)&(period.index_name==idx)].iloc[0]
+            d=trend.loc[(trend.scenario==case)&(trend.index_name==idx)].set_index('metric')
+            v=d.loc['Delta1']
+            rows.append([case,idx,r.change_days,r.change_rate_pp,d.loc['q10','estimate'],d.loc['q90','estimate'],f'{v.estimate:.2f} [{v.ci_low:.2f}, {v.ci_high:.2f}]'])
+    text+='\n\n### Table S13. Thermal period changes and trend sensitivity\n\nPeriod differences are 2008–2024 minus 1991–2007 means, averaging stations equally on the common 108-station network. Count changes are days per year; rate changes are percentage points of valid observed days. Slopes and Δ₁ intervals are days per decade. Corrected baseline counts may be fractional because event counts, not thresholds, are averaged over donor replacements. Intervals are conditional sensitivity intervals, not independent tests.\n\n'+markdown_table(pd.DataFrame(rows,columns=['Scenario','index_name','Count change','Valid-day rate change','q10 slope','q90 slope','Δ₁ [95% interval]']))
+    zero=pd.read_csv(out/'tables/zero_threshold_summary.csv')
+    z=zero.loc[(zero.threshold_mode=='refitted')&(zero.component=='joint_change')]
+    rows=[]
+    for definition in ['annual','warm_season']:
+        for group in ['All',*REGIMES]:
+            d=z.loc[(z.definition==definition)&(z.climate_regime==group)]
+            allrow=d.loc[(d.rule=='strict')&(d.stratum=='all')].iloc[0]
+            pos=d.loc[(d.rule=='strict')&(d.stratum=='positive')].iloc[0]
+            dry=d.loc[(d.rule=='dry_inclusive_only')&(d.stratum=='all')].iloc[0]
+            both=d.loc[(d.rule=='both_inclusive')&(d.stratum=='all')].iloc[0]
+            fmt=lambda r:f'{r.estimate_pp:.2f} [{r.ci_low_pp:.2f}, {r.ci_high_pp:.2f}]'
+            rows.append([definition,group,int(allrow.n_stations),int(allrow.n_zero),int(pos.n_stations),fmt(allrow),fmt(pos),fmt(dry),fmt(both)])
+    text+='\n\n### Table S14. Structural-zero dilution and tie definitions within climate regimes\n\nJoint-frequency changes in percentage points with exploratory 95% refitted-threshold intervals. N+ is the fixed observed-positive-cutoff subset. All strict point estimates equal N+/N times the positive-subset point estimate: this is an exact reweighting identity, not independent robustness evidence. Strict and inclusive all-station rules retain identical stations. Dry-inclusive changes only precipitation equality; both-inclusive also changes temperature equality. Group intervals do not test between-group contrasts. The three-station summer BSh positive subset is especially imprecise. Fixed-threshold intervals, paired rule effects, observed-zero strata and bootstrap cutoff changes are archived separately.\n\n'+markdown_table(pd.DataFrame(rows,columns=['definition','climate_regime','N','N₀','N+','Strict all','Strict positive subset','Dry-inclusive all','Both-inclusive all']))
     text+='\n\n## S3. Supplementary figures\n\n'
     for i,(stem,title,caption) in enumerate(SPECS,1):
         text+=f'### Figure S{i}. {title}\n\n![{title}](../outputs/publication_v2/figures/{stem}.png)\n\n*{caption}*\n\n'
     text+='''## S4. Reproducibility and complete machine-readable evidence
 
-All retained research tables are indexed in [Supplementary_Data_Catalog.md](Supplementary_Data_Catalog.md), including station-level results, complete bootstrap draws, reference metadata and validation records. Main and supplementary graphics are available as vector PDF, editable SVG, 350-dpi PNG and 600-dpi TIFF. The [supplementary figure atlas](../outputs/publication_v2/Supplementary_Figure_Atlas.pdf) contains Figures S1–S11; the [main atlas](../outputs/publication_v2/Figure_Atlas.pdf) contains Figures 1–10. Map boundaries supply geographical context only; their external source and redistribution license still require author confirmation.
+All retained research tables are indexed in [Supplementary_Data_Catalog.md](Supplementary_Data_Catalog.md), including station-level results, complete bootstrap draws, reference metadata and validation records. Main and supplementary graphics are available as vector PDF, editable SVG, 350-dpi PNG and 600-dpi TIFF. The [supplementary figure atlas](../outputs/publication_v2/Supplementary_Figure_Atlas.pdf) contains Figures S1–S15; the [main atlas](../outputs/publication_v2/Figure_Atlas.pdf) contains Figures 1–10. Map boundaries supply geographical context only; their external source and redistribution license still require author confirmation.
 
-Build the extension with `python run_publication.py`, validate raw-derived thermal and compound quantities with `python validate_publication.py`, and build the curated supplementary graphics with `python build_supplementary.py`. Rebuild text and atlases with `python build_publication_docs.py`. The wider historical numerical audit is reproduced with `python audit_output_data.py recompute`; it writes to an isolated work directory and never overwrites research outputs. Cleanup follows a file-specific manifest, with a verified recovery archive before deletion.
+Build the extension with `python run_publication.py`, validate raw-derived thermal and compound quantities with `python validate_publication.py`, and build the curated supplementary graphics with `python build_supplementary.py`. Reproduce the thermal network extension alone with `python run_thermal_network.py` and independently verify it with `python validate_thermal_network.py`. Run index-construction and structural-zero sensitivities with `python run_index_definition.py` and `python run_zero_threshold.py`; check both using `python validate_index_zero.py`. Rebuild text and atlases with `python build_publication_docs.py`. The wider historical numerical audit is reproduced with `python audit_output_data.py recompute`; it writes to an isolated work directory and never overwrites research outputs. Cleanup follows a file-specific manifest, with a verified recovery archive before deletion.
 '''
     return text

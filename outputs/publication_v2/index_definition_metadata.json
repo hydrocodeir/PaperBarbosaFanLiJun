@@ -1,0 +1,69 @@
+{
+  "settings": {
+    "baseline_years": [
+      1991,
+      2007
+    ],
+    "analysis_years": [
+      1991,
+      2024
+    ],
+    "annual_min_valid_fraction": 0.8,
+    "minimum_window_samples": 15,
+    "scenarios": [
+      {
+        "name": "full_w11_t7",
+        "reference_end": 2024,
+        "window": 11,
+        "method": "linear",
+        "correction": false
+      },
+      {
+        "name": "full_w5_t7",
+        "reference_end": 2024,
+        "window": 5,
+        "method": "linear",
+        "correction": false
+      },
+      {
+        "name": "fixed_w11_t7_raw",
+        "reference_end": 2007,
+        "window": 11,
+        "method": "linear",
+        "correction": false
+      },
+      {
+        "name": "fixed_w11_t7_corrected",
+        "reference_end": 2007,
+        "window": 11,
+        "method": "linear",
+        "correction": true
+      },
+      {
+        "name": "fixed_w5_t7_corrected",
+        "reference_end": 2007,
+        "window": 5,
+        "method": "linear",
+        "correction": true
+      },
+      {
+        "name": "fixed_w5_t8_corrected",
+        "reference_end": 2007,
+        "window": 5,
+        "method": "median_unbiased",
+        "correction": true
+      }
+    ]
+  },
+  "n_common_stations": 108,
+  "correction": "Exhaustive target-year exclusion and duplication of each other baseline year; average event counts, not thresholds. 17 x 16 replacements for early-reference scenarios.",
+  "quantiles": "linear = Hyndman-Fan type 7; median_unbiased = type 8; strict < q10 and > q90; circular calendar-day windows; no leap days.",
+  "uncertainty": "Conditional 4999 synchronized original-year pairs block draws (L4), held corrected indices and thresholds; sensitivity intervals, not extra confirmatory tests.",
+  "sources": {
+    "data/data.csv": "fda57a81f41622771325d66e132bd19adbd27e4ed10d5310bd8684b5cfb8c1ce",
+    "index_definition_config.yaml": "a5a7463af480293eab02f1748e377d27e70cbea2ea5e1af48d9e5692c6d3206c",
+    "src/paper_pipeline/index_definition.py": "c3b38339e48e045cfa0a1888bb7007aba52e8541420f787133e6109724ed0d9b",
+    "outputs/publication_v2/tables/thermal_network_membership.csv": "5fbb2c0b1ccc2b3f728e90e6ac5120eb12c60fdffc3fa3eed030fed4d9028887",
+    "outputs/publication_v2/tables/thermal_network_sampled_year_positions_L4.csv": "8a4528bd53e5c1400c4e8d83532689272fab6d411c1a4b90c308f98b772a454e"
+  }
+}

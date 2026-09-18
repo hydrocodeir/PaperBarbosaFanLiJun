@@ -1,14 +1,16 @@
 {
   "Manuscript_Q1_2026.md_links": "PASS",
   "Supplementary_Q1_2026.md_links": "PASS",
-  "reference_count": 25,
-  "supplementary_figure_count": 11,
+  "reference_count": 27,
+  "supplementary_figure_count": 15,
   "main_figure_count": 10,
   "main_table_count": 5,
   "regime_tables_generated_from_CSV": "PASS",
-  "conclusion_word_count": 443,
+  "conclusion_word_count": 545,
   "all_references_cited_in_body": "PASS",
-  "table1_OLS_values": "PASS",
-  "table1_all_coefficients_and_FDR_counts": "PASS",
-  "table3_all_components_and_intervals": "PASS"
+  "table1_fixed_network_coefficients_and_intervals": "PASS",
+  "thermal_network_station_count": 108,
+  "table3_all_components_and_intervals": "PASS",
+  "matched_network_uncorrected_and_corrected_headline_values": "PASS",
+  "zero_cutoff_reweighting_explicitly_separated": "PASS"
 }
